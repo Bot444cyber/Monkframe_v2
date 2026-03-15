@@ -23,6 +23,7 @@ import morgan from "morgan";
 
 // 3. Local files
 import Database from "./design/DataBase";
+import { poolConnection } from "./db"; // for heartbeat keepalive
 import { initSocket, getIO } from "./config/socket";
 import "./config/module/passport";
 import { errorHandler } from "./middlewares/error.middleware";
@@ -234,25 +235,44 @@ app.use(errorHandler);
 // ============================================
 // START SERVER
 // ============================================
-const server = httpServer.listen(PORT, () => {
+// Bind to 0.0.0.0 so Hostinger's internal health checker can reach the process
+const server = httpServer.listen(Number(PORT), '0.0.0.0', () => {
     logger.info(`🚀 UI Management System started`, {
         port: PORT,
+        host: '0.0.0.0',
         env: process.env.NODE_ENV || 'development',
         health: `http://localhost:${PORT}/api/health`,
     });
 });
 
-// Prevent Hostinger's process manager from killing long-running requests
-// (file uploads, image processing, Drive API calls can exceed 3s)
-server.timeout = 120000;         // 120s — max time for any single request
-server.keepAliveTimeout = 120000; // 120s — keep TCP connections alive through Nginx
-server.headersTimeout = 125000;  // 125s — must be > keepAliveTimeout to avoid race condition
+// ── Passenger-compatible timeout settings ────────────────────────────────
+// timeout:          120s guards slow requests (uploads, Drive API, etc.)
+// keepAliveTimeout: 0  — let Passenger manage its own reverse-proxy pipe
+//                       (a non-zero value can cause Passenger to SIGTERM)
+// headersTimeout:   125s — must stay > keepAliveTimeout
+server.timeout = 120000;
+server.keepAliveTimeout = 0;    // Passenger compatibility — do NOT set to 120000
+server.headersTimeout = 125000;
+
+// ── Anti-SIGTERM Heartbeat ───────────────────────────────────────────────
+// Passenger kills processes it considers 'idle'. A periodic DB ping every
+// 5 seconds keeps the process visibly alive AND the MySQL connection warm.
+const heartbeat = setInterval(async () => {
+    try {
+        await poolConnection.query('SELECT 1');
+    } catch (err) {
+        logger.warn('Heartbeat DB ping failed', { error: String(err) });
+    }
+}, 5000);
+heartbeat.unref(); // Don't let the interval block graceful shutdown
+// ─────────────────────────────────────────────────────────────────────────
 
 // ============================================
 // GRACEFUL SHUTDOWN
 // ============================================
 function gracefulShutdown(signal: string) {
     logger.info(`Received ${signal}, shutting down gracefully...`);
+    clearInterval(heartbeat); // stop the DB keepalive ping
     server.close(async () => {
         logger.info('HTTP server closed');
         try {
