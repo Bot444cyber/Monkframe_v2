@@ -134,30 +134,13 @@ class Database {
 
     public async initializeDatabase(): Promise<boolean> {
         try {
-            console.log('🚀 Initializing database...');
-
             // Step 1: Check if database exists
             const databaseExists = await this.checkDatabaseExists();
 
             if (!databaseExists) {
                 console.log('📋 Database not found, creating new database...');
-
-                // Step 2: Create database if it doesn't exist
-                const created = await this.create();
-                if (!created) {
-                    console.error('❌ Failed to create database');
-                    return false;
-                }
-
-                // Step 3: Connect to the newly created database
-                const connected = await this.connect();
-                if (!connected) {
-                    console.error('❌ Failed to connect to newly created database');
-                    return false;
-                }
             }
 
-            console.log('🎉 Database initialization completed successfully');
             return true;
         }
         catch (error) {
