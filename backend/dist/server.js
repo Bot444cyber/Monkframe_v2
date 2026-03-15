@@ -247,7 +247,7 @@ function startApp() {
     return __awaiter(this, void 0, void 0, function* () {
         // 1. Await DB before opening the port
         yield initializeDatabase();
-        const server = httpServer.listen(Number(PORT), () => {
+        const server = httpServer.listen(PORT, () => {
             logger_1.default.info('🚀 UI Management System started', {
                 port: PORT,
                 env: process.env.NODE_ENV || 'development',

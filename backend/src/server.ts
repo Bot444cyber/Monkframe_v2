@@ -264,7 +264,7 @@ async function startApp() {
     // 1. Await DB before opening the port
     await initializeDatabase();
 
-    const server = httpServer.listen(Number(PORT), () => {
+    const server = httpServer.listen(PORT, () => {
         logger.info('🚀 UI Management System started', {
             port: PORT,
             env: process.env.NODE_ENV || 'development',
