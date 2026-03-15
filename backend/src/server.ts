@@ -150,6 +150,16 @@ initSocket(httpServer, sessionMiddleware);
 // ============================================
 // HEALTH CHECK
 // ============================================
+app.get('/', (req: Request, res: Response) => {
+    res.json({
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        uptime: Math.floor(process.uptime()),
+        environment: process.env.NODE_ENV || 'development',
+        version: process.env.npm_package_version || '1.0.0',
+    });
+});
+
 app.get('/api/health', (req: Request, res: Response) => {
     const database = Database.getInstance();
     const dbStatus = database.getConnectionStatus();
