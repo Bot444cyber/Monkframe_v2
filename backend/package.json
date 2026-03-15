@@ -2,12 +2,13 @@
   "name": "server",
   "version": "1.0.0",
   "main": "dist/server.js",
-  "scripts": {
+"scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "prod": "npm run build && npm run db:push && npm run start"
   },
   "keywords": [],
   "author": "",
