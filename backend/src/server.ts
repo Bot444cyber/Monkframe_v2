@@ -44,6 +44,9 @@ const httpServer = createServer(app);
 const PORT = process.env.PORT || 8000;
 const isProd = process.env.NODE_ENV === 'production';
 
+// Trust proxy for secure cookies
+app.set('trust proxy', 1);
+
 // ============================================
 // DATABASE
 // ============================================
