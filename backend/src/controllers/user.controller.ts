@@ -30,12 +30,20 @@ export const googleAuthCallback = (req: Request, res: Response, next: NextFuncti
         }
 
         try {
-            console.log('🔍 Processing Google Profile:', profile.id, profile.emails?.[0]?.value);
+            const googleId = String(profile.id); // Force string — Google IDs exceed JS/MySQL numeric limits
+            console.log('🔍 Processing Google Profile:', googleId, profile.emails?.[0]?.value);
 
             // Check if user exists with this google_id
-            let user = await db.query.users.findFirst({
-                where: eq(users.google_id, profile.id),
-            });
+            // Wrapped in try-catch in case the DB column type is BIGINT (not VARCHAR) and overflows
+            let user: typeof import('../db/schema').users.$inferSelect | undefined;
+            try {
+                user = await db.query.users.findFirst({
+                    where: eq(users.google_id, googleId),
+                }) ?? undefined;
+            } catch (googleIdQueryError) {
+                console.warn('⚠️ google_id lookup failed (possible DB column type mismatch - expected VARCHAR, got numeric type). Falling through to email lookup.', googleIdQueryError);
+                user = undefined;
+            }
 
             if (!user) {
                 console.log('ℹ️ User not found by Google ID, checking email...');
@@ -47,19 +55,19 @@ export const googleAuthCallback = (req: Request, res: Response, next: NextFuncti
 
                     if (existingEmailUser) {
                         console.log('✅ Linking to existing email user:', existingEmailUser.user_id);
-                        await db.update(users).set({ google_id: profile.id }).where(eq(users.user_id, existingEmailUser.user_id));
-                        user = await db.query.users.findFirst({ where: eq(users.user_id, existingEmailUser.user_id) });
+                        await db.update(users).set({ google_id: googleId }).where(eq(users.user_id, existingEmailUser.user_id));
+                        user = await db.query.users.findFirst({ where: eq(users.user_id, existingEmailUser.user_id) }) ?? undefined;
                     }
                     else {
                         console.log('🆕 Creating new user from Google profile');
                         // Create new user
                         await db.insert(users).values({
-                            google_id: profile.id,
+                            google_id: googleId,
                             email: profile.emails[0].value,
                             full_name: profile.displayName,
                             password_hash: '',
                         });
-                        user = await db.query.users.findFirst({ where: eq(users.email, profile.emails[0].value) });
+                        user = await db.query.users.findFirst({ where: eq(users.email, profile.emails[0].value) }) ?? undefined;
 
                         // Standardize user object for dashboard
                         if (user) {
@@ -77,15 +85,15 @@ export const googleAuthCallback = (req: Request, res: Response, next: NextFuncti
                     }
                 } else {
                     console.log('⚠️ No email in profile, creating fallback user');
-                    const fallbackEmail = `${profile.id}@google.oauth`;
+                    const fallbackEmail = `${googleId}@google.oauth`;
                     await db.insert(users).values({
-                        google_id: profile.id,
+                        google_id: googleId,
                         email: fallbackEmail, // Fallback email
                         full_name: profile.displayName,
                         password_hash: '',
                     });
 
-                    user = await db.query.users.findFirst({ where: eq(users.email, fallbackEmail) });
+                    user = await db.query.users.findFirst({ where: eq(users.email, fallbackEmail) }) ?? undefined;
 
                     if (user) {
                         const formattedUser = {
