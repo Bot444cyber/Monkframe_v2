@@ -8,11 +8,18 @@ type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 
 function log(level: LogLevel, message: string, meta?: Record<string, unknown>) {
     const ts = new Date().toISOString();
+
+    // STRICTLY USE CONSOLE to prevent Hostinger Passenger from detecting
+    // process.stdout modifications as file writes and restarting the app.
     if (isProd) {
-        // Machine-readable JSON for log aggregators (Datadog, CloudWatch, etc.)
-        process.stdout.write(
-            JSON.stringify({ ts, level, message, ...meta }) + '\n'
-        );
+        const logData = JSON.stringify({ ts, level, message, ...meta });
+        if (level === 'error') {
+            console.error(logData);
+        } else if (level === 'warn') {
+            console.warn(logData);
+        } else {
+            console.log(logData);
+        }
     } else {
         const prefix: Record<LogLevel, string> = {
             info: '📘',
@@ -22,7 +29,10 @@ function log(level: LogLevel, message: string, meta?: Record<string, unknown>) {
         };
         const parts = [`${prefix[level]} [${level.toUpperCase()}]`, message];
         if (meta && Object.keys(meta).length > 0) parts.push(JSON.stringify(meta));
-        console[level === 'debug' ? 'log' : level](parts.join(' '));
+
+        if (level === 'error') console.error(parts.join(' '));
+        else if (level === 'warn') console.warn(parts.join(' '));
+        else console.log(parts.join(' '));
     }
 }
 

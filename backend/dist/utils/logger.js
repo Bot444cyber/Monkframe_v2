@@ -6,9 +6,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const isProd = process.env.NODE_ENV === 'production';
 function log(level, message, meta) {
     const ts = new Date().toISOString();
+    // STRICTLY USE CONSOLE to prevent Hostinger Passenger from detecting
+    // process.stdout modifications as file writes and restarting the app.
     if (isProd) {
-        // Machine-readable JSON for log aggregators (Datadog, CloudWatch, etc.)
-        process.stdout.write(JSON.stringify(Object.assign({ ts, level, message }, meta)) + '\n');
+        const logData = JSON.stringify(Object.assign({ ts, level, message }, meta));
+        if (level === 'error') {
+            console.error(logData);
+        }
+        else if (level === 'warn') {
+            console.warn(logData);
+        }
+        else {
+            console.log(logData);
+        }
     }
     else {
         const prefix = {
@@ -20,7 +30,12 @@ function log(level, message, meta) {
         const parts = [`${prefix[level]} [${level.toUpperCase()}]`, message];
         if (meta && Object.keys(meta).length > 0)
             parts.push(JSON.stringify(meta));
-        console[level === 'debug' ? 'log' : level](parts.join(' '));
+        if (level === 'error')
+            console.error(parts.join(' '));
+        else if (level === 'warn')
+            console.warn(parts.join(' '));
+        else
+            console.log(parts.join(' '));
     }
 }
 const logger = {
