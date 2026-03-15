@@ -29,9 +29,7 @@ class Auth {
                 if (!email || !password) {
                     return { status: false, message: "Email and password are required" };
                 }
-                const user = yield db_1.db.query.users.findFirst({
-                    where: (0, drizzle_orm_1.eq)(schema_1.users.email, email)
-                });
+                const [user] = yield db_1.db.select().from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.email, email)).limit(1);
                 if (!user) {
                     return { status: false, message: "User not found" };
                 }
@@ -66,9 +64,7 @@ class Auth {
                 if (!isValid) {
                     return { status: false, message: "Invalid or expired OTP" };
                 }
-                const user = yield db_1.db.query.users.findFirst({
-                    where: (0, drizzle_orm_1.eq)(schema_1.users.email, email)
-                });
+                const [user] = yield db_1.db.select().from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.email, email)).limit(1);
                 if (!user) {
                     return { status: false, message: "User not found" };
                 }
@@ -97,9 +93,7 @@ class Auth {
                     return { status: false, message: "Invalid or expired OTP" };
                 }
                 // Check if user already exists (double check)
-                const existingUser = yield db_1.db.query.users.findFirst({
-                    where: (0, drizzle_orm_1.eq)(schema_1.users.email, email)
-                });
+                const [existingUser] = yield db_1.db.select().from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.email, email)).limit(1);
                 if (existingUser) {
                     return { status: false, message: "User already exists" };
                 }
@@ -112,9 +106,7 @@ class Auth {
                     full_name: fullName,
                     role: 'CUSTOMER' // Default role
                 });
-                const newUser = yield db_1.db.query.users.findFirst({
-                    where: (0, drizzle_orm_1.eq)(schema_1.users.email, email)
-                });
+                const [newUser] = yield db_1.db.select().from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.email, email)).limit(1);
                 if (!newUser) {
                     return { status: false, message: "Failed to create user" };
                 }

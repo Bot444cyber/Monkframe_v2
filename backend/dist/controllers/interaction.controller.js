@@ -24,18 +24,13 @@ const toggleLike = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         if (!userId)
             return res.status(401).json({ status: false, message: "Unauthorized" });
         // Fetch user details for notification
-        const userDetails = yield db_1.db.query.users.findFirst({
-            where: (0, drizzle_orm_1.eq)(schema_1.users.user_id, userId),
-            columns: { full_name: true, email: true }
-        });
-        const existingLike = yield db_1.db.query.likes.findFirst({
-            where: (0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.likes.user_id, userId), (0, drizzle_orm_1.eq)(schema_1.likes.ui_id, id))
-        });
+        const [userDetails] = yield db_1.db.select({ full_name: schema_1.users.full_name, email: schema_1.users.email }).from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.user_id, userId)).limit(1);
+        const [existingLike] = yield db_1.db.select().from(schema_1.likes).where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.likes.user_id, userId), (0, drizzle_orm_1.eq)(schema_1.likes.ui_id, id))).limit(1);
         if (existingLike) {
             // Unlike
             yield db_1.db.delete(schema_1.likes).where((0, drizzle_orm_1.eq)(schema_1.likes.id, existingLike.id));
             yield db_1.db.update(schema_1.uis).set({ likes: (0, drizzle_orm_1.sql) `${schema_1.uis.likes} - 1` }).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id));
-            const updatedUI = yield db_1.db.query.uis.findFirst({ where: (0, drizzle_orm_1.eq)(schema_1.uis.id, id) });
+            const [updatedUI] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id)).limit(1);
             // Emit real-time update
             (0, socket_1.getIO)().emit('like:updated', { uiId: id, likesCount: updatedUI === null || updatedUI === void 0 ? void 0 : updatedUI.likes, liked: false, userId });
             return res.json({ status: true, message: "Unliked", liked: false, likesCount: updatedUI === null || updatedUI === void 0 ? void 0 : updatedUI.likes });
@@ -48,7 +43,7 @@ const toggleLike = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 ui_id: id
             });
             yield db_1.db.update(schema_1.uis).set({ likes: (0, drizzle_orm_1.sql) `${schema_1.uis.likes} + 1` }).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id));
-            const updatedUI = yield db_1.db.query.uis.findFirst({ where: (0, drizzle_orm_1.eq)(schema_1.uis.id, id) });
+            const [updatedUI] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id)).limit(1);
             // Create Notification
             try {
                 const notificationId = (0, crypto_1.randomUUID)();
@@ -94,15 +89,10 @@ const toggleWishlist = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.user_id;
         if (!userId)
             return res.status(401).json({ status: false, message: "Unauthorized" });
-        const existingWish = yield db_1.db.query.wishlists.findFirst({
-            where: (0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.wishlists.user_id, userId), (0, drizzle_orm_1.eq)(schema_1.wishlists.ui_id, id))
-        });
+        const [existingWish] = yield db_1.db.select().from(schema_1.wishlists).where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.wishlists.user_id, userId), (0, drizzle_orm_1.eq)(schema_1.wishlists.ui_id, id))).limit(1);
         // Fetch user details for notification (recycle if possible, but safe to fetch here if not above)
         // Since this is a separate function, we need to fetch again or reuse logic.
-        const userDetails = yield db_1.db.query.users.findFirst({
-            where: (0, drizzle_orm_1.eq)(schema_1.users.user_id, userId),
-            columns: { full_name: true, email: true }
-        });
+        const [userDetails] = yield db_1.db.select({ full_name: schema_1.users.full_name, email: schema_1.users.email }).from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.user_id, userId)).limit(1);
         if (existingWish) {
             yield db_1.db.delete(schema_1.wishlists).where((0, drizzle_orm_1.eq)(schema_1.wishlists.id, existingWish.id));
             // Emit real-time update
@@ -118,7 +108,7 @@ const toggleWishlist = (req, res) => __awaiter(void 0, void 0, void 0, function*
             // Create Notification
             try {
                 // Fetch UI title for message
-                const ui = yield db_1.db.query.uis.findFirst({ where: (0, drizzle_orm_1.eq)(schema_1.uis.id, id), columns: { title: true } });
+                const [ui] = yield db_1.db.select({ title: schema_1.uis.title }).from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id)).limit(1);
                 const notificationId = (0, crypto_1.randomUUID)();
                 yield db_1.db.insert(schema_1.notifications).values({
                     id: notificationId,
@@ -192,7 +182,7 @@ const addComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         // Create Notification
         try {
             // Fetch UI title
-            const ui = yield db_1.db.query.uis.findFirst({ where: (0, drizzle_orm_1.eq)(schema_1.uis.id, id), columns: { title: true } });
+            const [ui] = yield db_1.db.select({ title: schema_1.uis.title }).from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id)).limit(1);
             const notificationId = (0, crypto_1.randomUUID)();
             yield db_1.db.insert(schema_1.notifications).values({
                 id: notificationId,
@@ -281,7 +271,7 @@ const deleteComment = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     try {
         const { commentId } = req.params;
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.user_id;
-        const comment = yield db_1.db.query.comments.findFirst({ where: (0, drizzle_orm_1.eq)(schema_1.comments.id, commentId) });
+        const [comment] = yield db_1.db.select().from(schema_1.comments).where((0, drizzle_orm_1.eq)(schema_1.comments.id, commentId)).limit(1);
         if (!comment)
             return res.status(404).json({ status: false, message: "Comment not found" });
         if (comment.user_id !== userId) {

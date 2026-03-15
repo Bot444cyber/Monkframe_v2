@@ -41,33 +41,41 @@ const googleAuthCallback = (req, res, next) => {
             return res.redirect(`${process.env.FRONTEND_URL}/login?error=no_user`);
         }
         try {
-            console.log('🔍 Processing Google Profile:', profile.id, (_b = (_a = profile.emails) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.value);
+            const googleId = String(profile.id); // Force string — Google IDs exceed JS/MySQL numeric limits
+            console.log('🔍 Processing Google Profile:', googleId, (_b = (_a = profile.emails) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.value);
             // Check if user exists with this google_id
-            let user = yield db_1.db.query.users.findFirst({
-                where: (0, drizzle_orm_1.eq)(schema_1.users.google_id, profile.id),
-            });
+            // Wrapped in try-catch in case the DB column type is BIGINT (not VARCHAR) and overflows
+            let user;
+            try {
+                const [found] = yield db_1.db.select().from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.google_id, googleId)).limit(1);
+                user = found;
+            }
+            catch (googleIdQueryError) {
+                console.warn('⚠️ google_id lookup failed, falling through to email lookup.', googleIdQueryError);
+                user = undefined;
+            }
             if (!user) {
                 console.log('ℹ️ User not found by Google ID, checking email...');
                 // Check by email if user exists to link accounts
                 if (profile.emails && profile.emails.length > 0) {
-                    const existingEmailUser = yield db_1.db.query.users.findFirst({
-                        where: (0, drizzle_orm_1.eq)(schema_1.users.email, profile.emails[0].value),
-                    });
+                    const [existingEmailUser] = yield db_1.db.select().from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.email, profile.emails[0].value)).limit(1);
                     if (existingEmailUser) {
                         console.log('✅ Linking to existing email user:', existingEmailUser.user_id);
-                        yield db_1.db.update(schema_1.users).set({ google_id: profile.id }).where((0, drizzle_orm_1.eq)(schema_1.users.user_id, existingEmailUser.user_id));
-                        user = yield db_1.db.query.users.findFirst({ where: (0, drizzle_orm_1.eq)(schema_1.users.user_id, existingEmailUser.user_id) });
+                        yield db_1.db.update(schema_1.users).set({ google_id: googleId }).where((0, drizzle_orm_1.eq)(schema_1.users.user_id, existingEmailUser.user_id));
+                        const [refetched] = yield db_1.db.select().from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.user_id, existingEmailUser.user_id)).limit(1);
+                        user = refetched;
                     }
                     else {
                         console.log('🆕 Creating new user from Google profile');
                         // Create new user
                         yield db_1.db.insert(schema_1.users).values({
-                            google_id: profile.id,
+                            google_id: googleId,
                             email: profile.emails[0].value,
                             full_name: profile.displayName,
                             password_hash: '',
                         });
-                        user = yield db_1.db.query.users.findFirst({ where: (0, drizzle_orm_1.eq)(schema_1.users.email, profile.emails[0].value) });
+                        const [createdUser] = yield db_1.db.select().from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.email, profile.emails[0].value)).limit(1);
+                        user = createdUser;
                         // Standardize user object for dashboard
                         if (user) {
                             const formattedUser = {
@@ -85,14 +93,15 @@ const googleAuthCallback = (req, res, next) => {
                 }
                 else {
                     console.log('⚠️ No email in profile, creating fallback user');
-                    const fallbackEmail = `${profile.id}@google.oauth`;
+                    const fallbackEmail = `${googleId}@google.oauth`;
                     yield db_1.db.insert(schema_1.users).values({
-                        google_id: profile.id,
+                        google_id: googleId,
                         email: fallbackEmail, // Fallback email
                         full_name: profile.displayName,
                         password_hash: '',
                     });
-                    user = yield db_1.db.query.users.findFirst({ where: (0, drizzle_orm_1.eq)(schema_1.users.email, fallbackEmail) });
+                    const [fallbackUser] = yield db_1.db.select().from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.email, fallbackEmail)).limit(1);
+                    user = fallbackUser;
                     if (user) {
                         const formattedUser = {
                             id: user.user_id,
@@ -172,9 +181,7 @@ const getUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const paymentsPage = parseInt(req.query.paymentsPage) || 1;
         const paymentsLimit = parseInt(req.query.paymentsLimit) || 5;
         // Get basic user data (no joins needed here)
-        const user = yield db_1.db.query.users.findFirst({
-            where: (0, drizzle_orm_1.eq)(schema_1.users.user_id, userId)
-        });
+        const [user] = yield db_1.db.select().from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.user_id, userId)).limit(1);
         if (!user) {
             return res.status(404).json({ status: false, message: "User not found" });
         }

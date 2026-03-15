@@ -57,9 +57,7 @@ const VerifyEmailByOTP = (req, res) => __awaiter(void 0, void 0, void 0, functio
             return res.json({ status: true, message: 'OTP verified', token: verifyResult.token });
         }
         // Otherwise generate OTP (Registration/Forgot Password flow)
-        const existingEmail = yield db_1.db.query.authOtp.findFirst({
-            where: (0, drizzle_orm_1.eq)(schema_1.authOtp.email, req.body.email),
-        });
+        const [existingEmail] = yield db_1.db.select().from(schema_1.authOtp).where((0, drizzle_orm_1.eq)(schema_1.authOtp.email, req.body.email)).limit(1);
         if (existingEmail) {
             const generatedOTP = yield Otp_1.default.SetupOTP(req.body.email);
             if (!generatedOTP) {
@@ -78,9 +76,7 @@ const VerifyEmailByOTP = (req, res) => __awaiter(void 0, void 0, void 0, functio
             yield (0, email_service_1.default)(req.body.email, generatedOTP);
             return res.json({ status: true, message: 'OTP is updated.' });
         }
-        const existingUserCheck = yield db_1.db.query.users.findFirst({
-            where: (0, drizzle_orm_1.eq)(schema_1.users.email, req.body.email)
-        });
+        const [existingUserCheck] = yield db_1.db.select().from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.email, req.body.email)).limit(1);
         if (existingUserCheck) {
             return res.json({ status: false, message: 'User already registered.' });
         }
@@ -117,7 +113,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return res.json({ status: false, message: result.message });
         }
         // Fetch the user object to emit (optional, but good for UI)
-        const newUser = yield db_1.db.query.users.findFirst({ where: (0, drizzle_orm_1.eq)(schema_1.users.email, email) });
+        const [newUser] = yield db_1.db.select().from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.email, email)).limit(1);
         if (newUser) {
             // Standardize user object for dashboard
             const formattedUser = {

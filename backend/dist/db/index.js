@@ -42,5 +42,29 @@ const promise_1 = __importDefault(require("mysql2/promise"));
 const schema = __importStar(require("./schema"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-exports.poolConnection = promise_1.default.createPool(process.env.DATABASE_URL);
-exports.db = (0, mysql2_1.drizzle)(exports.poolConnection, { schema, mode: 'planetscale' });
+// Create the pool using an object to handle special characters safely
+exports.poolConnection = promise_1.default.createPool({
+    // Fallback to 127.0.0.1 if DB_HOST is missing
+    host: process.env.DB_HOST || '127.0.0.1',
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    // Ensure port is a valid number, default to 3306
+    port: Number(process.env.DB_PORT) || 3306,
+    waitForConnections: true,
+    connectionLimit: 5, // Lower limit is safer for Hostinger shared plans
+    queueLimit: 0,
+    // Essential for keeping the connection alive on Hostinger
+    enableKeepAlive: true,
+    keepAliveInitialDelay: 10000,
+});
+exports.db = (0, mysql2_1.drizzle)(exports.poolConnection, { schema, mode: 'default' });
+// Add a quick check to log if the connection fails
+exports.poolConnection.getConnection()
+    .then(conn => {
+    console.log("✅ Database Pool Initialized");
+    conn.release();
+})
+    .catch(err => {
+    console.error("❌ Database Pool Error:", err.message);
+});

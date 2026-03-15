@@ -40,9 +40,7 @@ class OTP {
                 return false;
             }
             try {
-                const record = yield db_1.db.query.authOtp.findFirst({
-                    where: (0, drizzle_orm_1.eq)(schema_1.authOtp.email, email)
-                });
+                const [record] = yield db_1.db.select().from(schema_1.authOtp).where((0, drizzle_orm_1.eq)(schema_1.authOtp.email, email)).limit(1);
                 if (!record) {
                     return false;
                 }

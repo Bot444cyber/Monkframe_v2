@@ -32,14 +32,20 @@ passport_1.default.use(new passport_google_oauth20_1.Strategy({
     }
 })));
 passport_1.default.serializeUser((user, done) => {
-    done(null, user.user_id || user.id);
+    const id = user.user_id;
+    if (!id || typeof id !== 'number') {
+        return done(new Error('serializeUser: user_id is missing or not a number'), null);
+    }
+    done(null, id);
 });
 passport_1.default.deserializeUser((id, done) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const user = yield db_1.db.query.users.findFirst({
-            where: (0, drizzle_orm_1.eq)(schema_1.users.user_id, id),
-        });
-        done(null, user);
+        const numericId = Number(id);
+        if (!Number.isInteger(numericId) || numericId <= 0) {
+            return done(null, false);
+        }
+        const [user] = yield db_1.db.select().from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.user_id, numericId)).limit(1);
+        done(null, user !== null && user !== void 0 ? user : false);
     }
     catch (error) {
         done(error, null);

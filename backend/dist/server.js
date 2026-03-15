@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var _a, _b;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sessionMiddleware = void 0;
 // 1. THIS MUST BE THE ABSOLUTE FIRST LINE
@@ -35,6 +36,7 @@ const compression_1 = __importDefault(require("compression"));
 const morgan_1 = __importDefault(require("morgan"));
 // 3. Local files
 const DataBase_1 = __importDefault(require("./design/DataBase"));
+const db_1 = require("./db"); // for heartbeat keepalive
 const socket_1 = require("./config/socket");
 require("./config/module/passport");
 const error_middleware_1 = require("./middlewares/error.middleware");
@@ -53,6 +55,8 @@ const app = (0, express_1.default)();
 const httpServer = (0, http_1.createServer)(app);
 const PORT = process.env.PORT || 8000;
 const isProd = process.env.NODE_ENV === 'production';
+// Trust proxy for secure cookies
+app.set('trust proxy', 1);
 // ============================================
 // DATABASE
 // ============================================
@@ -80,35 +84,46 @@ function initializeDatabase() {
         }
     });
 }
-initializeDatabase();
 // ============================================
 // MIDDLEWARE
 // ============================================
-// Security headers
+// Security headers — adjusted so helmet doesn't block OAuth redirects or
+// cross-origin image loading from Google Drive.
 app.use((0, helmet_1.default)({
     crossOriginResourcePolicy: { policy: 'cross-origin' }, // allow image proxy
-    contentSecurityPolicy: isProd ? undefined : false, // disable CSP in dev
+    crossOriginOpenerPolicy: { policy: 'unsafe-none' }, // allow Google OAuth popup flow
+    contentSecurityPolicy: isProd ? undefined : false,
 }));
-// CORS
+// CORS — resilient: handles x-forwarded-proto from Hostinger's Nginx proxy
+// and gracefully falls back when FRONTEND_URL is not set.
 const allowedOrigins = [
     process.env.FRONTEND_URL,
-].filter((origin) => !!origin);
+    ...((_b = (_a = process.env.ALLOWED_ORIGINS) === null || _a === void 0 ? void 0 : _a.split(',')) !== null && _b !== void 0 ? _b : []),
+].filter((o) => !!(o === null || o === void 0 ? void 0 : o.trim()));
 app.use((0, cors_1.default)({
-    origin: (origin, callback) => {
-        if (!origin)
+    origin: (incomingOrigin, callback) => {
+        // Allow requests with no origin (curl, Postman, server-to-server)
+        if (!incomingOrigin)
             return callback(null, true);
+        // In development always allow
         if (!isProd)
             return callback(null, true);
-        if (allowedOrigins.includes(origin)) {
+        // Normalise: strip trailing slash, handle http→https via proxy
+        const normalised = incomingOrigin.replace(/\/$/, '');
+        const httpsVariant = normalised.replace(/^http:\/\//i, 'https://');
+        const allowed = allowedOrigins.length === 0 || // no list set → open (fallback)
+            allowedOrigins.some((o) => o === normalised || o === httpsVariant);
+        if (allowed) {
             callback(null, true);
         }
         else {
-            callback(new Error('Not allowed by CORS'));
+            logger_1.default.warn(`CORS blocked origin: ${incomingOrigin}`);
+            callback(new Error(`Origin '${incomingOrigin}' not allowed by CORS`));
         }
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Cookie'],
     exposedHeaders: ['Content-Range', 'X-Content-Range'],
     maxAge: 86400,
 }));
@@ -125,6 +140,22 @@ app.use((0, morgan_1.default)(morganFormat, {
     },
     skip: (req) => req.path === '/api/health',
 }));
+// ── Diagnostic Middleware ──────────────────────────────────────────────────
+// Logs key headers to help identify if Hostinger/Nginx strips auth headers.
+// Disable in production once the issue is diagnosed.
+if (!isProd) {
+    app.use((req, _res, next) => {
+        logger_1.default.debug(`[DIAG] ${req.method} ${req.path}`, {
+            origin: req.headers['origin'] || '—',
+            authorization: req.headers['authorization'] ? '✔ present' : '✘ missing',
+            cookie: req.headers['cookie'] ? '✔ present' : '✘ missing',
+            'x-forwarded-for': req.headers['x-forwarded-for'] || '—',
+            'x-real-ip': req.headers['x-real-ip'] || '—',
+        });
+        next();
+    });
+}
+// ──────────────────────────────────────────────────────────────────────────
 // Session configuration
 exports.sessionMiddleware = (0, express_session_1.default)({
     secret: process.env.SESSION_SECRET || 'fallback-dev-secret-do-not-use-in-prod',
@@ -149,6 +180,15 @@ app.use(rateLimit_middleware_1.generalLimiter);
 // ============================================
 // HEALTH CHECK
 // ============================================
+app.get('/', (req, res) => {
+    res.json({
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        uptime: Math.floor(process.uptime()),
+        environment: process.env.NODE_ENV || 'development',
+        version: process.env.npm_package_version || '1.0.0',
+    });
+});
 app.get('/api/health', (req, res) => {
     const database = DataBase_1.default.getInstance();
     const dbStatus = database.getConnectionStatus();
@@ -197,41 +237,72 @@ app.use((req, res) => {
 // Global error handler (must be last)
 app.use(error_middleware_1.errorHandler);
 // ============================================
-// START SERVER
+// START SERVER (async — DB must be ready first)
 // ============================================
-const server = httpServer.listen(PORT, () => {
-    logger_1.default.info(`🚀 UI Management System started`, {
-        port: PORT,
-        env: process.env.NODE_ENV || 'development',
-        health: `http://localhost:${PORT}/api/health`,
+function startApp() {
+    return __awaiter(this, void 0, void 0, function* () {
+        // 1. Await DB before opening the port so Hostinger's health-check
+        //    never hits the app while it's still booting (avoids 503/403 on first probe)
+        yield initializeDatabase();
+        // 2. Bind to 0.0.0.0 so Passenger's internal health-checker can reach us
+        const server = httpServer.listen(Number(PORT), '0.0.0.0', () => {
+            logger_1.default.info('🚀 UI Management System started', {
+                port: PORT,
+                host: '0.0.0.0',
+                env: process.env.NODE_ENV || 'development',
+                health: `http://localhost:${PORT}/api/health`,
+            });
+        });
+        // ── Passenger-specific timeout settings ──────────────────────────────
+        // timeout:          120 000 ms — guards long-running routes (uploads, Drive API)
+        // keepAliveTimeout: 5 000 ms  — small non-zero value recommended by Passenger;
+        //                               0 can cause proxy hangs, 120 000 causes SIGTERM
+        // headersTimeout:   6 000 ms  — must be slightly > keepAliveTimeout
+        server.timeout = 120000;
+        server.keepAliveTimeout = 5000;
+        server.headersTimeout = 6000;
+        // ── Anti-SIGTERM Heartbeat ────────────────────────────────────────────
+        // Passenger kills 'idle' processes. A 5 s DB ping proves the process is
+        // still alive AND keeps the MySQL connection pool warm.
+        const heartbeat = setInterval(() => __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield db_1.poolConnection.query('SELECT 1');
+            }
+            catch (err) {
+                logger_1.default.warn('Heartbeat DB ping failed', { error: String(err) });
+            }
+        }), 5000);
+        heartbeat.unref(); // never block graceful shutdown
+        // ─────────────────────────────────────────────────────────────────────
+        // ============================================
+        // GRACEFUL SHUTDOWN
+        // ============================================
+        function gracefulShutdown(signal) {
+            logger_1.default.info(`Received ${signal}, shutting down gracefully...`);
+            clearInterval(heartbeat);
+            server.close(() => __awaiter(this, void 0, void 0, function* () {
+                var _a;
+                logger_1.default.info('HTTP server closed');
+                try {
+                    const database = DataBase_1.default.getInstance();
+                    yield ((_a = database.disconnect) === null || _a === void 0 ? void 0 : _a.call(database));
+                    logger_1.default.info('Database connection closed');
+                }
+                catch (err) {
+                    logger_1.default.error('Error closing database', { error: String(err) });
+                }
+                process.exit(0);
+            }));
+            // Force-kill after 10 s so Passenger can recycle the slot
+            setTimeout(() => {
+                logger_1.default.error('Forced shutdown after timeout');
+                process.exit(1);
+            }, 10000).unref();
+        }
+        process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+        process.on('SIGINT', () => gracefulShutdown('SIGINT'));
     });
-});
-// ============================================
-// GRACEFUL SHUTDOWN
-// ============================================
-function gracefulShutdown(signal) {
-    logger_1.default.info(`Received ${signal}, shutting down gracefully...`);
-    server.close(() => __awaiter(this, void 0, void 0, function* () {
-        var _a;
-        logger_1.default.info('HTTP server closed');
-        try {
-            const database = DataBase_1.default.getInstance();
-            yield ((_a = database.disconnect) === null || _a === void 0 ? void 0 : _a.call(database));
-            logger_1.default.info('Database connection closed');
-        }
-        catch (err) {
-            logger_1.default.error('Error closing database connection', { error: String(err) });
-        }
-        process.exit(0);
-    }));
-    // Force shutdown after 10 seconds
-    setTimeout(() => {
-        logger_1.default.error('Forced shutdown after timeout');
-        process.exit(1);
-    }, 10000);
 }
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 // Catch unhandled promise rejections
 process.on('unhandledRejection', (reason) => {
     logger_1.default.error('Unhandled promise rejection', { reason: String(reason) });
@@ -240,6 +311,11 @@ process.on('unhandledRejection', (reason) => {
 });
 process.on('uncaughtException', (err) => {
     logger_1.default.error('Uncaught exception', { error: err.message, stack: err.stack });
+    process.exit(1);
+});
+// Boot — startApp awaits DB init then opens the port
+startApp().catch((err) => {
+    logger_1.default.error('Fatal startup error', { error: String(err) });
     process.exit(1);
 });
 exports.default = app;

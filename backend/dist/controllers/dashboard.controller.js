@@ -112,12 +112,9 @@ const getStats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5); // Go back 5 months to include current month = 6 total
         sixMonthsAgo.setDate(1); // Start of that month
         sixMonthsAgo.setHours(0, 0, 0, 0);
-        const monthlyPayments = yield db_1.db.query.payments.findMany({
-            where: (0, drizzle_orm_1.and)((0, drizzle_orm_1.gte)(schema_1.payments.created_at, sixMonthsAgo), (0, drizzle_orm_1.eq)(schema_1.payments.status, 'COMPLETED')),
-            columns: {
-                created_at: true
-            }
-        });
+        const monthlyPayments = yield db_1.db.select({ created_at: schema_1.payments.created_at })
+            .from(schema_1.payments)
+            .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.gte)(schema_1.payments.created_at, sixMonthsAgo), (0, drizzle_orm_1.eq)(schema_1.payments.status, 'COMPLETED')));
         // Aggregate by month
         const graphMap = new Map();
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -148,18 +145,15 @@ const getStats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
         sevenDaysAgo.setHours(0, 0, 0, 0);
         // Fetch Metadata for last 7 days
-        const recentUIs = yield db_1.db.query.uis.findMany({
-            where: (0, drizzle_orm_1.gte)(schema_1.uis.created_at, sevenDaysAgo),
-            columns: { created_at: true }
-        });
-        const recentUsers = yield db_1.db.query.users.findMany({
-            where: (0, drizzle_orm_1.gte)(schema_1.users.created_at, sevenDaysAgo),
-            columns: { created_at: true }
-        });
-        const recentPayments = yield db_1.db.query.payments.findMany({
-            where: (0, drizzle_orm_1.and)((0, drizzle_orm_1.gte)(schema_1.payments.created_at, sevenDaysAgo), (0, drizzle_orm_1.eq)(schema_1.payments.status, 'COMPLETED')),
-            columns: { created_at: true, amount: true }
-        });
+        const recentUIs = yield db_1.db.select({ created_at: schema_1.uis.created_at })
+            .from(schema_1.uis)
+            .where((0, drizzle_orm_1.gte)(schema_1.uis.created_at, sevenDaysAgo));
+        const recentUsers = yield db_1.db.select({ created_at: schema_1.users.created_at })
+            .from(schema_1.users)
+            .where((0, drizzle_orm_1.gte)(schema_1.users.created_at, sevenDaysAgo));
+        const recentPayments = yield db_1.db.select({ created_at: schema_1.payments.created_at, amount: schema_1.payments.amount })
+            .from(schema_1.payments)
+            .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.gte)(schema_1.payments.created_at, sevenDaysAgo), (0, drizzle_orm_1.eq)(schema_1.payments.status, 'COMPLETED')));
         // Map to graphData — use local date string to match keys
         recentUIs.forEach(item => {
             const dateStr = toLocalDateStr(new Date(item.created_at));
@@ -182,17 +176,13 @@ const getStats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // Remove the 'date' field from final output if not needed, or keep it. Let's keep structure simple.
         const finalGraphData = graphData.map(({ day, uis, users, volume }) => ({ day, uis, users, volume }));
         // 10. Trending UIs
-        const trendingUIs = yield db_1.db.query.uis.findMany({
-            limit: 3,
-            orderBy: [(0, drizzle_orm_1.desc)(schema_1.uis.likes)], // or downloads
-            columns: {
-                id: true,
-                title: true,
-                imageSrc: true,
-                likes: true,
-                downloads: true
-            }
-        });
+        const trendingUIs = yield db_1.db.select({
+            id: schema_1.uis.id,
+            title: schema_1.uis.title,
+            imageSrc: schema_1.uis.imageSrc,
+            likes: schema_1.uis.likes,
+            downloads: schema_1.uis.downloads
+        }).from(schema_1.uis).orderBy((0, drizzle_orm_1.desc)(schema_1.uis.likes)).limit(3);
         // 11. Daily Stats (Real-time for "Today")
         const startOfToday = new Date();
         startOfToday.setHours(0, 0, 0, 0);
@@ -215,18 +205,15 @@ const getStats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // 12. Intraday Graph Data (Hourly breakdown for today)
         const hourlyStats = [];
         // Fetch raw data for today to aggregate in memory (efficient for daily range)
-        const todayPayments = yield db_1.db.query.payments.findMany({
-            where: (0, drizzle_orm_1.and)((0, drizzle_orm_1.gte)(schema_1.payments.created_at, startOfToday), (0, drizzle_orm_1.eq)(schema_1.payments.status, 'COMPLETED')),
-            columns: { created_at: true, amount: true }
-        });
-        const todayUsersList = yield db_1.db.query.users.findMany({
-            where: (0, drizzle_orm_1.gte)(schema_1.users.created_at, startOfToday),
-            columns: { created_at: true }
-        });
-        const todayUIsList = yield db_1.db.query.uis.findMany({
-            where: (0, drizzle_orm_1.gte)(schema_1.uis.created_at, startOfToday),
-            columns: { created_at: true }
-        });
+        const todayPayments = yield db_1.db.select({ created_at: schema_1.payments.created_at, amount: schema_1.payments.amount })
+            .from(schema_1.payments)
+            .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.gte)(schema_1.payments.created_at, startOfToday), (0, drizzle_orm_1.eq)(schema_1.payments.status, 'COMPLETED')));
+        const todayUsersList = yield db_1.db.select({ created_at: schema_1.users.created_at })
+            .from(schema_1.users)
+            .where((0, drizzle_orm_1.gte)(schema_1.users.created_at, startOfToday));
+        const todayUIsList = yield db_1.db.select({ created_at: schema_1.uis.created_at })
+            .from(schema_1.uis)
+            .where((0, drizzle_orm_1.gte)(schema_1.uis.created_at, startOfToday));
         // Generate buckets for 00:00 to 23:00
         for (let i = 0; i < 24; i++) {
             const hourLabel = `${i.toString().padStart(2, '0')}:00`;

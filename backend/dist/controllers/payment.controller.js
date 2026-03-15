@@ -111,10 +111,7 @@ const confirmPayment = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 .set({ status: 'COMPLETED' })
                 .where((0, drizzle_orm_1.eq)(schema_1.payments.stripePaymentIntentId, paymentIntentId));
             // Fetch UI details for better message
-            const ui = yield db_1.db.query.uis.findFirst({
-                where: (0, drizzle_orm_1.eq)(schema_1.uis.id, paymentIntent.metadata.uiId),
-                columns: { title: true }
-            });
+            const [ui] = yield db_1.db.select({ title: schema_1.uis.title }).from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, paymentIntent.metadata.uiId)).limit(1);
             const uiTitle = (ui === null || ui === void 0 ? void 0 : ui.title) || paymentIntent.metadata.uiId;
             const message = `Payment Successful: ${uiTitle}`;
             // Create Notification
@@ -131,10 +128,7 @@ const confirmPayment = (req, res) => __awaiter(void 0, void 0, void 0, function*
             // Emit notification event to specific user and admins
             const userId = parseInt(paymentIntent.metadata.userId);
             // Fetch user details for real-time display
-            const userDetails = yield db_1.db.query.users.findFirst({
-                where: (0, drizzle_orm_1.eq)(schema_1.users.user_id, userId),
-                columns: { full_name: true, email: true }
-            });
+            const [userDetails] = yield db_1.db.select({ full_name: schema_1.users.full_name, email: schema_1.users.email }).from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.user_id, userId)).limit(1);
             const notificationPayload = {
                 type: 'PAYMENT',
                 message: message,

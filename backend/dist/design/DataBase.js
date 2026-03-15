@@ -139,25 +139,11 @@ class Database {
     initializeDatabase() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('🚀 Initializing database...');
                 // Step 1: Check if database exists
                 const databaseExists = yield this.checkDatabaseExists();
                 if (!databaseExists) {
                     console.log('📋 Database not found, creating new database...');
-                    // Step 2: Create database if it doesn't exist
-                    const created = yield this.create();
-                    if (!created) {
-                        console.error('❌ Failed to create database');
-                        return false;
-                    }
-                    // Step 3: Connect to the newly created database
-                    const connected = yield this.connect();
-                    if (!connected) {
-                        console.error('❌ Failed to connect to newly created database');
-                        return false;
-                    }
                 }
-                console.log('🎉 Database initialization completed successfully');
                 return true;
             }
             catch (error) {

@@ -15,6 +15,8 @@ const initSocket = (httpServer, sessionMiddleware) => {
         ...(((_a = process.env.ALLOWED_ORIGINS) === null || _a === void 0 ? void 0 : _a.split(',')) || []),
     ].filter((origin) => !!origin);
     io = new socket_io_1.Server(httpServer, {
+        pingTimeout: 60000, // 60s — wait this long before declaring a dead connection
+        pingInterval: 25000, // 25s — send a heartbeat every 25s to beat Nginx's idle timeout
         cors: {
             origin: [
                 process.env.FRONTEND_URL,

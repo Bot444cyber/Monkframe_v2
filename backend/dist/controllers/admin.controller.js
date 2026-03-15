@@ -136,17 +136,14 @@ const deleteFilesFromDrive = (fileIds) => __awaiter(void 0, void 0, void 0, func
 exports.getOverviewStats = dashboard_controller_1.getStats;
 const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const usersList = yield db_1.db.query.users.findMany({
-            orderBy: [(0, drizzle_orm_1.desc)(schema_1.users.created_at)],
-            columns: {
-                user_id: true,
-                full_name: true,
-                email: true,
-                role: true,
-                status: true,
-                created_at: true
-            }
-        });
+        const usersList = yield db_1.db.select({
+            user_id: schema_1.users.user_id,
+            full_name: schema_1.users.full_name,
+            email: schema_1.users.email,
+            role: schema_1.users.role,
+            status: schema_1.users.status,
+            created_at: schema_1.users.created_at
+        }).from(schema_1.users).orderBy((0, drizzle_orm_1.desc)(schema_1.users.created_at));
         res.json({ status: true, data: usersList });
     }
     catch (error) {
@@ -253,7 +250,7 @@ const resetData = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // Double check admin role
         if (!requestingUserId)
             return res.status(403).json({ status: false, message: "Unauthorized" });
-        const user = yield db_1.db.query.users.findFirst({ where: (0, drizzle_orm_1.eq)(schema_1.users.user_id, requestingUserId) });
+        const [user] = yield db_1.db.select().from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.user_id, requestingUserId)).limit(1);
         if (!user || user.role !== 'ADMIN') {
             return res.status(403).json({ status: false, message: "Unauthorized" });
         }
@@ -270,7 +267,7 @@ const resetData = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const transactionOperations = [];
         // 1. Handle Google Drive Files
         if (targets.drive || targets.uis) {
-            const allUIs = yield db_1.db.query.uis.findMany({ columns: { google_file_id: true, imageSrc: true, showcase: true } });
+            const allUIs = yield db_1.db.select({ google_file_id: schema_1.uis.google_file_id, imageSrc: schema_1.uis.imageSrc, showcase: schema_1.uis.showcase }).from(schema_1.uis);
             let fileIdsToDelete = [];
             for (const ui of allUIs) {
                 if (ui.google_file_id)

@@ -24,6 +24,22 @@ const queue_1 = require("../config/queue");
 const drive_service_1 = require("../services/drive.service");
 const helpers_1 = require("../utils/helpers");
 const crypto_1 = require("crypto");
+const parseArray = (data) => {
+    if (!data)
+        return [];
+    if (Array.isArray(data))
+        return data;
+    if (typeof data === 'string') {
+        try {
+            const parsed = JSON.parse(data);
+            return Array.isArray(parsed) ? parsed : [];
+        }
+        catch (_a) {
+            return [];
+        }
+    }
+    return [];
+};
 // Fetch all UIs
 const getUIs = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
@@ -56,22 +72,17 @@ const getUIs = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const [totalQuery] = yield db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.uis).where(whereCondition);
         const total = totalQuery.value;
         // Fetch UIs
-        const uisRes = yield db_1.db.query.uis.findMany({
-            where: whereCondition,
-            offset: skip,
-            limit: limit,
-            orderBy: orderByCondition,
-        });
+        const uisRes = whereCondition
+            ? yield db_1.db.select().from(schema_1.uis).where(whereCondition).orderBy(...orderByCondition).limit(limit).offset(skip)
+            : yield db_1.db.select().from(schema_1.uis).orderBy(...orderByCondition).limit(limit).offset(skip);
         // Fetch relations manually to bypass MariaDB subquery scoping bugs
         const data = yield Promise.all(uisRes.map((ui) => __awaiter(void 0, void 0, void 0, function* () {
             var _a;
             // Get creator manually
             let creator = null;
             if (ui.creatorId) {
-                creator = yield db_1.db.query.users.findFirst({
-                    where: (users, { eq }) => eq(users.user_id, ui.creatorId),
-                    columns: { full_name: true, user_id: true }
-                });
+                const [found] = yield db_1.db.select({ full_name: schema_1.users.full_name, user_id: schema_1.users.user_id }).from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.user_id, ui.creatorId)).limit(1);
+                creator = found !== null && found !== void 0 ? found : null;
             }
             // Get comments count manually
             const commentsResult = yield db_1.db.select({ count: (0, drizzle_orm_1.count)() }).from(schema_1.comments).where((0, drizzle_orm_1.eq)(schema_1.comments.ui_id, ui.id));
@@ -81,17 +92,13 @@ const getUIs = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             let wished = false;
             if (userId) {
                 // Check if liked
-                const likeResult = yield db_1.db.query.likes.findFirst({
-                    where: (likes, { eq, and }) => and(eq(likes.user_id, userId), eq(likes.ui_id, ui.id))
-                });
+                const [likeResult] = yield db_1.db.select().from(schema_1.likes).where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.likes.user_id, userId), (0, drizzle_orm_1.eq)(schema_1.likes.ui_id, ui.id))).limit(1);
                 liked = !!likeResult;
                 // Check if wished
-                const wishResult = yield db_1.db.query.wishlists.findFirst({
-                    where: (wishlists, { eq, and }) => and(eq(wishlists.user_id, userId), eq(wishlists.ui_id, ui.id))
-                });
+                const [wishResult] = yield db_1.db.select().from(schema_1.wishlists).where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.wishlists.user_id, userId), (0, drizzle_orm_1.eq)(schema_1.wishlists.ui_id, ui.id))).limit(1);
                 wished = !!wishResult;
             }
-            return Object.assign(Object.assign({}, ui), { creator, imageSrc: (0, helpers_1.transformToProxy)(ui.imageSrc, req), showcase: (ui.showcase && Array.isArray(ui.showcase)) ? ui.showcase.map(url => (0, helpers_1.transformToProxy)(url, req)) : [], liked,
+            return Object.assign(Object.assign({}, ui), { creator, imageSrc: (0, helpers_1.transformToProxy)(ui.imageSrc, req), showcase: parseArray(ui.showcase).map((url) => (0, helpers_1.transformToProxy)(url, req)), specifications: parseArray(ui.specifications), highlights: parseArray(ui.highlights), liked,
                 wished,
                 commentsCount });
         })));
@@ -118,32 +125,24 @@ const getUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.user_id;
-        const ui = yield db_1.db.query.uis.findFirst({
-            where: (0, drizzle_orm_1.eq)(schema_1.uis.id, id),
-        });
+        const [ui] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id)).limit(1);
         if (!ui) {
             return res.status(404).json({ status: false, message: "UI not found" });
         }
         // Fetch relations manually to bypass MariaDB subquery scoping bugs
         let creator = null;
         if (ui.creatorId) {
-            creator = yield db_1.db.query.users.findFirst({
-                where: (users, { eq }) => eq(users.user_id, ui.creatorId),
-                columns: { full_name: true, user_id: true }
-            });
+            const [found] = yield db_1.db.select({ full_name: schema_1.users.full_name, user_id: schema_1.users.user_id }).from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.user_id, ui.creatorId)).limit(1);
+            creator = found !== null && found !== void 0 ? found : null;
         }
         const commentsResult = yield db_1.db.select({ count: (0, drizzle_orm_1.count)() }).from(schema_1.comments).where((0, drizzle_orm_1.eq)(schema_1.comments.ui_id, ui.id));
         const commentsCount = ((_b = commentsResult[0]) === null || _b === void 0 ? void 0 : _b.count) || 0;
         let liked = false;
         let wished = false;
         if (userId) {
-            const likeResult = yield db_1.db.query.likes.findFirst({
-                where: (likes, { eq, and }) => and(eq(likes.user_id, userId), eq(likes.ui_id, ui.id))
-            });
+            const [likeResult] = yield db_1.db.select().from(schema_1.likes).where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.likes.user_id, userId), (0, drizzle_orm_1.eq)(schema_1.likes.ui_id, ui.id))).limit(1);
             liked = !!likeResult;
-            const wishResult = yield db_1.db.query.wishlists.findFirst({
-                where: (wishlists, { eq, and }) => and(eq(wishlists.user_id, userId), eq(wishlists.ui_id, ui.id))
-            });
+            const [wishResult] = yield db_1.db.select().from(schema_1.wishlists).where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.wishlists.user_id, userId), (0, drizzle_orm_1.eq)(schema_1.wishlists.ui_id, ui.id))).limit(1);
             wished = !!wishResult;
         }
         // Fetch File Size from Drive if exists
@@ -176,7 +175,7 @@ const getUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 console.error("Failed to fetch Drive file size:", err);
             }
         }
-        const data = Object.assign(Object.assign({}, ui), { creator, imageSrc: (0, helpers_1.transformToProxy)(ui.imageSrc, req), showcase: (ui.showcase && Array.isArray(ui.showcase)) ? ui.showcase.map(url => (0, helpers_1.transformToProxy)(url, req)) : [], fileSize, // Add file size to response
+        const data = Object.assign(Object.assign({}, ui), { creator, imageSrc: (0, helpers_1.transformToProxy)(ui.imageSrc, req), showcase: parseArray(ui.showcase).map((url) => (0, helpers_1.transformToProxy)(url, req)), specifications: parseArray(ui.specifications), highlights: parseArray(ui.highlights), fileSize, // Add file size to response
             liked,
             wished,
             commentsCount });
@@ -192,7 +191,7 @@ exports.getUI = getUI;
 const downloadUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const ui = yield db_1.db.query.uis.findFirst({ where: (0, drizzle_orm_1.eq)(schema_1.uis.id, id) });
+        const [ui] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id)).limit(1);
         if (!ui || !ui.google_file_id) {
             return res.status(404).json({ status: false, message: "File not found" });
         }
@@ -302,10 +301,10 @@ const createUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             fileType: (files && files['uiFile'] && files['uiFile'][0]) ? (_b = files['uiFile'][0].originalname.split('.').pop()) === null || _b === void 0 ? void 0 : _b.toUpperCase() : null,
             creatorId: userId
         });
-        const newUI = yield db_1.db.query.uis.findFirst({ where: (0, drizzle_orm_1.eq)(schema_1.uis.id, generatedId) });
+        const [newUI] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, generatedId)).limit(1);
         if (newUI) {
             // Emit initial socket event
-            const ioData = Object.assign(Object.assign({}, newUI), { imageSrc: (0, helpers_1.transformToProxy)(newUI.imageSrc, req), showcase: (newUI.showcase && Array.isArray(newUI.showcase)) ? newUI.showcase.map(url => (0, helpers_1.transformToProxy)(url, req)) : [] });
+            const ioData = Object.assign(Object.assign({}, newUI), { imageSrc: (0, helpers_1.transformToProxy)(newUI.imageSrc, req), showcase: parseArray(newUI.showcase).map((url) => (0, helpers_1.transformToProxy)(url, req)), specifications: parseArray(newUI.specifications), highlights: parseArray(newUI.highlights) });
             (0, socket_1.getIO)().emit('ui:new', { ui: ioData });
             res.status(201).json({
                 status: true,
@@ -330,7 +329,7 @@ const updateUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { id } = req.params;
         const { title, price, category, author, overview, highlights, rating } = req.body;
         // Fetch existing UI
-        const existingUI = yield db_1.db.query.uis.findFirst({ where: (0, drizzle_orm_1.eq)(schema_1.uis.id, id) });
+        const [existingUI] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id)).limit(1);
         if (!existingUI) {
             return res.status(404).json({ status: false, message: "UI not found" });
         }
@@ -403,10 +402,10 @@ const updateUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         yield db_1.db.update(schema_1.uis).set(Object.assign({ title: title || undefined, price: price !== undefined ? price.toString() : undefined, category: category || undefined, author: author || undefined, overview: overview || undefined, rating: rating ? parseFloat(rating) : undefined, highlights: parsedHighlights !== undefined ? parsedHighlights : existingUI.highlights, specifications: parsedSpecifications !== undefined ? parsedSpecifications : existingUI.specifications }, (files && files['uiFile'] && files['uiFile'][0] ? {
             fileType: (_b = files['uiFile'][0].originalname.split('.').pop()) === null || _b === void 0 ? void 0 : _b.toUpperCase()
         } : {}))).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id));
-        const updatedUI = yield db_1.db.query.uis.findFirst({ where: (0, drizzle_orm_1.eq)(schema_1.uis.id, id) });
+        const [updatedUI] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id)).limit(1);
         if (updatedUI) {
             // Emit real-time update
-            const ioData = Object.assign(Object.assign({}, updatedUI), { imageSrc: (0, helpers_1.transformToProxy)(updatedUI.imageSrc, req), showcase: (updatedUI.showcase && Array.isArray(updatedUI.showcase)) ? updatedUI.showcase.map(url => (0, helpers_1.transformToProxy)(url, req)) : [] });
+            const ioData = Object.assign(Object.assign({}, updatedUI), { imageSrc: (0, helpers_1.transformToProxy)(updatedUI.imageSrc, req), showcase: parseArray(updatedUI.showcase).map((url) => (0, helpers_1.transformToProxy)(url, req)), specifications: parseArray(updatedUI.specifications), highlights: parseArray(updatedUI.highlights) });
             (0, socket_1.getIO)().emit('ui:updated', { ui: ioData });
             res.json({
                 status: true,
@@ -439,7 +438,7 @@ const deleteUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
         // 1. Find the UI to get file IDs
-        const ui = yield db_1.db.query.uis.findFirst({ where: (0, drizzle_orm_1.eq)(schema_1.uis.id, id) });
+        const [ui] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id)).limit(1);
         if (!ui) {
             return res.status(404).json({ status: false, message: "UI not found" });
         }
