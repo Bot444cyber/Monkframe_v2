@@ -256,15 +256,14 @@ app.use(errorHandler);
 // ============================================
 // ============================================
 // START SERVER (async — DB must be ready first)
-// ============================================
 async function startApp() {
     // 1. Await DB before opening the port
     await initializeDatabase();
 
-    const server = httpServer.listen(Number(PORT), '0.0.0.0', () => {
+    const server = httpServer.listen(Number(PORT), () => {
         logger.info('🚀 UI Management System started', {
             port: PORT,
-            host: '0.0.0.0',
+            env: process.env.NODE_ENV || 'development',
             health: `http://localhost:${PORT}/api/health`,
         });
     });

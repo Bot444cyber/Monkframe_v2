@@ -23,9 +23,8 @@ const logToDebug = (message: string) => {
     const timestamp = new Date().toISOString();
     const logMessage = `[${timestamp}] ${message}\n`;
 
-    // Ensure directory exists
-    const dir = path.dirname(logPath);
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    // Ensure directory exists manually — disabled here to avoid Passenger restart loops
+    // if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
     try {
         fs.appendFileSync(logPath, logMessage);

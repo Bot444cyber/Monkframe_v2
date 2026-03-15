@@ -12,13 +12,9 @@ const router = express.Router();
 // Ensure uploads directory exists (Absolute Path)
 const uploadDir = path.join(process.cwd(), 'uploads');
 
-if (!fs.existsSync(uploadDir)) {
-    console.log("DEBUG: Creating upload directory at:", uploadDir);
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-else {
-    console.log("DEBUG: Upload directory exists at:", uploadDir);
-}
+// The uploads directory must be created MANUALLY on Hostinger to avoid
+// filesystem changes during boot triggering Passenger's infinite restart loop.
+
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {

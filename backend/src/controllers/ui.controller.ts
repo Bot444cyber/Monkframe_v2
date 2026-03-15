@@ -582,7 +582,8 @@ export const streamImage = async (req: Request, res: Response) => {
 
         // Ensure cache directory exists
         if (!fs.existsSync(CACHE_DIR)) {
-            fs.mkdirSync(CACHE_DIR, { recursive: true });
+            // CACHE_DIR must be created manually to avoid Passenger automatic restarts!
+            console.warn(`[WARN] Cache dir missing. Create ${CACHE_DIR} manually.`);
         }
 
         // 1. Browser Caching Headers (Client-side)
