@@ -271,8 +271,8 @@ async function startApp() {
 
     // Tuning for Hostinger/Passenger Proxy
     server.timeout = 120_000;
-    server.keepAliveTimeout = 5_000;
-    server.headersTimeout = 6_000;
+    server.keepAliveTimeout = 65_000;
+    server.headersTimeout = 66_000;
 
     const heartbeat = setInterval(async () => {
         try {
@@ -280,7 +280,7 @@ async function startApp() {
         } catch (err) {
             logger.warn('Heartbeat DB ping failed', { error: String(err) });
         }
-    }, 5_000);
+    }, 60_000);
     heartbeat.unref();
 
     // ============================================
