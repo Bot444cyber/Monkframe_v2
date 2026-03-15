@@ -124,6 +124,23 @@ app.use(morgan(morganFormat, {
     skip: (req) => req.path === '/api/health',
 }));
 
+// ── Diagnostic Middleware ──────────────────────────────────────────────────
+// Logs key headers to help identify if Hostinger/Nginx strips auth headers.
+// Disable in production once the issue is diagnosed.
+if (!isProd) {
+    app.use((req: Request, _res, next) => {
+        logger.debug(`[DIAG] ${req.method} ${req.path}`, {
+            origin: req.headers['origin'] || '—',
+            authorization: req.headers['authorization'] ? '✔ present' : '✘ missing',
+            cookie: req.headers['cookie'] ? '✔ present' : '✘ missing',
+            'x-forwarded-for': req.headers['x-forwarded-for'] || '—',
+            'x-real-ip': req.headers['x-real-ip'] || '—',
+        });
+        next();
+    });
+}
+// ──────────────────────────────────────────────────────────────────────────
+
 // Session configuration
 export const sessionMiddleware = session({
     secret: process.env.SESSION_SECRET || 'fallback-dev-secret-do-not-use-in-prod',
