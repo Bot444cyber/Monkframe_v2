@@ -185,7 +185,8 @@ app.use(passport.session());
 app.use(generalLimiter);
 
 // Initialize Socket.io (after session middleware)
-initSocket(httpServer, sessionMiddleware);
+// DISABLED FOR HOSTINGER DIAGNOSTICS:
+// initSocket(httpServer, sessionMiddleware);
 
 // ============================================
 // HEALTH CHECK
@@ -226,6 +227,8 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
 // Dev-only socket test route
+// DISABLED FOR HOSTINGER DIAGNOSTICS:
+/*
 if (!isProd) {
     app.get('/api/test-socket', (req, res) => {
         try {
@@ -238,6 +241,7 @@ if (!isProd) {
         }
     });
 }
+*/
 
 // 404 handler
 app.use((req: Request, res: Response) => {
@@ -293,6 +297,8 @@ async function startApp() {
 
         // B. KILL WebSockets immediately 
         // If we don't do this, server.close() will wait forever
+        // DISABLED FOR HOSTINGER DIAGNOSTICS:
+        /*
         try {
             const io = getIO();
             io.close();
@@ -300,6 +306,7 @@ async function startApp() {
         } catch (err) {
             // Socket might not be initialized, ignore error
         }
+        */
 
         // C. Start closing the HTTP server
         server.close(() => {

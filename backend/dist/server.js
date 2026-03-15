@@ -37,7 +37,6 @@ const morgan_1 = __importDefault(require("morgan"));
 // 3. Local files
 const DataBase_1 = __importDefault(require("./design/DataBase"));
 const db_1 = require("./db"); // for heartbeat keepalive
-const socket_1 = require("./config/socket");
 require("./config/module/passport");
 const error_middleware_1 = require("./middlewares/error.middleware");
 const rateLimit_middleware_1 = require("./middlewares/rateLimit.middleware");
@@ -176,7 +175,8 @@ app.use(passport_1.default.session());
 // Global rate limiter (excludes auth routes which have stricter limits)
 app.use(rateLimit_middleware_1.generalLimiter);
 // Initialize Socket.io (after session middleware)
-(0, socket_1.initSocket)(httpServer, exports.sessionMiddleware);
+// DISABLED FOR HOSTINGER DIAGNOSTICS:
+// initSocket(httpServer, sessionMiddleware);
 // ============================================
 // HEALTH CHECK
 // ============================================
@@ -213,19 +213,21 @@ app.use('/api/payment', payment_routes_1.default);
 app.use('/api/notifications', notification_routes_1.default);
 app.use('/api/dashboard', dashboard_routes_1.default);
 // Dev-only socket test route
+// DISABLED FOR HOSTINGER DIAGNOSTICS:
+/*
 if (!isProd) {
     app.get('/api/test-socket', (req, res) => {
         try {
-            const io = (0, socket_1.getIO)();
+            const io = getIO();
             io.emit("test-event", { message: "Hello from Backend! WebSockets are working! 🚀" });
             res.json({ success: true, message: "Test event emitted to all clients" });
-        }
-        catch (error) {
-            logger_1.default.error("Socket error", { error: String(error) });
+        } catch (error) {
+            logger.error("Socket error", { error: String(error) });
             res.status(500).json({ success: false, error: "Failed to emit event" });
         }
     });
 }
+*/
 // 404 handler
 app.use((req, res) => {
     res.status(404).json({
@@ -276,14 +278,16 @@ function startApp() {
                 clearInterval(heartbeat);
                 // B. KILL WebSockets immediately 
                 // If we don't do this, server.close() will wait forever
+                // DISABLED FOR HOSTINGER DIAGNOSTICS:
+                /*
                 try {
-                    const io = (0, socket_1.getIO)();
+                    const io = getIO();
                     io.close();
-                    logger_1.default.info('WebSockets force-closed');
-                }
-                catch (err) {
+                    logger.info('WebSockets force-closed');
+                } catch (err) {
                     // Socket might not be initialized, ignore error
                 }
+                */
                 // C. Start closing the HTTP server
                 server.close(() => {
                     logger_1.default.info('HTTP server fully closed');
