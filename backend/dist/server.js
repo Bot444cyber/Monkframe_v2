@@ -255,8 +255,8 @@ function startApp() {
         });
         // Tuning for Hostinger/Passenger Proxy
         server.timeout = 120000;
-        server.keepAliveTimeout = 5000;
-        server.headersTimeout = 6000;
+        server.keepAliveTimeout = 65000;
+        server.headersTimeout = 66000;
         const heartbeat = setInterval(() => __awaiter(this, void 0, void 0, function* () {
             try {
                 yield db_1.poolConnection.query('SELECT 1');
@@ -264,7 +264,7 @@ function startApp() {
             catch (err) {
                 logger_1.default.warn('Heartbeat DB ping failed', { error: String(err) });
             }
-        }), 5000);
+        }), 60000);
         heartbeat.unref();
         // ============================================
         // FIXED GRACEFUL SHUTDOWN LOGIC
