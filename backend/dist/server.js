@@ -241,15 +241,14 @@ app.use(error_middleware_1.errorHandler);
 // ============================================
 // ============================================
 // START SERVER (async — DB must be ready first)
-// ============================================
 function startApp() {
     return __awaiter(this, void 0, void 0, function* () {
         // 1. Await DB before opening the port
         yield initializeDatabase();
-        const server = httpServer.listen(Number(PORT), '0.0.0.0', () => {
+        const server = httpServer.listen(Number(PORT), () => {
             logger_1.default.info('🚀 UI Management System started', {
                 port: PORT,
-                host: '0.0.0.0',
+                env: process.env.NODE_ENV || 'development',
                 health: `http://localhost:${PORT}/api/health`,
             });
         });

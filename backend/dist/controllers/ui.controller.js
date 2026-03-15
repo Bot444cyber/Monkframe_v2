@@ -485,7 +485,8 @@ const streamImage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const CACHE_FILE = path_1.default.join(CACHE_DIR, `${fileId}`);
         // Ensure cache directory exists
         if (!fs_1.default.existsSync(CACHE_DIR)) {
-            fs_1.default.mkdirSync(CACHE_DIR, { recursive: true });
+            // CACHE_DIR must be created manually to avoid Passenger automatic restarts!
+            console.warn(`[WARN] Cache dir missing. Create ${CACHE_DIR} manually.`);
         }
         // 1. Browser Caching Headers (Client-side)
         // Cache for 1 year (immutable) since fileIds are unique

@@ -42,18 +42,12 @@ const uiController = __importStar(require("../controllers/ui.controller"));
 const validateResource_1 = __importDefault(require("../middlewares/validateResource"));
 const ui_schema_1 = require("../schema/ui.schema");
 const auth_middleware_1 = require("../middlewares/auth.middleware");
-const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const router = express_1.default.Router();
 // Ensure uploads directory exists (Absolute Path)
 const uploadDir = path_1.default.join(process.cwd(), 'uploads');
-if (!fs_1.default.existsSync(uploadDir)) {
-    console.log("DEBUG: Creating upload directory at:", uploadDir);
-    fs_1.default.mkdirSync(uploadDir, { recursive: true });
-}
-else {
-    console.log("DEBUG: Upload directory exists at:", uploadDir);
-}
+// The uploads directory must be created MANUALLY on Hostinger to avoid
+// filesystem changes during boot triggering Passenger's infinite restart loop.
 const storage = multer_1.default.diskStorage({
     destination: (req, file, cb) => {
         cb(null, uploadDir);
