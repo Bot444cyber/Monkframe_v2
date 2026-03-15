@@ -184,9 +184,7 @@ app.use(passport.session());
 // Global rate limiter (excludes auth routes which have stricter limits)
 app.use(generalLimiter);
 
-// Initialize Socket.io (after session middleware)
-// DISABLED FOR HOSTINGER DIAGNOSTICS:
-// initSocket(httpServer, sessionMiddleware);
+// Initialize Socket.io (moved to startApp for DB readiness)
 
 // ============================================
 // HEALTH CHECK
@@ -263,6 +261,9 @@ app.use(errorHandler);
 async function startApp() {
     // 1. Await DB before opening the port
     await initializeDatabase();
+
+    // 2. Initialize Socket.io (after session middleware & DB are ready)
+    initSocket(httpServer, sessionMiddleware);
 
     const server = httpServer.listen(PORT || 8000, () => {
         logger.info('🚀 UI Management System started', {

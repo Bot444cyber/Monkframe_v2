@@ -36,6 +36,7 @@ const compression_1 = __importDefault(require("compression"));
 const morgan_1 = __importDefault(require("morgan"));
 // 3. Local files
 const DataBase_1 = __importDefault(require("./design/DataBase"));
+const socket_1 = require("./config/socket");
 require("./config/module/passport");
 const error_middleware_1 = require("./middlewares/error.middleware");
 const rateLimit_middleware_1 = require("./middlewares/rateLimit.middleware");
@@ -173,9 +174,7 @@ app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
 // Global rate limiter (excludes auth routes which have stricter limits)
 app.use(rateLimit_middleware_1.generalLimiter);
-// Initialize Socket.io (after session middleware)
-// DISABLED FOR HOSTINGER DIAGNOSTICS:
-// initSocket(httpServer, sessionMiddleware);
+// Initialize Socket.io (moved to startApp for DB readiness)
 // ============================================
 // HEALTH CHECK
 // ============================================
@@ -246,6 +245,8 @@ function startApp() {
     return __awaiter(this, void 0, void 0, function* () {
         // 1. Await DB before opening the port
         yield initializeDatabase();
+        // 2. Initialize Socket.io (after session middleware & DB are ready)
+        (0, socket_1.initSocket)(httpServer, exports.sessionMiddleware);
         const server = httpServer.listen(PORT || 8000, () => {
             logger_1.default.info('🚀 UI Management System started', {
                 port: PORT,
