@@ -13,6 +13,8 @@ export const initSocket = (httpServer: HttpServer, sessionMiddleware: RequestHan
     ].filter((origin): origin is string => !!origin);
 
     io = new Server(httpServer, {
+        pingTimeout: 60000,    // 60s — wait this long before declaring a dead connection
+        pingInterval: 25000,   // 25s — send a heartbeat every 25s to beat Nginx's idle timeout
         cors: {
             origin: [
                 process.env.FRONTEND_URL,

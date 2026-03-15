@@ -225,6 +225,12 @@ const server = httpServer.listen(PORT, () => {
     });
 });
 
+// Prevent Hostinger's process manager from killing long-running requests
+// (file uploads, image processing, Drive API calls can exceed 3s)
+server.timeout = 120000;         // 120s — max time for any single request
+server.keepAliveTimeout = 120000; // 120s — keep TCP connections alive through Nginx
+server.headersTimeout = 125000;  // 125s — must be > keepAliveTimeout to avoid race condition
+
 // ============================================
 // GRACEFUL SHUTDOWN
 // ============================================
