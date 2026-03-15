@@ -29,9 +29,9 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
         console.log("🔌 Initializing Socket connection to:", backendUrl);
 
-        const socketInstance = io("https://goldenrod-falcon-937813.hostingersite.com", {
+        const socketInstance = io(backendUrl, {
             withCredentials: true,
-            transports: ["websocket"], // STRICTLY websocket to avoid Hostinger Passenger HTTP kills
+            transports: ["websocket", "polling"], // Fallback to polling if websocket fails
             reconnectionAttempts: 5,
             reconnectionDelay: 1000,
             autoConnect: true,

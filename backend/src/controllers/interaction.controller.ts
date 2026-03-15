@@ -26,7 +26,7 @@ export const toggleLike = async (req: Request, res: Response) => {
             const [updatedUI] = await db.select().from(uis).where(eq(uis.id, id)).limit(1);
 
             // Emit real-time update
-            getIO().emit('like:updated', { uiId: id, likesCount: updatedUI?.likes, liked: false, userId });
+            try { getIO().emit('like:updated', { uiId: id, likesCount: updatedUI?.likes, liked: false, userId }); } catch (e) { }
 
             return res.json({ status: true, message: "Unliked", liked: false, likesCount: updatedUI?.likes });
         } else {
@@ -60,14 +60,16 @@ export const toggleLike = async (req: Request, res: Response) => {
                     user: userDetails,
                     ui: { title: updatedUI?.title }
                 };
-                getIO().to(userId.toString()).emit('new-notification', payload);
-                getIO().to('admin').emit('new-notification', payload);
+                try {
+                    getIO().to(userId.toString()).emit('new-notification', payload);
+                    getIO().to('admin').emit('new-notification', payload);
+                } catch (e) { }
             } catch (err) {
                 console.error("Notification error", err);
             }
 
             // Emit real-time update
-            getIO().emit('like:updated', { uiId: id, likesCount: updatedUI?.likes, liked: true, userId });
+            try { getIO().emit('like:updated', { uiId: id, likesCount: updatedUI?.likes, liked: true, userId }); } catch (e) { }
 
             return res.json({ status: true, message: "Liked", liked: true, likesCount: updatedUI?.likes });
         }
@@ -95,7 +97,7 @@ export const toggleWishlist = async (req: Request, res: Response) => {
             await db.delete(wishlists).where(eq(wishlists.id, existingWish.id));
 
             // Emit real-time update
-            getIO().emit('wishlist:updated', { uiId: id, wished: false, userId });
+            try { getIO().emit('wishlist:updated', { uiId: id, wished: false, userId }); } catch (e) { }
 
             return res.json({ status: true, message: "Removed from wishlist", wished: false });
         } else {
@@ -128,14 +130,16 @@ export const toggleWishlist = async (req: Request, res: Response) => {
                     user: userDetails,
                     ui: { title: ui?.title }
                 };
-                getIO().to(userId.toString()).emit('new-notification', payload);
-                getIO().to('admin').emit('new-notification', payload);
+                try {
+                    getIO().to(userId.toString()).emit('new-notification', payload);
+                    getIO().to('admin').emit('new-notification', payload);
+                } catch (e) { }
             } catch (err) {
                 console.error("Notification error", err);
             }
 
             // Emit real-time update
-            getIO().emit('wishlist:updated', { uiId: id, wished: true, userId });
+            try { getIO().emit('wishlist:updated', { uiId: id, wished: true, userId }); } catch (e) { }
 
             return res.json({ status: true, message: "Added to wishlist", wished: true });
         }
@@ -209,14 +213,16 @@ export const addComment = async (req: Request, res: Response) => {
                 user: comment?.user,
                 ui: { title: ui?.title }
             };
-            getIO().to(userId.toString()).emit('new-notification', payload);
-            getIO().to('admin').emit('new-notification', payload);
+            try {
+                getIO().to(userId.toString()).emit('new-notification', payload);
+                getIO().to('admin').emit('new-notification', payload);
+            } catch (e) { }
         } catch (err) {
             console.error("Notification error", err);
         }
 
         // Emit real-time update
-        getIO().emit('comment:added', { uiId: id, comment });
+        try { getIO().emit('comment:added', { uiId: id, comment }); } catch (e) { }
 
         res.json({ status: true, message: "Comment added", data: comment });
     } catch (error) {

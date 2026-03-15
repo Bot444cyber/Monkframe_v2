@@ -34,9 +34,9 @@ export const NotificationService = {
 
     connectSocket: () => {
         if (!socket) {
-            socket = io("https://goldenrod-falcon-937813.hostingersite.com", {
+            socket = io(process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:1000', {
                 withCredentials: true,
-                transports: ['websocket'] // STRICTLY websocket
+                transports: ['websocket']
             });
 
             socket.on('connect', () => {

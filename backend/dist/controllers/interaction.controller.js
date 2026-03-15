@@ -32,7 +32,10 @@ const toggleLike = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             yield db_1.db.update(schema_1.uis).set({ likes: (0, drizzle_orm_1.sql) `${schema_1.uis.likes} - 1` }).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id));
             const [updatedUI] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id)).limit(1);
             // Emit real-time update
-            (0, socket_1.getIO)().emit('like:updated', { uiId: id, likesCount: updatedUI === null || updatedUI === void 0 ? void 0 : updatedUI.likes, liked: false, userId });
+            try {
+                (0, socket_1.getIO)().emit('like:updated', { uiId: id, likesCount: updatedUI === null || updatedUI === void 0 ? void 0 : updatedUI.likes, liked: false, userId });
+            }
+            catch (e) { }
             return res.json({ status: true, message: "Unliked", liked: false, likesCount: updatedUI === null || updatedUI === void 0 ? void 0 : updatedUI.likes });
         }
         else {
@@ -64,14 +67,20 @@ const toggleLike = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                     user: userDetails,
                     ui: { title: updatedUI === null || updatedUI === void 0 ? void 0 : updatedUI.title }
                 };
-                (0, socket_1.getIO)().to(userId.toString()).emit('new-notification', payload);
-                (0, socket_1.getIO)().to('admin').emit('new-notification', payload);
+                try {
+                    (0, socket_1.getIO)().to(userId.toString()).emit('new-notification', payload);
+                    (0, socket_1.getIO)().to('admin').emit('new-notification', payload);
+                }
+                catch (e) { }
             }
             catch (err) {
                 console.error("Notification error", err);
             }
             // Emit real-time update
-            (0, socket_1.getIO)().emit('like:updated', { uiId: id, likesCount: updatedUI === null || updatedUI === void 0 ? void 0 : updatedUI.likes, liked: true, userId });
+            try {
+                (0, socket_1.getIO)().emit('like:updated', { uiId: id, likesCount: updatedUI === null || updatedUI === void 0 ? void 0 : updatedUI.likes, liked: true, userId });
+            }
+            catch (e) { }
             return res.json({ status: true, message: "Liked", liked: true, likesCount: updatedUI === null || updatedUI === void 0 ? void 0 : updatedUI.likes });
         }
     }
@@ -96,7 +105,10 @@ const toggleWishlist = (req, res) => __awaiter(void 0, void 0, void 0, function*
         if (existingWish) {
             yield db_1.db.delete(schema_1.wishlists).where((0, drizzle_orm_1.eq)(schema_1.wishlists.id, existingWish.id));
             // Emit real-time update
-            (0, socket_1.getIO)().emit('wishlist:updated', { uiId: id, wished: false, userId });
+            try {
+                (0, socket_1.getIO)().emit('wishlist:updated', { uiId: id, wished: false, userId });
+            }
+            catch (e) { }
             return res.json({ status: true, message: "Removed from wishlist", wished: false });
         }
         else {
@@ -127,14 +139,20 @@ const toggleWishlist = (req, res) => __awaiter(void 0, void 0, void 0, function*
                     user: userDetails,
                     ui: { title: ui === null || ui === void 0 ? void 0 : ui.title }
                 };
-                (0, socket_1.getIO)().to(userId.toString()).emit('new-notification', payload);
-                (0, socket_1.getIO)().to('admin').emit('new-notification', payload);
+                try {
+                    (0, socket_1.getIO)().to(userId.toString()).emit('new-notification', payload);
+                    (0, socket_1.getIO)().to('admin').emit('new-notification', payload);
+                }
+                catch (e) { }
             }
             catch (err) {
                 console.error("Notification error", err);
             }
             // Emit real-time update
-            (0, socket_1.getIO)().emit('wishlist:updated', { uiId: id, wished: true, userId });
+            try {
+                (0, socket_1.getIO)().emit('wishlist:updated', { uiId: id, wished: true, userId });
+            }
+            catch (e) { }
             return res.json({ status: true, message: "Added to wishlist", wished: true });
         }
     }
@@ -201,14 +219,20 @@ const addComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 user: comment === null || comment === void 0 ? void 0 : comment.user,
                 ui: { title: ui === null || ui === void 0 ? void 0 : ui.title }
             };
-            (0, socket_1.getIO)().to(userId.toString()).emit('new-notification', payload);
-            (0, socket_1.getIO)().to('admin').emit('new-notification', payload);
+            try {
+                (0, socket_1.getIO)().to(userId.toString()).emit('new-notification', payload);
+                (0, socket_1.getIO)().to('admin').emit('new-notification', payload);
+            }
+            catch (e) { }
         }
         catch (err) {
             console.error("Notification error", err);
         }
         // Emit real-time update
-        (0, socket_1.getIO)().emit('comment:added', { uiId: id, comment });
+        try {
+            (0, socket_1.getIO)().emit('comment:added', { uiId: id, comment });
+        }
+        catch (e) { }
         res.json({ status: true, message: "Comment added", data: comment });
     }
     catch (error) {
