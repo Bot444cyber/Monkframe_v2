@@ -5,4 +5,4 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const poolConnection = mysql.createPool(process.env.DATABASE_URL!);
-export const db = drizzle(poolConnection, { schema, mode: 'planetscale' });
+export const db = drizzle(poolConnection, { schema, mode: 'default' });
