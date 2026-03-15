@@ -25,15 +25,23 @@ passport.use(
 );
 
 passport.serializeUser((user: any, done) => {
-    done(null, user.user_id || user.id);
+    const id = user.user_id;
+    if (!id || typeof id !== 'number') {
+        return done(new Error('serializeUser: user_id is missing or not a number'), null);
+    }
+    done(null, id);
 });
 
-passport.deserializeUser(async (id: number, done) => {
+passport.deserializeUser(async (id: any, done) => {
     try {
+        const numericId = Number(id);
+        if (!Number.isInteger(numericId) || numericId <= 0) {
+            return done(null, false);
+        }
         const user = await db.query.users.findFirst({
-            where: eq(users.user_id, id),
+            where: eq(users.user_id, numericId),
         });
-        done(null, user);
+        done(null, user ?? false);
     } catch (error) {
         done(error, null);
     }
