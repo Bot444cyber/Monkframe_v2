@@ -267,8 +267,7 @@ async function startApp() {
     const server = httpServer.listen(PORT, () => {
         logger.info('🚀 UI Management System started', {
             port: PORT,
-            env: process.env.NODE_ENV || 'development',
-            health: `http://localhost:${PORT}/api/health`,
+            env: process.env.NODE_ENV || 'development'
         });
     });
 

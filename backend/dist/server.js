@@ -250,8 +250,7 @@ function startApp() {
         const server = httpServer.listen(PORT, () => {
             logger_1.default.info('🚀 UI Management System started', {
                 port: PORT,
-                env: process.env.NODE_ENV || 'development',
-                health: `http://localhost:${PORT}/api/health`,
+                env: process.env.NODE_ENV || 'development'
             });
         });
         // Tuning for Hostinger/Passenger Proxy
