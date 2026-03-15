@@ -50,13 +50,13 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         socketInstance.on("disconnect", (reason) => {
             console.log("❌ Socket Disconnected:", reason);
             setIsConnected(false);
-            toast.error("Disconnected from Real-time Server", { id: 'socket-disconnected' });
+            // toast.error("Disconnected from Real-time Server", { id: 'socket-disconnected' }); // Silenced
         });
 
         socketInstance.on("connect_error", (err) => {
-            console.error("⚠️ Socket Connection Error:", err.message);
+            console.warn("⚠️ Socket Connection Error (Silenced):", err.message);
             setIsConnected(false);
-            toast.error(`Connection Error: ${err.message}`, { id: 'socket-error' });
+            // toast.error(`Connection Error: ${err.message}`, { id: 'socket-error' }); // Silenced
         });
 
         setSocket(socketInstance);
