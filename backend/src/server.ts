@@ -254,33 +254,26 @@ app.use(errorHandler);
 // ============================================
 // START SERVER (async — DB must be ready first)
 // ============================================
+// ============================================
+// START SERVER (async — DB must be ready first)
+// ============================================
 async function startApp() {
-    // 1. Await DB before opening the port so Hostinger's health-check
-    //    never hits the app while it's still booting (avoids 503/403 on first probe)
+    // 1. Await DB before opening the port
     await initializeDatabase();
 
-    // 2. Bind to 0.0.0.0 so Passenger's internal health-checker can reach us
     const server = httpServer.listen(Number(PORT), '0.0.0.0', () => {
         logger.info('🚀 UI Management System started', {
             port: PORT,
             host: '0.0.0.0',
-            env: process.env.NODE_ENV || 'development',
             health: `http://localhost:${PORT}/api/health`,
         });
     });
 
-    // ── Passenger-specific timeout settings ──────────────────────────────
-    // timeout:          120 000 ms — guards long-running routes (uploads, Drive API)
-    // keepAliveTimeout: 5 000 ms  — small non-zero value recommended by Passenger;
-    //                               0 can cause proxy hangs, 120 000 causes SIGTERM
-    // headersTimeout:   6 000 ms  — must be slightly > keepAliveTimeout
+    // Tuning for Hostinger/Passenger Proxy
     server.timeout = 120_000;
     server.keepAliveTimeout = 5_000;
     server.headersTimeout = 6_000;
 
-    // ── Anti-SIGTERM Heartbeat ────────────────────────────────────────────
-    // Passenger kills 'idle' processes. A 5 s DB ping proves the process is
-    // still alive AND keeps the MySQL connection pool warm.
     const heartbeat = setInterval(async () => {
         try {
             await poolConnection.query('SELECT 1');
@@ -288,30 +281,52 @@ async function startApp() {
             logger.warn('Heartbeat DB ping failed', { error: String(err) });
         }
     }, 5_000);
-    heartbeat.unref(); // never block graceful shutdown
-    // ─────────────────────────────────────────────────────────────────────
+    heartbeat.unref();
 
     // ============================================
-    // GRACEFUL SHUTDOWN
+    // FIXED GRACEFUL SHUTDOWN LOGIC
     // ============================================
-    function gracefulShutdown(signal: string) {
-        logger.info(`Received ${signal}, shutting down gracefully...`);
+    async function gracefulShutdown(signal: string) {
+        logger.info(`Received ${signal}, starting fast-close shutdown...`);
+
+        // A. Stop the heartbeat immediately
         clearInterval(heartbeat);
-        server.close(async () => {
-            logger.info('HTTP server closed');
-            try {
-                const database = Database.getInstance();
-                await database.disconnect?.();
-                logger.info('Database connection closed');
-            } catch (err) {
-                logger.error('Error closing database', { error: String(err) });
-            }
-            process.exit(0);
+
+        // B. KILL WebSockets immediately 
+        // If we don't do this, server.close() will wait forever
+        try {
+            const io = getIO();
+            io.close();
+            logger.info('WebSockets force-closed');
+        } catch (err) {
+            // Socket might not be initialized, ignore error
+        }
+
+        // C. Start closing the HTTP server
+        server.close(() => {
+            logger.info('HTTP server fully closed');
         });
 
-        // Force-kill after 10 s so Passenger can recycle the slot
+        // D. DISCONNECT DATABASE immediately
+        // We do this OUTSIDE the server.close callback to ensure it happens now
+        try {
+            const database = Database.getInstance();
+            await database.disconnect?.();
+            logger.info('Database connection closed safely');
+        } catch (err) {
+            logger.error('Error closing database', { error: String(err) });
+        }
+
+        // E. EXIT PROMPTLY (Exit 0 = Success)
+        // Give it 1 second to finish logging, then kill the process
         setTimeout(() => {
-            logger.error('Forced shutdown after timeout');
+            logger.info('Graceful exit successful. Process terminating.');
+            process.exit(0);
+        }, 1500);
+
+        // F. Emergency Backup (Forced Kill)
+        setTimeout(() => {
+            logger.error('Forced shutdown: App took too long to die');
             process.exit(1);
         }, 10_000).unref();
     }
