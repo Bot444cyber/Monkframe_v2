@@ -73,37 +73,56 @@ async function initializeDatabase() {
     }
 }
 
-initializeDatabase();
+
 
 // ============================================
 // MIDDLEWARE
 // ============================================
 
-// Security headers
+// Security headers — adjusted so helmet doesn't block OAuth redirects or
+// cross-origin image loading from Google Drive.
 app.use(helmet({
-    crossOriginResourcePolicy: { policy: 'cross-origin' }, // allow image proxy
-    contentSecurityPolicy: isProd ? undefined : false,      // disable CSP in dev
+    crossOriginResourcePolicy: { policy: 'cross-origin' },  // allow image proxy
+    crossOriginOpenerPolicy: { policy: 'unsafe-none' },   // allow Google OAuth popup flow
+    contentSecurityPolicy: isProd ? undefined : false,
 }));
 
-// CORS
+// CORS — resilient: handles x-forwarded-proto from Hostinger's Nginx proxy
+// and gracefully falls back when FRONTEND_URL is not set.
 const allowedOrigins = [
     process.env.FRONTEND_URL,
-].filter((origin): origin is string => !!origin);
+    ...(process.env.ALLOWED_ORIGINS?.split(',') ?? []),
+].filter((o): o is string => !!o?.trim());
 
 app.use(
     cors({
-        origin: (origin, callback) => {
-            if (!origin) return callback(null, true);
+        origin: (incomingOrigin, callback) => {
+            // Allow requests with no origin (curl, Postman, server-to-server)
+            if (!incomingOrigin) return callback(null, true);
+
+            // In development always allow
             if (!isProd) return callback(null, true);
-            if (allowedOrigins.includes(origin)) {
+
+            // Normalise: strip trailing slash, handle http→https via proxy
+            const normalised = incomingOrigin.replace(/\/$/, '');
+            const httpsVariant = normalised.replace(/^http:\/\//i, 'https://');
+
+            const allowed =
+                allowedOrigins.length === 0 ||          // no list set → open (fallback)
+                allowedOrigins.some((o) =>
+                    o === normalised || o === httpsVariant
+                );
+
+            if (allowed) {
                 callback(null, true);
             } else {
-                callback(new Error('Not allowed by CORS'));
+                logger.warn(`CORS blocked origin: ${incomingOrigin}`);
+                callback(new Error(`Origin '${incomingOrigin}' not allowed by CORS`));
             }
         },
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-        allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Cookie'],
         exposedHeaders: ['Content-Range', 'X-Content-Range'],
         maxAge: 86400,
     })
@@ -233,67 +252,74 @@ app.use((req: Request, res: Response) => {
 app.use(errorHandler);
 
 // ============================================
-// START SERVER
+// START SERVER (async — DB must be ready first)
 // ============================================
-// Bind to 0.0.0.0 so Hostinger's internal health checker can reach the process
-const server = httpServer.listen(Number(PORT), '0.0.0.0', () => {
-    logger.info(`🚀 UI Management System started`, {
-        port: PORT,
-        host: '0.0.0.0',
-        env: process.env.NODE_ENV || 'development',
-        health: `http://localhost:${PORT}/api/health`,
+async function startApp() {
+    // 1. Await DB before opening the port so Hostinger's health-check
+    //    never hits the app while it's still booting (avoids 503/403 on first probe)
+    await initializeDatabase();
+
+    // 2. Bind to 0.0.0.0 so Passenger's internal health-checker can reach us
+    const server = httpServer.listen(Number(PORT), '0.0.0.0', () => {
+        logger.info('🚀 UI Management System started', {
+            port: PORT,
+            host: '0.0.0.0',
+            env: process.env.NODE_ENV || 'development',
+            health: `http://localhost:${PORT}/api/health`,
+        });
     });
-});
 
-// ── Passenger-compatible timeout settings ────────────────────────────────
-// timeout:          120s guards slow requests (uploads, Drive API, etc.)
-// keepAliveTimeout: 0  — let Passenger manage its own reverse-proxy pipe
-//                       (a non-zero value can cause Passenger to SIGTERM)
-// headersTimeout:   125s — must stay > keepAliveTimeout
-server.timeout = 120000;
-server.keepAliveTimeout = 0;    // Passenger compatibility — do NOT set to 120000
-server.headersTimeout = 125000;
+    // ── Passenger-specific timeout settings ──────────────────────────────
+    // timeout:          120 000 ms — guards long-running routes (uploads, Drive API)
+    // keepAliveTimeout: 5 000 ms  — small non-zero value recommended by Passenger;
+    //                               0 can cause proxy hangs, 120 000 causes SIGTERM
+    // headersTimeout:   6 000 ms  — must be slightly > keepAliveTimeout
+    server.timeout = 120_000;
+    server.keepAliveTimeout = 5_000;
+    server.headersTimeout = 6_000;
 
-// ── Anti-SIGTERM Heartbeat ───────────────────────────────────────────────
-// Passenger kills processes it considers 'idle'. A periodic DB ping every
-// 5 seconds keeps the process visibly alive AND the MySQL connection warm.
-const heartbeat = setInterval(async () => {
-    try {
-        await poolConnection.query('SELECT 1');
-    } catch (err) {
-        logger.warn('Heartbeat DB ping failed', { error: String(err) });
-    }
-}, 5000);
-heartbeat.unref(); // Don't let the interval block graceful shutdown
-// ─────────────────────────────────────────────────────────────────────────
-
-// ============================================
-// GRACEFUL SHUTDOWN
-// ============================================
-function gracefulShutdown(signal: string) {
-    logger.info(`Received ${signal}, shutting down gracefully...`);
-    clearInterval(heartbeat); // stop the DB keepalive ping
-    server.close(async () => {
-        logger.info('HTTP server closed');
+    // ── Anti-SIGTERM Heartbeat ────────────────────────────────────────────
+    // Passenger kills 'idle' processes. A 5 s DB ping proves the process is
+    // still alive AND keeps the MySQL connection pool warm.
+    const heartbeat = setInterval(async () => {
         try {
-            const database = Database.getInstance();
-            await database.disconnect?.();
-            logger.info('Database connection closed');
+            await poolConnection.query('SELECT 1');
         } catch (err) {
-            logger.error('Error closing database connection', { error: String(err) });
+            logger.warn('Heartbeat DB ping failed', { error: String(err) });
         }
-        process.exit(0);
-    });
+    }, 5_000);
+    heartbeat.unref(); // never block graceful shutdown
+    // ─────────────────────────────────────────────────────────────────────
 
-    // Force shutdown after 10 seconds
-    setTimeout(() => {
-        logger.error('Forced shutdown after timeout');
-        process.exit(1);
-    }, 10_000);
+    // ============================================
+    // GRACEFUL SHUTDOWN
+    // ============================================
+    function gracefulShutdown(signal: string) {
+        logger.info(`Received ${signal}, shutting down gracefully...`);
+        clearInterval(heartbeat);
+        server.close(async () => {
+            logger.info('HTTP server closed');
+            try {
+                const database = Database.getInstance();
+                await database.disconnect?.();
+                logger.info('Database connection closed');
+            } catch (err) {
+                logger.error('Error closing database', { error: String(err) });
+            }
+            process.exit(0);
+        });
+
+        // Force-kill after 10 s so Passenger can recycle the slot
+        setTimeout(() => {
+            logger.error('Forced shutdown after timeout');
+            process.exit(1);
+        }, 10_000).unref();
+    }
+
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 }
 
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 // Catch unhandled promise rejections
 process.on('unhandledRejection', (reason) => {
@@ -303,6 +329,12 @@ process.on('unhandledRejection', (reason) => {
 
 process.on('uncaughtException', (err) => {
     logger.error('Uncaught exception', { error: err.message, stack: err.stack });
+    process.exit(1);
+});
+
+// Boot — startApp awaits DB init then opens the port
+startApp().catch((err) => {
+    logger.error('Fatal startup error', { error: String(err) });
     process.exit(1);
 });
 
