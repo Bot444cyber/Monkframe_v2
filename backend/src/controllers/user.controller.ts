@@ -35,13 +35,12 @@ export const googleAuthCallback = (req: Request, res: Response, next: NextFuncti
 
             // Check if user exists with this google_id
             // Wrapped in try-catch in case the DB column type is BIGINT (not VARCHAR) and overflows
-            let user: typeof import('../db/schema').users.$inferSelect | undefined;
+            let user: typeof users.$inferSelect | undefined;
             try {
-                user = await db.query.users.findFirst({
-                    where: eq(users.google_id, googleId),
-                }) ?? undefined;
+                const [found] = await db.select().from(users).where(eq(users.google_id, googleId)).limit(1);
+                user = found;
             } catch (googleIdQueryError) {
-                console.warn('⚠️ google_id lookup failed (possible DB column type mismatch - expected VARCHAR, got numeric type). Falling through to email lookup.', googleIdQueryError);
+                console.warn('⚠️ google_id lookup failed, falling through to email lookup.', googleIdQueryError);
                 user = undefined;
             }
 
@@ -49,14 +48,13 @@ export const googleAuthCallback = (req: Request, res: Response, next: NextFuncti
                 console.log('ℹ️ User not found by Google ID, checking email...');
                 // Check by email if user exists to link accounts
                 if (profile.emails && profile.emails.length > 0) {
-                    const existingEmailUser = await db.query.users.findFirst({
-                        where: eq(users.email, profile.emails[0].value),
-                    });
+                    const [existingEmailUser] = await db.select().from(users).where(eq(users.email, profile.emails[0].value)).limit(1);
 
                     if (existingEmailUser) {
                         console.log('✅ Linking to existing email user:', existingEmailUser.user_id);
                         await db.update(users).set({ google_id: googleId }).where(eq(users.user_id, existingEmailUser.user_id));
-                        user = await db.query.users.findFirst({ where: eq(users.user_id, existingEmailUser.user_id) }) ?? undefined;
+                        const [refetched] = await db.select().from(users).where(eq(users.user_id, existingEmailUser.user_id)).limit(1);
+                        user = refetched;
                     }
                     else {
                         console.log('🆕 Creating new user from Google profile');
@@ -67,7 +65,8 @@ export const googleAuthCallback = (req: Request, res: Response, next: NextFuncti
                             full_name: profile.displayName,
                             password_hash: '',
                         });
-                        user = await db.query.users.findFirst({ where: eq(users.email, profile.emails[0].value) }) ?? undefined;
+                        const [createdUser] = await db.select().from(users).where(eq(users.email, profile.emails[0].value)).limit(1);
+                        user = createdUser;
 
                         // Standardize user object for dashboard
                         if (user) {
@@ -93,7 +92,8 @@ export const googleAuthCallback = (req: Request, res: Response, next: NextFuncti
                         password_hash: '',
                     });
 
-                    user = await db.query.users.findFirst({ where: eq(users.email, fallbackEmail) }) ?? undefined;
+                    const [fallbackUser] = await db.select().from(users).where(eq(users.email, fallbackEmail)).limit(1);
+                    user = fallbackUser;
 
                     if (user) {
                         const formattedUser = {
@@ -175,9 +175,7 @@ export const getUserProfile = async (req: Request, res: Response) => {
         const paymentsLimit = parseInt(req.query.paymentsLimit as string) || 5;
 
         // Get basic user data (no joins needed here)
-        const user = await db.query.users.findFirst({
-            where: eq(users.user_id, userId)
-        });
+        const [user] = await db.select().from(users).where(eq(users.user_id, userId)).limit(1);
 
         if (!user) {
             return res.status(404).json({ status: false, message: "User not found" });

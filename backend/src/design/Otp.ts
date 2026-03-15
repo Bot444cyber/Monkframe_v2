@@ -31,9 +31,7 @@ class OTP {
         }
 
         try {
-            const record = await db.query.authOtp.findFirst({
-                where: eq(authOtp.email, email)
-            });
+            const [record] = await db.select().from(authOtp).where(eq(authOtp.email, email)).limit(1);
 
             if (!record) {
                 return false;

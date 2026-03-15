@@ -100,17 +100,14 @@ export const getOverviewStats = getStats;
 
 export const getAllUsers = async (req: Request, res: Response) => {
     try {
-        const usersList = await db.query.users.findMany({
-            orderBy: [desc(users.created_at)],
-            columns: {
-                user_id: true,
-                full_name: true,
-                email: true,
-                role: true,
-                status: true,
-                created_at: true
-            }
-        });
+        const usersList = await db.select({
+            user_id: users.user_id,
+            full_name: users.full_name,
+            email: users.email,
+            role: users.role,
+            status: users.status,
+            created_at: users.created_at
+        }).from(users).orderBy(desc(users.created_at));
         res.json({ status: true, data: usersList });
     } catch (error) {
         console.error("Get All Users Error:", error);
@@ -220,7 +217,7 @@ export const resetData = async (req: Request, res: Response) => {
         // Double check admin role
         if (!requestingUserId) return res.status(403).json({ status: false, message: "Unauthorized" });
 
-        const user = await db.query.users.findFirst({ where: eq(users.user_id, requestingUserId) });
+        const [user] = await db.select().from(users).where(eq(users.user_id, requestingUserId)).limit(1);
         if (!user || user.role !== 'ADMIN') {
             return res.status(403).json({ status: false, message: "Unauthorized" });
         }
@@ -241,7 +238,7 @@ export const resetData = async (req: Request, res: Response) => {
 
         // 1. Handle Google Drive Files
         if (targets.drive || targets.uis) {
-            const allUIs = await db.query.uis.findMany({ columns: { google_file_id: true, imageSrc: true, showcase: true } });
+            const allUIs = await db.select({ google_file_id: uis.google_file_id, imageSrc: uis.imageSrc, showcase: uis.showcase }).from(uis);
             let fileIdsToDelete: string[] = [];
 
             for (const ui of allUIs) {

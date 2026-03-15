@@ -52,9 +52,7 @@ export const VerifyEmailByOTP = async (req: Request, res: Response) => {
 
         // Otherwise generate OTP (Registration/Forgot Password flow)
 
-        const existingEmail = await db.query.authOtp.findFirst({
-            where: eq(authOtp.email, req.body.email),
-        });
+        const [existingEmail] = await db.select().from(authOtp).where(eq(authOtp.email, req.body.email)).limit(1);
 
         if (existingEmail) {
             const generatedOTP = await OTP.SetupOTP(req.body.email);
@@ -79,9 +77,7 @@ export const VerifyEmailByOTP = async (req: Request, res: Response) => {
             return res.json({ status: true, message: 'OTP is updated.' });
         }
 
-        const existingUserCheck = await db.query.users.findFirst({
-            where: eq(users.email, req.body.email)
-        });
+        const [existingUserCheck] = await db.select().from(users).where(eq(users.email, req.body.email)).limit(1);
         if (existingUserCheck) {
             return res.json({ status: false, message: 'User already registered.' })
         }
@@ -127,7 +123,7 @@ export const register = async (req: Request, res: Response) => {
         }
 
         // Fetch the user object to emit (optional, but good for UI)
-        const newUser = await db.query.users.findFirst({ where: eq(users.email, email) });
+        const [newUser] = await db.select().from(users).where(eq(users.email, email)).limit(1);
         if (newUser) {
             // Standardize user object for dashboard
             const formattedUser = {

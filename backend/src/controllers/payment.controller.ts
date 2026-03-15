@@ -110,10 +110,7 @@ export const confirmPayment = async (req: Request, res: Response) => {
                 .where(eq(payments.stripePaymentIntentId, paymentIntentId));
 
             // Fetch UI details for better message
-            const ui = await db.query.uis.findFirst({
-                where: eq(uis.id, paymentIntent.metadata.uiId),
-                columns: { title: true }
-            });
+            const [ui] = await db.select({ title: uis.title }).from(uis).where(eq(uis.id, paymentIntent.metadata.uiId)).limit(1);
             const uiTitle = ui?.title || paymentIntent.metadata.uiId;
             const message = `Payment Successful: ${uiTitle}`;
 
@@ -134,10 +131,7 @@ export const confirmPayment = async (req: Request, res: Response) => {
             const userId = parseInt(paymentIntent.metadata.userId);
 
             // Fetch user details for real-time display
-            const userDetails = await db.query.users.findFirst({
-                where: eq(users.user_id, userId),
-                columns: { full_name: true, email: true }
-            });
+            const [userDetails] = await db.select({ full_name: users.full_name, email: users.email }).from(users).where(eq(users.user_id, userId)).limit(1);
 
             const notificationPayload = {
                 type: 'PAYMENT',

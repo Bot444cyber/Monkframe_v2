@@ -116,12 +116,9 @@ export const getStats = async (req: Request, res: Response) => {
         sixMonthsAgo.setDate(1); // Start of that month
         sixMonthsAgo.setHours(0, 0, 0, 0);
 
-        const monthlyPayments = await db.query.payments.findMany({
-            where: and(gte(payments.created_at, sixMonthsAgo), eq(payments.status, 'COMPLETED')),
-            columns: {
-                created_at: true
-            }
-        });
+        const monthlyPayments = await db.select({ created_at: payments.created_at })
+            .from(payments)
+            .where(and(gte(payments.created_at, sixMonthsAgo), eq(payments.status, 'COMPLETED')));
 
         // Aggregate by month
         const graphMap = new Map<string, number>();
@@ -158,20 +155,17 @@ export const getStats = async (req: Request, res: Response) => {
         sevenDaysAgo.setHours(0, 0, 0, 0);
 
         // Fetch Metadata for last 7 days
-        const recentUIs = await db.query.uis.findMany({
-            where: gte(uis.created_at, sevenDaysAgo),
-            columns: { created_at: true }
-        });
+        const recentUIs = await db.select({ created_at: uis.created_at })
+            .from(uis)
+            .where(gte(uis.created_at, sevenDaysAgo));
 
-        const recentUsers = await db.query.users.findMany({
-            where: gte(users.created_at, sevenDaysAgo),
-            columns: { created_at: true }
-        });
+        const recentUsers = await db.select({ created_at: users.created_at })
+            .from(users)
+            .where(gte(users.created_at, sevenDaysAgo));
 
-        const recentPayments = await db.query.payments.findMany({
-            where: and(gte(payments.created_at, sevenDaysAgo), eq(payments.status, 'COMPLETED')),
-            columns: { created_at: true, amount: true }
-        });
+        const recentPayments = await db.select({ created_at: payments.created_at, amount: payments.amount })
+            .from(payments)
+            .where(and(gte(payments.created_at, sevenDaysAgo), eq(payments.status, 'COMPLETED')));
 
         // Map to graphData — use local date string to match keys
         recentUIs.forEach(item => {
@@ -196,17 +190,13 @@ export const getStats = async (req: Request, res: Response) => {
         const finalGraphData = graphData.map(({ day, uis, users, volume }) => ({ day, uis, users, volume }));
 
         // 10. Trending UIs
-        const trendingUIs = await db.query.uis.findMany({
-            limit: 3,
-            orderBy: [desc(uis.likes)], // or downloads
-            columns: {
-                id: true,
-                title: true,
-                imageSrc: true,
-                likes: true,
-                downloads: true
-            }
-        });
+        const trendingUIs = await db.select({
+            id: uis.id,
+            title: uis.title,
+            imageSrc: uis.imageSrc,
+            likes: uis.likes,
+            downloads: uis.downloads
+        }).from(uis).orderBy(desc(uis.likes)).limit(3);
 
         // 11. Daily Stats (Real-time for "Today")
         const startOfToday = new Date();
@@ -236,20 +226,17 @@ export const getStats = async (req: Request, res: Response) => {
         const hourlyStats: { day: string, uis: number, users: number, volume: number }[] = [];
 
         // Fetch raw data for today to aggregate in memory (efficient for daily range)
-        const todayPayments = await db.query.payments.findMany({
-            where: and(gte(payments.created_at, startOfToday), eq(payments.status, 'COMPLETED')),
-            columns: { created_at: true, amount: true }
-        });
+        const todayPayments = await db.select({ created_at: payments.created_at, amount: payments.amount })
+            .from(payments)
+            .where(and(gte(payments.created_at, startOfToday), eq(payments.status, 'COMPLETED')));
 
-        const todayUsersList = await db.query.users.findMany({
-            where: gte(users.created_at, startOfToday),
-            columns: { created_at: true }
-        });
+        const todayUsersList = await db.select({ created_at: users.created_at })
+            .from(users)
+            .where(gte(users.created_at, startOfToday));
 
-        const todayUIsList = await db.query.uis.findMany({
-            where: gte(uis.created_at, startOfToday),
-            columns: { created_at: true }
-        });
+        const todayUIsList = await db.select({ created_at: uis.created_at })
+            .from(uis)
+            .where(gte(uis.created_at, startOfToday));
 
         // Generate buckets for 00:00 to 23:00
         for (let i = 0; i < 24; i++) {

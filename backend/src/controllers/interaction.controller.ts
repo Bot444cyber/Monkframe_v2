@@ -14,21 +14,16 @@ export const toggleLike = async (req: Request, res: Response) => {
         if (!userId) return res.status(401).json({ status: false, message: "Unauthorized" });
 
         // Fetch user details for notification
-        const userDetails = await db.query.users.findFirst({
-            where: eq(users.user_id, userId),
-            columns: { full_name: true, email: true }
-        });
+        const [userDetails] = await db.select({ full_name: users.full_name, email: users.email }).from(users).where(eq(users.user_id, userId)).limit(1);
 
-        const existingLike = await db.query.likes.findFirst({
-            where: and(eq(likes.user_id, userId), eq(likes.ui_id, id))
-        });
+        const [existingLike] = await db.select().from(likes).where(and(eq(likes.user_id, userId), eq(likes.ui_id, id))).limit(1);
 
         if (existingLike) {
             // Unlike
             await db.delete(likes).where(eq(likes.id, existingLike.id));
             await db.update(uis).set({ likes: sql`${uis.likes} - 1` }).where(eq(uis.id, id));
 
-            const updatedUI = await db.query.uis.findFirst({ where: eq(uis.id, id) });
+            const [updatedUI] = await db.select().from(uis).where(eq(uis.id, id)).limit(1);
 
             // Emit real-time update
             getIO().emit('like:updated', { uiId: id, likesCount: updatedUI?.likes, liked: false, userId });
@@ -42,7 +37,7 @@ export const toggleLike = async (req: Request, res: Response) => {
                 ui_id: id
             });
             await db.update(uis).set({ likes: sql`${uis.likes} + 1` }).where(eq(uis.id, id));
-            const updatedUI = await db.query.uis.findFirst({ where: eq(uis.id, id) });
+            const [updatedUI] = await db.select().from(uis).where(eq(uis.id, id)).limit(1);
 
             // Create Notification
             try {
@@ -90,16 +85,11 @@ export const toggleWishlist = async (req: Request, res: Response) => {
 
         if (!userId) return res.status(401).json({ status: false, message: "Unauthorized" });
 
-        const existingWish = await db.query.wishlists.findFirst({
-            where: and(eq(wishlists.user_id, userId), eq(wishlists.ui_id, id))
-        });
+        const [existingWish] = await db.select().from(wishlists).where(and(eq(wishlists.user_id, userId), eq(wishlists.ui_id, id))).limit(1);
 
         // Fetch user details for notification (recycle if possible, but safe to fetch here if not above)
         // Since this is a separate function, we need to fetch again or reuse logic.
-        const userDetails = await db.query.users.findFirst({
-            where: eq(users.user_id, userId),
-            columns: { full_name: true, email: true }
-        });
+        const [userDetails] = await db.select({ full_name: users.full_name, email: users.email }).from(users).where(eq(users.user_id, userId)).limit(1);
 
         if (existingWish) {
             await db.delete(wishlists).where(eq(wishlists.id, existingWish.id));
@@ -118,7 +108,7 @@ export const toggleWishlist = async (req: Request, res: Response) => {
             // Create Notification
             try {
                 // Fetch UI title for message
-                const ui = await db.query.uis.findFirst({ where: eq(uis.id, id), columns: { title: true } });
+                const [ui] = await db.select({ title: uis.title }).from(uis).where(eq(uis.id, id)).limit(1);
                 const notificationId = randomUUID();
                 await db.insert(notifications).values({
                     id: notificationId,
@@ -199,7 +189,7 @@ export const addComment = async (req: Request, res: Response) => {
         // Create Notification
         try {
             // Fetch UI title
-            const ui = await db.query.uis.findFirst({ where: eq(uis.id, id), columns: { title: true } });
+            const [ui] = await db.select({ title: uis.title }).from(uis).where(eq(uis.id, id)).limit(1);
             const notificationId = randomUUID();
             await db.insert(notifications).values({
                 id: notificationId,
@@ -293,7 +283,7 @@ export const deleteComment = async (req: Request, res: Response) => {
         const { commentId } = req.params;
         const userId = req.user?.user_id;
 
-        const comment = await db.query.comments.findFirst({ where: eq(comments.id, commentId) });
+        const [comment] = await db.select().from(comments).where(eq(comments.id, commentId)).limit(1);
         if (!comment) return res.status(404).json({ status: false, message: "Comment not found" });
 
         if (comment.user_id !== userId) {

@@ -33,9 +33,7 @@ class Auth {
                 return { status: false, message: "Email and password are required" };
             }
 
-            const user = await db.query.users.findFirst({
-                where: eq(users.email, email)
-            });
+            const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
 
             if (!user) {
                 return { status: false, message: "User not found" };
@@ -75,9 +73,7 @@ class Auth {
                 return { status: false, message: "Invalid or expired OTP" };
             }
 
-            const user = await db.query.users.findFirst({
-                where: eq(users.email, email)
-            });
+            const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
 
             if (!user) {
                 return { status: false, message: "User not found" };
@@ -108,9 +104,7 @@ class Auth {
             }
 
             // Check if user already exists (double check)
-            const existingUser = await db.query.users.findFirst({
-                where: eq(users.email, email)
-            });
+            const [existingUser] = await db.select().from(users).where(eq(users.email, email)).limit(1);
 
             if (existingUser) {
                 return { status: false, message: "User already exists" };
@@ -127,9 +121,7 @@ class Auth {
                 role: 'CUSTOMER' // Default role
             });
 
-            const newUser = await db.query.users.findFirst({
-                where: eq(users.email, email)
-            });
+            const [newUser] = await db.select().from(users).where(eq(users.email, email)).limit(1);
 
             if (!newUser) {
                 return { status: false, message: "Failed to create user" };

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { db } from '../db';
-import { uis, comments as commentsTable } from '../db/schema';
+import { uis, comments as commentsTable, users, likes, wishlists } from '../db/schema';
 import { eq, and, or, like, desc, count, sql } from 'drizzle-orm';
 import { google } from 'googleapis';
 import fs from 'fs';
@@ -68,22 +68,17 @@ export const getUIs = async (req: Request, res: Response) => {
         const total = totalQuery.value;
 
         // Fetch UIs
-        const uisRes = await db.query.uis.findMany({
-            where: whereCondition,
-            offset: skip,
-            limit: limit,
-            orderBy: orderByCondition,
-        });
+        const uisRes = whereCondition
+            ? await db.select().from(uis).where(whereCondition).orderBy(...orderByCondition).limit(limit).offset(skip)
+            : await db.select().from(uis).orderBy(...orderByCondition).limit(limit).offset(skip);
 
         // Fetch relations manually to bypass MariaDB subquery scoping bugs
         const data = await Promise.all(uisRes.map(async (ui: any) => {
             // Get creator manually
             let creator = null;
             if (ui.creatorId) {
-                creator = await db.query.users.findFirst({
-                    where: (users, { eq }) => eq(users.user_id, ui.creatorId),
-                    columns: { full_name: true, user_id: true }
-                });
+                const [found] = await db.select({ full_name: users.full_name, user_id: users.user_id }).from(users).where(eq(users.user_id, ui.creatorId)).limit(1);
+                creator = found ?? null;
             }
 
             // Get comments count manually
@@ -96,15 +91,11 @@ export const getUIs = async (req: Request, res: Response) => {
 
             if (userId) {
                 // Check if liked
-                const likeResult = await db.query.likes.findFirst({
-                    where: (likes, { eq, and }) => and(eq(likes.user_id, userId), eq(likes.ui_id, ui.id))
-                });
+                const [likeResult] = await db.select().from(likes).where(and(eq(likes.user_id, userId), eq(likes.ui_id, ui.id))).limit(1);
                 liked = !!likeResult;
 
                 // Check if wished
-                const wishResult = await db.query.wishlists.findFirst({
-                    where: (wishlists, { eq, and }) => and(eq(wishlists.user_id, userId), eq(wishlists.ui_id, ui.id))
-                });
+                const [wishResult] = await db.select().from(wishlists).where(and(eq(wishlists.user_id, userId), eq(wishlists.ui_id, ui.id))).limit(1);
                 wished = !!wishResult;
             }
 
@@ -143,9 +134,7 @@ export const getUI = async (req: Request, res: Response) => {
         const { id } = req.params;
         const userId = req.user?.user_id;
 
-        const ui = await db.query.uis.findFirst({
-            where: eq(uis.id, id),
-        });
+        const [ui] = await db.select().from(uis).where(eq(uis.id, id)).limit(1);
 
         if (!ui) {
             return res.status(404).json({ status: false, message: "UI not found" });
@@ -154,10 +143,8 @@ export const getUI = async (req: Request, res: Response) => {
         // Fetch relations manually to bypass MariaDB subquery scoping bugs
         let creator = null;
         if (ui.creatorId) {
-            creator = await db.query.users.findFirst({
-                where: (users, { eq }) => eq(users.user_id, ui.creatorId!),
-                columns: { full_name: true, user_id: true }
-            });
+            const [found] = await db.select({ full_name: users.full_name, user_id: users.user_id }).from(users).where(eq(users.user_id, ui.creatorId!)).limit(1);
+            creator = found ?? null;
         }
 
         const commentsResult = await db.select({ count: count() }).from(commentsTable).where(eq(commentsTable.ui_id, ui.id));
@@ -167,14 +154,10 @@ export const getUI = async (req: Request, res: Response) => {
         let wished = false;
 
         if (userId) {
-            const likeResult = await db.query.likes.findFirst({
-                where: (likes, { eq, and }) => and(eq(likes.user_id, userId), eq(likes.ui_id, ui.id))
-            });
+            const [likeResult] = await db.select().from(likes).where(and(eq(likes.user_id, userId), eq(likes.ui_id, ui.id))).limit(1);
             liked = !!likeResult;
 
-            const wishResult = await db.query.wishlists.findFirst({
-                where: (wishlists, { eq, and }) => and(eq(wishlists.user_id, userId), eq(wishlists.ui_id, ui.id))
-            });
+            const [wishResult] = await db.select().from(wishlists).where(and(eq(wishlists.user_id, userId), eq(wishlists.ui_id, ui.id))).limit(1);
             wished = !!wishResult;
         }
 
@@ -238,7 +221,7 @@ export const getUI = async (req: Request, res: Response) => {
 export const downloadUI = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const ui = await db.query.uis.findFirst({ where: eq(uis.id, id) });
+        const [ui] = await db.select().from(uis).where(eq(uis.id, id)).limit(1);
 
         if (!ui || !ui.google_file_id) {
             return res.status(404).json({ status: false, message: "File not found" });
@@ -372,7 +355,7 @@ export const createUI = async (req: Request, res: Response) => {
             creatorId: userId
         });
 
-        const newUI = await db.query.uis.findFirst({ where: eq(uis.id, generatedId) });
+        const [newUI] = await db.select().from(uis).where(eq(uis.id, generatedId)).limit(1);
 
         if (newUI) {
             // Emit initial socket event
@@ -408,7 +391,7 @@ export const updateUI = async (req: Request, res: Response) => {
         const { title, price, category, author, overview, highlights, rating } = req.body;
 
         // Fetch existing UI
-        const existingUI = await db.query.uis.findFirst({ where: eq(uis.id, id) });
+        const [existingUI] = await db.select().from(uis).where(eq(uis.id, id)).limit(1);
         if (!existingUI) {
             return res.status(404).json({ status: false, message: "UI not found" });
         }
@@ -498,7 +481,7 @@ export const updateUI = async (req: Request, res: Response) => {
             } : {})
         }).where(eq(uis.id, id));
 
-        const updatedUI = await db.query.uis.findFirst({ where: eq(uis.id, id) });
+        const [updatedUI] = await db.select().from(uis).where(eq(uis.id, id)).limit(1);
 
         if (updatedUI) {
             // Emit real-time update
@@ -545,7 +528,7 @@ export const deleteUI = async (req: Request, res: Response) => {
         const { id } = req.params;
 
         // 1. Find the UI to get file IDs
-        const ui = await db.query.uis.findFirst({ where: eq(uis.id, id) });
+        const [ui] = await db.select().from(uis).where(eq(uis.id, id)).limit(1);
 
         if (!ui) {
             return res.status(404).json({ status: false, message: "UI not found" });

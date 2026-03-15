@@ -38,9 +38,7 @@ passport.deserializeUser(async (id: any, done) => {
         if (!Number.isInteger(numericId) || numericId <= 0) {
             return done(null, false);
         }
-        const user = await db.query.users.findFirst({
-            where: eq(users.user_id, numericId),
-        });
+        const [user] = await db.select().from(users).where(eq(users.user_id, numericId)).limit(1);
         done(null, user ?? false);
     } catch (error) {
         done(error, null);
