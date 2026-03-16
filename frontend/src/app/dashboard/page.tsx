@@ -656,7 +656,7 @@ export default function Dashboard() {
 
             {/* Main Content */}
             <main className="flex-1 lg:ml-72 pt-20 lg:pt-8 px-6 lg:px-12 pb-12 overflow-x-hidden w-full">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-10 animate-fade-in relative z-50">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-10 animate-fade-in relative z-10">
                     <div>
                         <h1 className="text-3xl font-black text-white tracking-tight mb-2">Dashboard</h1>
                         <p className="text-gray-400">Welcome back, {user?.full_name?.split(' ')[0] || 'Admin'}</p>
