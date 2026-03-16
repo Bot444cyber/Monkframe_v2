@@ -499,6 +499,13 @@ const streamImage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const drive = googleapis_1.google.drive({ version: 'v3', auth });
         // Fetch stream
         const response = yield drive.files.get({ fileId: fileId, alt: 'media' }, { responseType: 'stream' });
+        // Transfer essential headers from Google to avoid browser "nosniff" blocking
+        if (response.headers['content-type']) {
+            res.setHeader('Content-Type', response.headers['content-type']);
+        }
+        if (response.headers['content-length']) {
+            res.setHeader('Content-Length', response.headers['content-length']);
+        }
         // Pipe directly to client Response
         response.data.pipe(res);
         // Handle errors during streaming

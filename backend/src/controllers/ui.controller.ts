@@ -609,6 +609,14 @@ export const streamImage = async (req: Request, res: Response) => {
             { responseType: 'stream' }
         );
 
+        // Transfer essential headers from Google to avoid browser "nosniff" blocking
+        if (response.headers['content-type']) {
+            res.setHeader('Content-Type', response.headers['content-type'] as string);
+        }
+        if (response.headers['content-length']) {
+            res.setHeader('Content-Length', response.headers['content-length'] as string);
+        }
+
         // Pipe directly to client Response
         response.data.pipe(res);
 
