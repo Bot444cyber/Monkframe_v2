@@ -79,7 +79,11 @@ export const googleAuthCallback = (req: Request, res: Response, next: NextFuncti
                                 purchases: 0,
                                 lifetimeValue: 0
                             };
-                            getIO().emit('user:new', { user: formattedUser });
+                            try {
+                                getIO().emit('user:new', { user: formattedUser });
+                            } catch (e) {
+                                console.error('Socket emit error on user:new:', e);
+                            }
                         }
                     }
                 } else {
@@ -105,7 +109,11 @@ export const googleAuthCallback = (req: Request, res: Response, next: NextFuncti
                             purchases: 0,
                             lifetimeValue: 0
                         };
-                        getIO().emit('user:new', { user: formattedUser });
+                        try {
+                            getIO().emit('user:new', { user: formattedUser });
+                        } catch (e) {
+                            console.error('Socket emit error on user:new:', e);
+                        }
                     }
                 }
             } else {

@@ -87,7 +87,12 @@ const googleAuthCallback = (req, res, next) => {
                                 purchases: 0,
                                 lifetimeValue: 0
                             };
-                            (0, socket_1.getIO)().emit('user:new', { user: formattedUser });
+                            try {
+                                (0, socket_1.getIO)().emit('user:new', { user: formattedUser });
+                            }
+                            catch (e) {
+                                console.error('Socket emit error on user:new:', e);
+                            }
                         }
                     }
                 }
@@ -112,7 +117,12 @@ const googleAuthCallback = (req, res, next) => {
                             purchases: 0,
                             lifetimeValue: 0
                         };
-                        (0, socket_1.getIO)().emit('user:new', { user: formattedUser });
+                        try {
+                            (0, socket_1.getIO)().emit('user:new', { user: formattedUser });
+                        }
+                        catch (e) {
+                            console.error('Socket emit error on user:new:', e);
+                        }
                     }
                 }
             }
