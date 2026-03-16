@@ -10,7 +10,7 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
             {/* Top Row */}
             <div className="flex flex-col gap-6">
                 {/* Main Hero Image */}
-                <div className={`relative w-full overflow-hidden rounded-2xl ${color} bg-opacity-20 group cursor-zoom-in min-h-[250px] md:aspect-[1.4/1]`}>
+                <div className={`relative w-full overflow-hidden rounded-2xl ${color} bg-opacity-20 group cursor-zoom-in aspect-[1.4/1]`}>
                     <div className="absolute inset-0 p-1 md:p-2 transition-transform duration-700 group-hover:scale-105">
                         <div className="relative w-full h-full bg-zinc-900 rounded-xl shadow-2xl overflow-hidden border border-white/5 shadow-purple-500/20">
                             {/* Mock Content */}
@@ -57,7 +57,7 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
                 return (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {showcase.map((src: any, idx: number) => (
-                            <div key={idx} className="w-full min-h-[200px] md:aspect-[4/3] bg-zinc-900 rounded-2xl overflow-hidden relative group border border-white/5">
+                            <div key={idx} className="w-full aspect-[4/3] bg-zinc-900 rounded-2xl overflow-hidden relative group border border-white/5">
                                 <img
                                     src={src}
                                     alt={`Showcase ${idx + 1}`}
