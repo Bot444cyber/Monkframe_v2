@@ -6,12 +6,12 @@ const payload = {
         price: string().min(1, "Price is required").or(number().transform(val => val.toString())),
         category: string().min(1, "Category is required"),
         author: string().min(1, "Author is required"),
-        color: string().optional(),
-        overview: string().optional(),
-        highlights: string().optional().or(any().array()).optional(), // Can be JSON string or array
-        rating: string().optional().or(number().transform(val => val.toString())).optional(),
-        imageSrc: string().optional(),
-        google_file_id: string().optional(),
+        color: string().nullable().optional(),
+        overview: string().nullable().optional(),
+        highlights: string().nullable().optional().or(any().array()).optional(), // Can be JSON string or array
+        rating: string().nullable().optional().or(number().transform(val => val.toString())).optional(),
+        imageSrc: string().nullable().optional(),
+        google_file_id: string().nullable().optional(),
     }),
 };
 

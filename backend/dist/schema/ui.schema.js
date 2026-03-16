@@ -8,12 +8,12 @@ const payload = {
         price: (0, zod_1.string)().min(1, "Price is required").or((0, zod_1.number)().transform(val => val.toString())),
         category: (0, zod_1.string)().min(1, "Category is required"),
         author: (0, zod_1.string)().min(1, "Author is required"),
-        color: (0, zod_1.string)().optional(),
-        overview: (0, zod_1.string)().optional(),
-        highlights: (0, zod_1.string)().optional().or((0, zod_1.any)().array()).optional(), // Can be JSON string or array
-        rating: (0, zod_1.string)().optional().or((0, zod_1.number)().transform(val => val.toString())).optional(),
-        imageSrc: (0, zod_1.string)().optional(),
-        google_file_id: (0, zod_1.string)().optional(),
+        color: (0, zod_1.string)().nullable().optional(),
+        overview: (0, zod_1.string)().nullable().optional(),
+        highlights: (0, zod_1.string)().nullable().optional().or((0, zod_1.any)().array()).optional(), // Can be JSON string or array
+        rating: (0, zod_1.string)().nullable().optional().or((0, zod_1.number)().transform(val => val.toString())).optional(),
+        imageSrc: (0, zod_1.string)().nullable().optional(),
+        google_file_id: (0, zod_1.string)().nullable().optional(),
     }),
 };
 const params = {
