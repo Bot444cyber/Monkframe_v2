@@ -42,12 +42,10 @@ const uiController = __importStar(require("../controllers/ui.controller"));
 const validateResource_1 = __importDefault(require("../middlewares/validateResource"));
 const ui_schema_1 = require("../schema/ui.schema");
 const auth_middleware_1 = require("../middlewares/auth.middleware");
-const path_1 = __importDefault(require("path"));
+const os_1 = __importDefault(require("os"));
 const router = express_1.default.Router();
-// Ensure uploads directory exists (Absolute Path)
-const uploadDir = path_1.default.join(process.cwd(), 'uploads');
-// The uploads directory must be created MANUALLY on Hostinger to avoid
-// filesystem changes during boot triggering Passenger's infinite restart loop.
+// Ensure uploads use OS temp dir instead of project folder to prevent issues on Hostinger
+const uploadDir = os_1.default.tmpdir();
 const storage = multer_1.default.diskStorage({
     destination: (req, file, cb) => {
         cb(null, uploadDir);

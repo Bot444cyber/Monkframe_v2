@@ -7,14 +7,12 @@ import { authenticateUser, optionalAuthenticate } from '../middlewares/auth.midd
 import fs from 'fs';
 import path from 'path';
 
+import os from 'os';
+
 const router = express.Router();
 
-// Ensure uploads directory exists (Absolute Path)
-const uploadDir = path.join(process.cwd(), 'uploads');
-
-// The uploads directory must be created MANUALLY on Hostinger to avoid
-// filesystem changes during boot triggering Passenger's infinite restart loop.
-
+// Ensure uploads use OS temp dir instead of project folder to prevent issues on Hostinger
+const uploadDir = os.tmpdir();
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
