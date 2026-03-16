@@ -10,9 +10,9 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
             {/* Top Row */}
             <div className="flex flex-col gap-6">
                 {/* Main Hero Image */}
-                <div className={`relative aspect-[1.4/1] w-full overflow-hidden rounded-2xl ${color} bg-opacity-20 group cursor-zoom-in`}>
-                    <div className="absolute inset-0 flex items-center justify-center transition-transform duration-700 group-hover:scale-105">
-                        <div className="relative w-[98%] h-[98%] bg-zinc-900 rounded-xl shadow-2xl overflow-hidden border border-white/5 shadow-purple-500/20">
+                <div className={`relative w-full overflow-hidden rounded-2xl ${color} bg-opacity-20 group cursor-zoom-in min-h-[250px] md:aspect-[1.4/1]`}>
+                    <div className="absolute inset-0 p-1 md:p-2 transition-transform duration-700 group-hover:scale-105">
+                        <div className="relative w-full h-full bg-zinc-900 rounded-xl shadow-2xl overflow-hidden border border-white/5 shadow-purple-500/20">
                             {/* Mock Content */}
                             <div className="absolute top-4 left-6 z-10 bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-lg shadow-lg">
                                 <h3 className="text-xs font-bold text-white tracking-wide">{product.title}</h3>
@@ -57,14 +57,14 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
                 return (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {showcase.map((src: any, idx: number) => (
-                            <div key={idx} className="aspect-[4/3] bg-zinc-900 rounded-2xl overflow-hidden relative group border border-white/5">
+                            <div key={idx} className="w-full min-h-[200px] md:aspect-[4/3] bg-zinc-900 rounded-2xl overflow-hidden relative group border border-white/5">
                                 <img
                                     src={src}
                                     alt={`Showcase ${idx + 1}`}
                                     referrerPolicy="no-referrer"
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                             </div>
                         ))}
                     </div>
