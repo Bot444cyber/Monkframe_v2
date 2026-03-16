@@ -580,25 +580,11 @@ export const streamImage = async (req: Request, res: Response) => {
         const CACHE_DIR = path.join(__dirname, '../../cache');
         const CACHE_FILE = path.join(CACHE_DIR, `${fileId}`);
 
-        // Ensure cache directory exists
-        if (!fs.existsSync(CACHE_DIR)) {
-            // CACHE_DIR must be created manually to avoid Passenger automatic restarts!
-            console.warn(`[WARN] Cache dir missing. Create ${CACHE_DIR} manually.`);
-        }
-
         // 1. Browser Caching Headers (Client-side)
         // Cache for 1 year (immutable) since fileIds are unique
         res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
 
-        // 2. Server-Side Caching (Disk Cache)
-        if (fs.existsSync(CACHE_FILE)) {
-            // Serve from Disk Cache
-            const fileStream = fs.createReadStream(CACHE_FILE);
-            fileStream.pipe(res);
-            return;
-        }
-
-        // If not in cache, fetch from Drive
+        // Fetch from Drive
         // OAuth2 Strategy
         const clientId = process.env.GOOGLE_DRIVE_CLIENT_ID;
         const clientSecret = process.env.GOOGLE_DRIVE_CLIENT_SECRET;
@@ -623,17 +609,12 @@ export const streamImage = async (req: Request, res: Response) => {
             { responseType: 'stream' }
         );
 
-        // Pipe to Response AND Save to Disk Cache
-        const dest = fs.createWriteStream(CACHE_FILE);
-
-        response.data.pipe(dest); // Save to cache
-        response.data.pipe(res);  // Send to client
+        // Pipe directly to client Response
+        response.data.pipe(res);
 
         // Handle errors during streaming
         response.data.on('error', (err) => {
             console.error('Error streaming data:', err);
-            // Try to clean up partial file
-            if (fs.existsSync(CACHE_FILE)) fs.unlinkSync(CACHE_FILE);
         });
 
     } catch (error) {

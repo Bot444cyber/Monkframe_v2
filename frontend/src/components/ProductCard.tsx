@@ -171,6 +171,7 @@ export default function ProductCard({ product }: { product: Product }) {
                     <img
                         src={product.imageSrc}
                         alt={product.title}
+                        referrerPolicy="no-referrer"
                         className="h-full w-full object-cover transition-transform duration-[1.2s] ease-in-out group-hover:scale-110 opacity-80 group-hover:opacity-100"
                     />
                     <div className="absolute inset-0 bg-transparent" />

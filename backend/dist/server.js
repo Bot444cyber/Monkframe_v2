@@ -246,6 +246,7 @@ function startApp() {
         const server = httpServer.listen(PORT || 8000, () => {
             logger_1.default.info('🚀 UI Management System started', {
                 port: PORT,
+                url: `http://localhost:${PORT}`,
                 env: process.env.NODE_ENV || 'development'
             });
         });

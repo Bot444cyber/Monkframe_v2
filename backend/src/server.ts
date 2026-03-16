@@ -265,11 +265,11 @@ async function startApp() {
     const server = httpServer.listen(PORT || 8000, () => {
         logger.info('🚀 UI Management System started', {
             port: PORT,
+            url: `http://localhost:${PORT}`,
             env: process.env.NODE_ENV || 'development'
         });
     });
 }
-
 
 // Catch unhandled promise rejections
 process.on('unhandledRejection', (reason) => {
