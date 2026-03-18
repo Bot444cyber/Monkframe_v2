@@ -14,7 +14,6 @@ if (missing.length > 0) {
 // 2. Node/Express modules
 import cors from "cors";
 import express, { Express, Request, Response } from "express";
-import { createServer } from "http";
 import session from "express-session";
 import passport from "passport";
 import helmet from "helmet";
@@ -41,7 +40,6 @@ import notificationRoutes from "./routes/notification.routes";
 import dashboardRoutes from "./routes/dashboard.routes";
 
 const app: Express = express();
-const httpServer = createServer(app);
 const PORT = process.env.PORT || 8000;
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -224,23 +222,6 @@ app.use('/api/payment', paymentRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
-// Dev-only socket test route
-// DISABLED FOR HOSTINGER DIAGNOSTICS:
-/*
-if (!isProd) {
-    app.get('/api/test-socket', (req, res) => {
-        try {
-            const io = getIO();
-            io.emit("test-event", { message: "Hello from Backend! WebSockets are working! 🚀" });
-            res.json({ success: true, message: "Test event emitted to all clients" });
-        } catch (error) {
-            logger.error("Socket error", { error: String(error) });
-            res.status(500).json({ success: false, error: "Failed to emit event" });
-        }
-    });
-}
-*/
-
 // 404 handler
 app.use((req: Request, res: Response) => {
     res.status(404).json({
@@ -262,7 +243,7 @@ async function startApp() {
     // 1. Await DB before opening the port
     await initializeDatabase();
 
-    const server = httpServer.listen(PORT || 8000, () => {
+    const server = app.listen(PORT || 8000, () => {
         logger.info('🚀 UI Management System started', {
             port: PORT,
             url: `http://localhost:${PORT}`,

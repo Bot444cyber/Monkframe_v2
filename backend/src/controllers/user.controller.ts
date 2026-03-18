@@ -4,7 +4,6 @@ import { db } from '../db';
 import { users, wishlists as wishlistsTable, payments as paymentsTable, uis, likes } from '../db/schema';
 import { eq, desc, count, and } from 'drizzle-orm';
 import GenerateToken from '../config/module/generator/GenerateToken';
-import { getIO } from '../config/socket';
 import { transformToProxy } from '../utils/helpers';
 
 // Initiate Google Login
@@ -79,11 +78,6 @@ export const googleAuthCallback = (req: Request, res: Response, next: NextFuncti
                                 purchases: 0,
                                 lifetimeValue: 0
                             };
-                            try {
-                                getIO().emit('user:new', { user: formattedUser });
-                            } catch (e) {
-                                console.error('Socket emit error on user:new:', e);
-                            }
                         }
                     }
                 } else {
@@ -109,11 +103,6 @@ export const googleAuthCallback = (req: Request, res: Response, next: NextFuncti
                             purchases: 0,
                             lifetimeValue: 0
                         };
-                        try {
-                            getIO().emit('user:new', { user: formattedUser });
-                        } catch (e) {
-                            console.error('Socket emit error on user:new:', e);
-                        }
                     }
                 }
             } else {

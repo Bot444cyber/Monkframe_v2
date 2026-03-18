@@ -18,7 +18,6 @@ const fs_1 = __importDefault(require("fs"));
 const db_1 = require("../db");
 const schema_1 = require("../db/schema");
 const drizzle_orm_1 = require("drizzle-orm");
-const socket_1 = require("../config/socket");
 const uploadFileToDrive = (filePath, fileName, mimeType, isPublic) => __awaiter(void 0, void 0, void 0, function* () {
     // OAuth2 Strategy
     const clientId = process.env.GOOGLE_DRIVE_CLIENT_ID;
@@ -83,33 +82,14 @@ const processUpload = (data) => __awaiter(void 0, void 0, void 0, function* () {
                 WHERE id = ${uiId}
             `);
         }
-        // Notify User/Frontend
-        const io = (0, socket_1.getIO)();
-        if (userId) {
-            io.to(userId.toString()).emit('upload:complete', {
-                uiId,
-                type,
-                status: 'success',
-                url: upload.publicUrl
-            });
-        }
         // Clean up
         if (fs_1.default.existsSync(filePath)) {
             fs_1.default.unlinkSync(filePath);
         }
     }
     catch (error) {
-        console.error(`❌ Upload Failed:`, error);
         if (fs_1.default.existsSync(filePath)) {
             fs_1.default.unlinkSync(filePath);
-        }
-        const io = (0, socket_1.getIO)();
-        if (userId) {
-            io.to(userId.toString()).emit('upload:error', {
-                uiId,
-                type,
-                message: error.message
-            });
         }
         // Don't throw, just log, so request can finish if using await
     }

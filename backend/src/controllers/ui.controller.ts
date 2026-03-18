@@ -5,7 +5,6 @@ import { eq, and, or, like, desc, count, sql } from 'drizzle-orm';
 import { google } from 'googleapis';
 import fs from 'fs';
 import path from 'path';
-import { getIO } from '../config/socket';
 import { uploadQueue } from '../config/queue';
 import { uploadFileToDrive, deleteFileFromDrive } from '../services/drive.service';
 import { transformToProxy } from '../utils/helpers';
@@ -366,11 +365,6 @@ export const createUI = async (req: Request, res: Response) => {
                 specifications: parseArray(newUI.specifications),
                 highlights: parseArray(newUI.highlights)
             };
-            try {
-                getIO().emit('ui:new', { ui: ioData });
-            } catch (e) {
-                console.error("Socket emit error on ui:new:", e);
-            }
 
             res.status(201).json({
                 status: true,
@@ -496,11 +490,6 @@ export const updateUI = async (req: Request, res: Response) => {
                 specifications: parseArray(updatedUI.specifications),
                 highlights: parseArray(updatedUI.highlights)
             };
-            try {
-                getIO().emit('ui:updated', { ui: ioData });
-            } catch (e) {
-                console.error("Socket emit error on ui:updated:", e);
-            }
 
             res.json({
                 status: true,
@@ -570,13 +559,6 @@ export const deleteUI = async (req: Request, res: Response) => {
 
         // 5. Delete from DB
         await db.delete(uis).where(eq(uis.id, id));
-
-        // Emit real-time event
-        try {
-            getIO().emit('ui:deleted', { id });
-        } catch (e) {
-            console.error("Socket emit error on ui:deleted:", e);
-        }
 
         res.json({ status: true, message: "UI and associated Drive files deleted successfully" });
     } catch (error) {

@@ -4,7 +4,6 @@ import { Request, Response } from 'express';
 import { db } from '../db';
 import { authOtp, users } from '../db/schema';
 import { eq } from 'drizzle-orm';
-import { getIO } from '../config/socket';
 import sendOTPEmail from '../services/email.service';
 import { randomUUID } from 'crypto';
 
@@ -135,7 +134,6 @@ export const register = async (req: Request, res: Response) => {
                 purchases: 0,
                 lifetimeValue: 0
             };
-            getIO().emit('user:new', { user: formattedUser });
         }
 
         return res.json({ status: true, message: 'Registration successful', token: result.token });

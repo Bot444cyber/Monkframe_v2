@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.confirmPayment = exports.createPaymentIntent = void 0;
 const stripe_1 = __importDefault(require("stripe"));
-const socket_1 = require("../config/socket");
 const db_1 = require("../db");
 const schema_1 = require("../db/schema");
 const drizzle_orm_1 = require("drizzle-orm");
@@ -74,18 +73,7 @@ const createPaymentIntent = (req, res) => __awaiter(void 0, void 0, void 0, func
             .where((0, drizzle_orm_1.eq)(schema_1.payments.id, paymentId))
             .limit(1);
         if ((fullPaymentRow === null || fullPaymentRow === void 0 ? void 0 : fullPaymentRow.user_full_name) && (fullPaymentRow === null || fullPaymentRow === void 0 ? void 0 : fullPaymentRow.ui_title)) {
-            const formattedPayment = {
-                id: fullPaymentRow.id,
-                customerName: fullPaymentRow.user_full_name,
-                email: fullPaymentRow.user_email,
-                item: fullPaymentRow.ui_title,
-                date: fullPaymentRow.created_at.toISOString().split('T')[0],
-                amount: `$${fullPaymentRow.amount}`,
-                status: fullPaymentRow.status.toLowerCase(),
-                stripePaymentIntentId: fullPaymentRow.stripePaymentIntentId
-            };
-            // Emit real-time event
-            (0, socket_1.getIO)().emit('payment:new', { payment: formattedPayment });
+            // Standardized payment object for dashboard
         }
         res.json({
             clientSecret: paymentIntent.client_secret,
@@ -123,24 +111,6 @@ const confirmPayment = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 uiId: paymentIntent.metadata.uiId,
                 isRead: false
             });
-            // Emit real-time update
-            (0, socket_1.getIO)().emit('payment:updated', { paymentIntentId, status: 'COMPLETED' });
-            // Emit notification event to specific user and admins
-            const userId = parseInt(paymentIntent.metadata.userId);
-            // Fetch user details for real-time display
-            const [userDetails] = yield db_1.db.select({ full_name: schema_1.users.full_name, email: schema_1.users.email }).from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.user_id, userId)).limit(1);
-            const notificationPayload = {
-                type: 'PAYMENT',
-                message: message,
-                userId: userId,
-                uiId: paymentIntent.metadata.uiId,
-                user: userDetails, // Include user details
-                ui: { title: uiTitle } // Include UI details
-            };
-            // To User
-            (0, socket_1.getIO)().to(userId.toString()).emit('new-notification', notificationPayload);
-            // To Admins
-            (0, socket_1.getIO)().to('admin').emit('new-notification', notificationPayload);
             // Here you can unlock content, send email, etc.
             res.json({ success: true, status: 'COMPLETED' });
         }

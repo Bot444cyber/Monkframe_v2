@@ -28,7 +28,6 @@ if (missing.length > 0) {
 // 2. Node/Express modules
 const cors_1 = __importDefault(require("cors"));
 const express_1 = __importDefault(require("express"));
-const http_1 = require("http");
 const express_session_1 = __importDefault(require("express-session"));
 const passport_1 = __importDefault(require("passport"));
 const helmet_1 = __importDefault(require("helmet"));
@@ -50,7 +49,6 @@ const payment_routes_1 = __importDefault(require("./routes/payment.routes"));
 const notification_routes_1 = __importDefault(require("./routes/notification.routes"));
 const dashboard_routes_1 = __importDefault(require("./routes/dashboard.routes"));
 const app = (0, express_1.default)();
-const httpServer = (0, http_1.createServer)(app);
 const PORT = process.env.PORT || 8000;
 const isProd = process.env.NODE_ENV === 'production';
 // Trust proxy for secure cookies
@@ -208,22 +206,6 @@ app.use('/api/interactions', interaction_routes_1.default);
 app.use('/api/payment', payment_routes_1.default);
 app.use('/api/notifications', notification_routes_1.default);
 app.use('/api/dashboard', dashboard_routes_1.default);
-// Dev-only socket test route
-// DISABLED FOR HOSTINGER DIAGNOSTICS:
-/*
-if (!isProd) {
-    app.get('/api/test-socket', (req, res) => {
-        try {
-            const io = getIO();
-            io.emit("test-event", { message: "Hello from Backend! WebSockets are working! 🚀" });
-            res.json({ success: true, message: "Test event emitted to all clients" });
-        } catch (error) {
-            logger.error("Socket error", { error: String(error) });
-            res.status(500).json({ success: false, error: "Failed to emit event" });
-        }
-    });
-}
-*/
 // 404 handler
 app.use((req, res) => {
     res.status(404).json({
@@ -243,7 +225,7 @@ function startApp() {
     return __awaiter(this, void 0, void 0, function* () {
         // 1. Await DB before opening the port
         yield initializeDatabase();
-        const server = httpServer.listen(PORT || 8000, () => {
+        const server = app.listen(PORT || 8000, () => {
             logger_1.default.info('🚀 UI Management System started', {
                 port: PORT,
                 url: `http://localhost:${PORT}`,

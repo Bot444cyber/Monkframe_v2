@@ -19,7 +19,6 @@ const drizzle_orm_1 = require("drizzle-orm");
 const googleapis_1 = require("googleapis");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const socket_1 = require("../config/socket");
 const queue_1 = require("../config/queue");
 const drive_service_1 = require("../services/drive.service");
 const helpers_1 = require("../utils/helpers");
@@ -305,12 +304,6 @@ const createUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (newUI) {
             // Emit initial socket event
             const ioData = Object.assign(Object.assign({}, newUI), { imageSrc: (0, helpers_1.transformToProxy)(newUI.imageSrc, req), showcase: parseArray(newUI.showcase).map((url) => (0, helpers_1.transformToProxy)(url, req)), specifications: parseArray(newUI.specifications), highlights: parseArray(newUI.highlights) });
-            try {
-                (0, socket_1.getIO)().emit('ui:new', { ui: ioData });
-            }
-            catch (e) {
-                console.error("Socket emit error on ui:new:", e);
-            }
             res.status(201).json({
                 status: true,
                 message: "UI Created and files uploaded.",
@@ -411,12 +404,6 @@ const updateUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (updatedUI) {
             // Emit real-time update
             const ioData = Object.assign(Object.assign({}, updatedUI), { imageSrc: (0, helpers_1.transformToProxy)(updatedUI.imageSrc, req), showcase: parseArray(updatedUI.showcase).map((url) => (0, helpers_1.transformToProxy)(url, req)), specifications: parseArray(updatedUI.specifications), highlights: parseArray(updatedUI.highlights) });
-            try {
-                (0, socket_1.getIO)().emit('ui:updated', { ui: ioData });
-            }
-            catch (e) {
-                console.error("Socket emit error on ui:updated:", e);
-            }
             res.json({
                 status: true,
                 message: "UI Updated. Files are processing in background.",
@@ -477,13 +464,6 @@ const deleteUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         // 5. Delete from DB
         yield db_1.db.delete(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id));
-        // Emit real-time event
-        try {
-            (0, socket_1.getIO)().emit('ui:deleted', { id });
-        }
-        catch (e) {
-            console.error("Socket emit error on ui:deleted:", e);
-        }
         res.json({ status: true, message: "UI and associated Drive files deleted successfully" });
     }
     catch (error) {

@@ -18,7 +18,6 @@ const db_1 = require("../db");
 const schema_1 = require("../db/schema");
 const drizzle_orm_1 = require("drizzle-orm");
 const GenerateToken_1 = __importDefault(require("../config/module/generator/GenerateToken"));
-const socket_1 = require("../config/socket");
 const helpers_1 = require("../utils/helpers");
 // Initiate Google Login
 exports.googleAuth = passport_1.default.authenticate('google', {
@@ -87,12 +86,6 @@ const googleAuthCallback = (req, res, next) => {
                                 purchases: 0,
                                 lifetimeValue: 0
                             };
-                            try {
-                                (0, socket_1.getIO)().emit('user:new', { user: formattedUser });
-                            }
-                            catch (e) {
-                                console.error('Socket emit error on user:new:', e);
-                            }
                         }
                     }
                 }
@@ -117,12 +110,6 @@ const googleAuthCallback = (req, res, next) => {
                             purchases: 0,
                             lifetimeValue: 0
                         };
-                        try {
-                            (0, socket_1.getIO)().emit('user:new', { user: formattedUser });
-                        }
-                        catch (e) {
-                            console.error('Socket emit error on user:new:', e);
-                        }
                     }
                 }
             }

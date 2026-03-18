@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { db } from '../db';
 import { likes, wishlists, comments, uis, notifications, users } from '../db/schema';
 import { eq, and, sql, count, desc } from 'drizzle-orm';
-import { getIO } from '../config/socket';
 import { randomUUID } from 'crypto';
 
 // Toggle Like
@@ -24,9 +23,6 @@ export const toggleLike = async (req: Request, res: Response) => {
             await db.update(uis).set({ likes: sql`${uis.likes} - 1` }).where(eq(uis.id, id));
 
             const [updatedUI] = await db.select().from(uis).where(eq(uis.id, id)).limit(1);
-
-            // Emit real-time update
-            try { getIO().emit('like:updated', { uiId: id, likesCount: updatedUI?.likes, liked: false, userId }); } catch (e) { }
 
             return res.json({ status: true, message: "Unliked", liked: false, likesCount: updatedUI?.likes });
         } else {
@@ -60,16 +56,9 @@ export const toggleLike = async (req: Request, res: Response) => {
                     user: userDetails,
                     ui: { title: updatedUI?.title }
                 };
-                try {
-                    getIO().to(userId.toString()).emit('new-notification', payload);
-                    getIO().to('admin').emit('new-notification', payload);
-                } catch (e) { }
             } catch (err) {
                 console.error("Notification error", err);
             }
-
-            // Emit real-time update
-            try { getIO().emit('like:updated', { uiId: id, likesCount: updatedUI?.likes, liked: true, userId }); } catch (e) { }
 
             return res.json({ status: true, message: "Liked", liked: true, likesCount: updatedUI?.likes });
         }
@@ -95,9 +84,6 @@ export const toggleWishlist = async (req: Request, res: Response) => {
 
         if (existingWish) {
             await db.delete(wishlists).where(eq(wishlists.id, existingWish.id));
-
-            // Emit real-time update
-            try { getIO().emit('wishlist:updated', { uiId: id, wished: false, userId }); } catch (e) { }
 
             return res.json({ status: true, message: "Removed from wishlist", wished: false });
         } else {
@@ -130,16 +116,9 @@ export const toggleWishlist = async (req: Request, res: Response) => {
                     user: userDetails,
                     ui: { title: ui?.title }
                 };
-                try {
-                    getIO().to(userId.toString()).emit('new-notification', payload);
-                    getIO().to('admin').emit('new-notification', payload);
-                } catch (e) { }
             } catch (err) {
                 console.error("Notification error", err);
             }
-
-            // Emit real-time update
-            try { getIO().emit('wishlist:updated', { uiId: id, wished: true, userId }); } catch (e) { }
 
             return res.json({ status: true, message: "Added to wishlist", wished: true });
         }
@@ -213,16 +192,9 @@ export const addComment = async (req: Request, res: Response) => {
                 user: comment?.user,
                 ui: { title: ui?.title }
             };
-            try {
-                getIO().to(userId.toString()).emit('new-notification', payload);
-                getIO().to('admin').emit('new-notification', payload);
-            } catch (e) { }
         } catch (err) {
             console.error("Notification error", err);
         }
-
-        // Emit real-time update
-        try { getIO().emit('comment:added', { uiId: id, comment }); } catch (e) { }
 
         res.json({ status: true, message: "Comment added", data: comment });
     } catch (error) {

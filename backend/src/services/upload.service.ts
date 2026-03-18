@@ -4,7 +4,6 @@ import fs from 'fs';
 import { db } from '../db';
 import { uis } from '../db/schema';
 import { eq, sql } from 'drizzle-orm';
-import { getIO } from '../config/socket';
 
 interface UploadJobData {
     filePath: string;
@@ -95,35 +94,14 @@ export const processUpload = async (data: UploadJobData) => {
             `);
         }
 
-        // Notify User/Frontend
-        const io = getIO();
-        if (userId) {
-            io.to(userId.toString()).emit('upload:complete', {
-                uiId,
-                type,
-                status: 'success',
-                url: upload.publicUrl
-            });
-        }
-
         // Clean up
         if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);
         }
 
     } catch (error: any) {
-        console.error(`❌ Upload Failed:`, error);
         if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);
-        }
-
-        const io = getIO();
-        if (userId) {
-            io.to(userId.toString()).emit('upload:error', {
-                uiId,
-                type,
-                message: error.message
-            });
         }
         // Don't throw, just log, so request can finish if using await
     }

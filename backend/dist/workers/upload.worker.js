@@ -17,7 +17,6 @@ const fs_1 = __importDefault(require("fs"));
 const db_1 = require("../db");
 const schema_1 = require("../db/schema");
 const drizzle_orm_1 = require("drizzle-orm");
-const socket_1 = require("../config/socket");
 const drive_service_1 = require("../services/drive.service");
 // uploadFileToDrive removed (imported from service)
 const uploadWorker = (job) => __awaiter(void 0, void 0, void 0, function* () {
@@ -43,17 +42,6 @@ const uploadWorker = (job) => __awaiter(void 0, void 0, void 0, function* () {
                 WHERE id = ${uiId}
             `);
         }
-        // Notify User/Frontend
-        const io = (0, socket_1.getIO)();
-        // Emit general update
-        if (userId) {
-            io.to(userId.toString()).emit('upload:complete', {
-                uiId,
-                type,
-                status: 'success',
-                url: upload.publicUrl
-            });
-        }
         // Clean up
         if (fs_1.default.existsSync(filePath)) {
             fs_1.default.unlinkSync(filePath);
@@ -65,15 +53,6 @@ const uploadWorker = (job) => __awaiter(void 0, void 0, void 0, function* () {
         // Clean up even on fail if file exists
         if (fs_1.default.existsSync(filePath)) {
             fs_1.default.unlinkSync(filePath);
-        }
-        // Notify Error
-        const io = (0, socket_1.getIO)();
-        if (userId) {
-            io.to(userId.toString()).emit('upload:error', {
-                uiId,
-                type,
-                message: error.message
-            });
         }
         throw error;
     }

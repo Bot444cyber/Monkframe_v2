@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import Stripe from 'stripe';
-import { getIO } from '../config/socket';
 import { db } from '../db';
 import { payments, uis, notifications, users } from '../db/schema';
 import { eq } from 'drizzle-orm';
@@ -68,19 +67,7 @@ export const createPaymentIntent = async (req: Request, res: Response) => {
             .limit(1);
 
         if (fullPaymentRow?.user_full_name && fullPaymentRow?.ui_title) {
-            const formattedPayment = {
-                id: fullPaymentRow.id,
-                customerName: fullPaymentRow.user_full_name,
-                email: fullPaymentRow.user_email,
-                item: fullPaymentRow.ui_title,
-                date: fullPaymentRow.created_at.toISOString().split('T')[0],
-                amount: `$${fullPaymentRow.amount}`,
-                status: fullPaymentRow.status.toLowerCase(),
-                stripePaymentIntentId: fullPaymentRow.stripePaymentIntentId
-            };
-
-            // Emit real-time event
-            getIO().emit('payment:new', { payment: formattedPayment });
+            // Standardized payment object for dashboard
         }
 
         res.json({
@@ -123,29 +110,6 @@ export const confirmPayment = async (req: Request, res: Response) => {
                 uiId: paymentIntent.metadata.uiId,
                 isRead: false
             });
-
-            // Emit real-time update
-            getIO().emit('payment:updated', { paymentIntentId, status: 'COMPLETED' });
-
-            // Emit notification event to specific user and admins
-            const userId = parseInt(paymentIntent.metadata.userId);
-
-            // Fetch user details for real-time display
-            const [userDetails] = await db.select({ full_name: users.full_name, email: users.email }).from(users).where(eq(users.user_id, userId)).limit(1);
-
-            const notificationPayload = {
-                type: 'PAYMENT',
-                message: message,
-                userId: userId,
-                uiId: paymentIntent.metadata.uiId,
-                user: userDetails, // Include user details
-                ui: { title: uiTitle } // Include UI details
-            };
-
-            // To User
-            getIO().to(userId.toString()).emit('new-notification', notificationPayload);
-            // To Admins
-            getIO().to('admin').emit('new-notification', notificationPayload);
 
             // Here you can unlock content, send email, etc.
 

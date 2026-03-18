@@ -14,19 +14,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
-const googleapis_1 = require("googleapis");
 // Load environment variables from .env file
 dotenv_1.default.config();
-// OAuth2 configuration
-const CLIENT_ID = process.env.GOOGLE_DRIVE_CLIENT_ID;
-const CLIENT_SECRET = process.env.GOOGLE_DRIVE_CLIENT_SECRET;
-const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
-const REFRESH_TOKEN = process.env.GOOGLE_REFRESH_TOKEN_GMAIL;
-const EMAIL_USER = process.env.EMAIL_USER;
-const oAuth2Client = new googleapis_1.google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
-oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
 /**
- * Sends a professional OTP email with the Railway Reservation System branding.
+ * Sends a professional OTP email with the Monkframer branding.
  * @param userEmail Recipient email address
  * @param otp The 6-digit OTP code
  * @returns boolean indicating success
@@ -38,26 +29,20 @@ function sendOTPEmail(userEmail, otp) {
             return false;
         }
         try {
-            const accessTokenResponse = yield oAuth2Client.getAccessToken();
-            const accessToken = accessTokenResponse.token;
-            if (!accessToken) {
-                throw new Error('Failed to generate access token');
-            }
+            // Production Mailtrap SMTP Configuration
             const transport = nodemailer_1.default.createTransport({
-                service: 'gmail',
+                host: process.env.SMTP_HOST,
+                port: Number(process.env.SMTP_PORT),
                 auth: {
-                    type: 'OAuth2',
-                    user: EMAIL_USER,
-                    clientId: CLIENT_ID,
-                    clientSecret: CLIENT_SECRET,
-                    refreshToken: REFRESH_TOKEN,
-                    accessToken: accessToken,
+                    user: process.env.SMTP_USER,
+                    pass: process.env.SMTP_TOKKEN, // Using your real token variable
                 },
             });
+            // Email content using your verified domain
             const mailOptions = {
-                from: `Railway Reservation System <${EMAIL_USER}>`,
+                from: '"Monkframer | UI/UX" <noreply@monkframer.online>',
                 to: userEmail,
-                subject: 'Your Verification Code',
+                subject: 'Your Verification Code | Monkframer',
                 text: `Your verification code is ${otp}`,
                 html: `
     <!DOCTYPE html>
@@ -65,14 +50,14 @@ function sendOTPEmail(userEmail, otp) {
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Railway Reservation System verification</title>
+      <title>Monkframer Verification</title>
       <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
         
         body { 
           margin: 0; 
           padding: 0; 
-          background-color: #f4f6f8; /* Light gray background */
+          background-color: #f4f6f8;
           font-family: 'Roboto', Arial, sans-serif;
           color: #333333;
           -webkit-font-smoothing: antialiased;
@@ -87,14 +72,14 @@ function sendOTPEmail(userEmail, otp) {
         .card {
           background: #ffffff;
           border-radius: 8px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Subtle shadow for professional look */
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
           overflow: hidden;
           text-align: center;
         }
         
         .header {
           padding: 30px 0;
-          background: #2c3e50; /* Dark header for contrast */
+          background: #2c3e50;
         }
         
         .brand-text {
@@ -125,9 +110,9 @@ function sendOTPEmail(userEmail, otp) {
         
         .otp-box {
           display: inline-block;
-          background: #ebf5ff; /* Light blue background */
-          border: 2px solid #3b82f6; /* Blue border */
-          color: #1d4ed8; /* Darker blue text */
+          background: #ebf5ff;
+          border: 2px solid #3b82f6;
+          color: #1d4ed8;
           font-size: 36px;
           font-weight: 700;
           letter-spacing: 5px;
@@ -156,7 +141,7 @@ function sendOTPEmail(userEmail, otp) {
       <div class="container">
         <div class="card">
           <div class="header">
-            <div class="brand-text">Railway Reservation System</div>
+            <div class="brand-text">MONKFRAMER UI/UX</div>
           </div>
           
           <div class="content">
@@ -169,8 +154,8 @@ function sendOTPEmail(userEmail, otp) {
           </div>
           
           <div class="footer">
-            &copy; ${new Date().getFullYear()} Railway Reservation System. All rights reserved.<br>
-            Please do not reply to this automated message.
+            &copy; ${new Date().getFullYear()} Monkframer. All rights reserved.<br>
+            Sent securely via monkframer.online
           </div>
         </div>
       </div>

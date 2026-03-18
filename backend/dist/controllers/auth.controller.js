@@ -18,7 +18,6 @@ const Auth_1 = require("../design/Auth");
 const db_1 = require("../db");
 const schema_1 = require("../db/schema");
 const drizzle_orm_1 = require("drizzle-orm");
-const socket_1 = require("../config/socket");
 const email_service_1 = __importDefault(require("../services/email.service"));
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -125,7 +124,6 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 purchases: 0,
                 lifetimeValue: 0
             };
-            (0, socket_1.getIO)().emit('user:new', { user: formattedUser });
         }
         return res.json({ status: true, message: 'Registration successful', token: result.token });
     }

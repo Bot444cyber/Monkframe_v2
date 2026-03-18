@@ -5,7 +5,6 @@ import fs from 'fs';
 import { db } from '../db';
 import { uis } from '../db/schema';
 import { eq, sql } from 'drizzle-orm';
-import { getIO } from '../config/socket';
 
 interface UploadJobData {
     filePath: string;
@@ -46,19 +45,6 @@ export const uploadWorker = async (job: Job<UploadJobData>) => {
             `);
         }
 
-        // Notify User/Frontend
-        const io = getIO();
-
-        // Emit general update
-        if (userId) {
-            io.to(userId.toString()).emit('upload:complete', {
-                uiId,
-                type,
-                status: 'success',
-                url: upload.publicUrl
-            });
-        }
-
         // Clean up
         if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);
@@ -71,16 +57,6 @@ export const uploadWorker = async (job: Job<UploadJobData>) => {
         // Clean up even on fail if file exists
         if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);
-        }
-
-        // Notify Error
-        const io = getIO();
-        if (userId) {
-            io.to(userId.toString()).emit('upload:error', {
-                uiId,
-                type,
-                message: error.message
-            });
         }
 
         throw error;
