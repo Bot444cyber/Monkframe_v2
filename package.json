@@ -2,8 +2,8 @@
   "name": "monkframe",
   "version": "1.0.0",
   "scripts": {
-    "build": "echo 'Skipping build, using pre-built .next folder'",
-    "start": "cd app && npm install && npm start"
+    "build": "cd app && npm install && npm run build",
+    "start": "cd app && npm run start"
   },
   "dependencies": {
     "next": "16.1.1",
