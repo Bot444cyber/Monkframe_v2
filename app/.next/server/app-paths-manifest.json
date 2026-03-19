@@ -1,0 +1,15 @@
+{
+  "/(auth)/login/page": "app/(auth)/login/page.js",
+  "/(auth)/signup/page": "app/(auth)/signup/page.js",
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/contact/page": "app/contact/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/faq/page": "app/faq/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/licenses/page": "app/licenses/page.js",
+  "/page": "app/page.js",
+  "/payment/page": "app/payment/page.js",
+  "/product/[id]/page": "app/product/[id]/page.js",
+  "/profile/page": "app/profile/page.js"
+}

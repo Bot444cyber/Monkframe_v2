@@ -2,15 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* This tells Next.js to build the .next folder one level up */
-  distDir: '../.next', 
-  
+  distDir: '.next',
+
   reactCompiler: true,
-  
-  /* THIS IS THE FIX FOR THE INVARIANT ERROR */
-  experimental: {
-    // @ts-expect-error: Undocumented Next.js patch for build bug
-    workUnitAsyncStorage: true,
-  },
 
   poweredByHeader: false,
   compress: true,
@@ -20,7 +14,7 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'drive.google.com' },
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
       { protocol: 'https', hostname: 'res.cloudinary.com' },
-      { protocol: 'https', hostname: 'images.unsplash.com' }, 
+      { protocol: 'https', hostname: 'images.unsplash.com' },
     ],
   },
   devIndicators: false,
