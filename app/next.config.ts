@@ -1,9 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* This tells Next.js to build the .next folder one level up */
-  distDir: '.next',
-
   reactCompiler: true,
 
   poweredByHeader: false,
