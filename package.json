@@ -4,12 +4,15 @@
   "description": "UI Management System Tool",
   "scripts": {
     "build": "cd app && npm install && npm run build",
-    "start": "npm run start"
+    "start": "cd app && npm run start"
   },
   "dependencies": {
-    "next": "latest",
-    "react": "latest",
-    "react-dom": "latest"
+    "next": "16.1.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "@tailwindcss/postcss": "^4",
+    "tailwindcss": "^4",
+    "postcss": "^8"
   },
   "author": "Abdul Rehman ( Full Stack Developer )",
   "license": "ISC",
