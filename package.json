@@ -1,0 +1,16 @@
+{
+  "name": "monkframe",
+  "version": "1.0.0",
+  "description": "UI Management System Tool",
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build",
+    "start": "cd frontend && npm run start"
+  },
+  "author": "Abdul Rehman ( Full Stack Developer )",
+  "license": "ISC",
+  "keywords": [
+    "ui",
+    "management",
+    "tool"
+  ]
+}
