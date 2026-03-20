@@ -22,12 +22,10 @@ import NotificationBell from '@/components/NotificationBell';
 type Tab = 'overview' | 'uis' | 'payments' | 'users' | 'activity';
 
 import { useAuth } from '@/context/AuthContext';
-import { useSocket } from '@/context/SocketContext';
 import toast from 'react-hot-toast';
 
 export default function Dashboard() {
     const { user, logout, isLoading: authLoading } = useAuth(); // Get user
-    const { socket } = useSocket();
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<Tab>('overview');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -202,125 +200,16 @@ export default function Dashboard() {
     React.useEffect(() => { if (activeTab === 'users') fetchUsers(); }, [activeTab, usersPage]);
     React.useEffect(() => { if (activeTab === 'payments') fetchPayments(); }, [activeTab, paymentsPage]);
 
-    // Real-time Listeners
     React.useEffect(() => {
-        if (!socket) return;
+        const interval = setInterval(() => {
+            if (activeTab === 'overview' && user?.role === 'ADMIN') fetchStats();
+            if (activeTab === 'uis') fetchUIs();
+            if (activeTab === 'users') fetchUsers();
+            if (activeTab === 'payments') fetchPayments();
+        }, 300000);
 
-        // Helper to update stats optimistically
-        const updateStat = (label: string, increment: number = 1) => {
-            setOverviewData(prev => ({
-                ...prev,
-                stats: prev.stats.map(s =>
-                    s.label === label
-                        ? { ...s, value: (parseInt(s.value.replace(/[^0-9]/g, '')) + increment).toString() }
-                        : s
-                )
-            }));
-        };
-
-        // UI Listeners
-        const handleUINew = (data: { ui: Product }) => {
-            // Update List
-            setUIs(prev => {
-                const exists = prev.find(p => p.id === data.ui.id);
-                if (exists) return prev;
-                return [data.ui, ...prev].slice(0, 12);
-            });
-
-            // Update Stats
-            updateStat('Live UIs', 1);
-            toast("New UI Deployed!", { icon: "🚀" });
-        };
-
-        const handleUIDeleted = (data: { id: string }) => {
-            setUIs(prev => prev.filter(u => u.id !== data.id));
-            toast("UI Deleted", { icon: "🗑️" });
-        };
-
-        const handleUIUpdated = (data: { ui: Product }) => {
-            setUIs(prev => prev.map(u => u.id === data.ui.id ? { ...u, ...data.ui } : u));
-        };
-
-        // User Listeners
-        const handleUserNew = (data: { user: any }) => {
-            // Update List
-            setUsers(prev => {
-                if (prev.length === 0) return prev;
-                return [data.user, ...prev].slice(0, 10);
-            });
-            // Update Stats
-            updateStat('Active Users', 1);
-            toast("New User Registered!", { icon: "👤" });
-        };
-
-        // Payment Listeners
-        const handlePaymentNew = (data: { payment: any }) => {
-            // Update Payments List
-            setPayments(prev => {
-                if (prev.length === 0) return prev;
-                return [data.payment, ...prev].slice(0, 10);
-            });
-
-            // Update Payment Distribution & Revenue (Simulated for real-time)
-            setOverviewData(prev => {
-                const newDist = {
-                    ...(prev.paymentStatusDistribution || { completed: 0, pending: 0, canceled: 0, failed: 0 })
-                };
-
-                if (data.payment.status === 'COMPLETED') newDist.completed++;
-                else if (data.payment.status === 'PENDING') newDist.pending++;
-
-                return {
-                    ...prev,
-                    paymentStatusDistribution: newDist
-                };
-            });
-
-            updateStat('Total Downloads', 1); // Assuming payment = download access
-
-            toast("New Payment Received!", { icon: "💰" });
-        };
-
-        const handlePaymentUpdated = (data: { paymentIntentId: string, status: string }) => {
-            setPayments(prev => prev.map(p => p.stripePaymentIntentId === data.paymentIntentId ? { ...p, status: data.status } : p));
-        };
-
-        const handleNewNotification = (notification: any) => {
-            setOverviewData(prev => ({
-                ...prev,
-                formattedActivities: [
-                    {
-                        id: notification.id,
-                        type: notification.type,
-                        message: notification.message,
-                        time: notification.created_at, // Consider formatting date here if needed, or in component
-                        user: notification.user?.full_name || 'Unknown',
-                        uiTitle: notification.ui?.title
-                    },
-                    ...(prev.formattedActivities || []).slice(0, 9)
-                ]
-            }));
-            // toast("New Activity: " + notification.type, { icon: "🔔" }); // Suppressed as per request
-        };
-
-        socket.on('ui:new', handleUINew);
-        socket.on('ui:updated', handleUIUpdated);
-        socket.on('ui:deleted', handleUIDeleted);
-        socket.on('user:new', handleUserNew);
-        socket.on('payment:new', handlePaymentNew);
-        socket.on('payment:updated', handlePaymentUpdated);
-        socket.on('new-notification', handleNewNotification);
-
-        return () => {
-            socket.off('ui:new', handleUINew);
-            socket.off('ui:updated', handleUIUpdated);
-            socket.off('ui:deleted', handleUIDeleted);
-            socket.off('user:new', handleUserNew);
-            socket.off('payment:new', handlePaymentNew);
-            socket.off('payment:updated', handlePaymentUpdated);
-            socket.off('new-notification', handleNewNotification);
-        };
-    }, [socket]); // Removed activeTab dependency to ensure background updates
+        return () => clearInterval(interval);
+    }, [activeTab, user]);
 
     // Handlers
     const handleSave = async () => {
@@ -573,7 +462,7 @@ export default function Dashboard() {
                         <div className="w-8 h-8 rounded-lg flex items-center justify-center">
                             <img src="/svg/logo.svg" alt="Monkframe Logo" className="w-full h-full object-contain" />
                         </div>
-                        <span className="text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-zinc-400">
+                        <span className="text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-r from-white via-white to-zinc-400">
                             Monkframe
                         </span>
                     </div>
@@ -590,7 +479,7 @@ export default function Dashboard() {
                                     key={item.id}
                                     onClick={() => { setActiveTab(item.id as Tab); setIsSidebarOpen(false); }}
                                     className={`w-full group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${activeTab === item.id
-                                        ? "bg-gradient-to-r from-white/10 to-transparent text-white shadow-[inset_1px_0_0_0_#6366f1]"
+                                        ? "bg-linear-to-r from-white/10 to-transparent text-white shadow-[inset_1px_0_0_0_#6366f1]"
                                         : "bg-transparent text-zinc-500 hover:text-zinc-200 hover:bg-white/5"
                                         }`}
                                 >

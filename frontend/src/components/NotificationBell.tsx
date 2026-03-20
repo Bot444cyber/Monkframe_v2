@@ -3,7 +3,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { useSocket } from '@/context/SocketContext';
 import toast from 'react-hot-toast';
 import { NotificationService } from '@/services/notification.service';
 import { format } from 'date-fns';
@@ -20,7 +19,6 @@ export default function NotificationBell({ disableToast = false, align = 'right'
     const bellRef = useRef<HTMLDivElement>(null);
 
     const { user } = useAuth(); // Import useAuth
-    const { socket } = useSocket();
 
     const fetchNotifications = async () => {
         try {
@@ -36,47 +34,18 @@ export default function NotificationBell({ disableToast = false, align = 'right'
     };
 
     useEffect(() => {
+        // Initial fetch
         fetchNotifications();
 
-        if (!socket) return;
-
-        // Ensure we join the user's room (important for SPA transitions)
-        if (user) {
-            socket.emit("setup", user);
-        }
-
-        // Listen for the event name we emitted in backend (ensure consistency)
-        // Backend: getIO().emit('new-notification', ...)
-        socket.on("new-notification", (data: any) => {
-            // console.log("🔔 New Notification:", data);
-
-            // Filter: Only show my own notifications in the Bell
-            if (String(data.userId) !== String(user?.user_id)) return;
-
-            // Construct a displayable notification object
-            const newNotif = {
-                ...data,
-                created_at: new Date().toISOString()
-            };
-
-            setNotifications(prev => {
-                // Deduplicate based on ID if present
-                if (data.id && prev.some(n => n.id === data.id)) {
-                    return prev;
-                }
-                return [newNotif, ...prev];
-            });
-            setHasUnread(true);
-            if (!disableToast) {
-                // Toasts suppressed for everyone as per user request
-                // Admin can monitor via the list, users get UI feedback elsewhere
+        // Set up polling (every 2 minutes)
+        const interval = setInterval(() => {
+            if (user) {
+                fetchNotifications();
             }
-        });
+        }, 120000);
 
-        return () => {
-            socket.off("new-notification");
-        };
-    }, [socket, user]);
+        return () => clearInterval(interval);
+    }, [user]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {

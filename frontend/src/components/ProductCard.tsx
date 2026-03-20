@@ -4,7 +4,6 @@ import { Product } from './ts/types';
 import { InteractionService } from '@/services/interaction.service';
 import CommentSection from './CommentSection';
 import { useAuth } from '@/context/AuthContext';
-import { useSocket } from '@/context/SocketContext';
 import toast from 'react-hot-toast';
 
 export default function ProductCard({ product }: { product: Product }) {
@@ -14,27 +13,6 @@ export default function ProductCard({ product }: { product: Product }) {
     const [likesCount, setLikesCount] = useState(product.likes);
     const [isLikeAnimating, setIsLikeAnimating] = useState(false);
     const [isCommentsOpen, setIsCommentsOpen] = useState(false);
-
-    const { socket } = useSocket();
-
-    React.useEffect(() => {
-        if (!socket) return;
-
-        socket.on("like:updated", (data: any) => {
-            if (data.uiId === product.id) {
-                setLikesCount(data.likesCount);
-                // If the event was triggered by the current user (e.g. from another tab/device), update state
-                // Note: user.id must be string compared to data.userId
-                if (user && String(user.user_id) === String(data.userId)) {
-                    setIsLiked(data.liked);
-                }
-            }
-        });
-
-        return () => {
-            socket.off("like:updated");
-        };
-    }, [socket, product.id, user]);
 
     React.useEffect(() => {
         setIsLiked(product.liked);
@@ -167,7 +145,7 @@ export default function ProductCard({ product }: { product: Product }) {
                 </div>
 
                 {/* Asset Preview */}
-                <div className={`relative aspect-[1.5/1] w-full overflow-hidden ${product.color || 'bg-[#111]'}`}>
+                <div className={`relative aspect-video w-full overflow-hidden ${product.color || 'bg-[#111]'}`}>
                     <img
                         src={product.imageSrc}
                         alt={product.title}

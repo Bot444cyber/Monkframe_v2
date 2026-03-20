@@ -4,7 +4,6 @@
 import React, { useEffect, useState } from 'react';
 import { NotificationService } from '@/services/notification.service';
 import { useAuth } from '@/context/AuthContext';
-import { useSocket } from '@/context/SocketContext';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 
@@ -53,54 +52,14 @@ const NotificationTable: React.FC = () => {
         };
 
         loadNotifications();
+
+        // Polling for new notifications every 5 minutes
+        const interval = setInterval(() => {
+            loadNotifications();
+        }, 300000);
+
+        return () => clearInterval(interval);
     }, [user, page, scope]);
-
-    const { socket } = useSocket();
-
-    useEffect(() => {
-        if (!socket) return;
-
-        const handleNewNotification = (newNotification: Notification) => {
-            // Only prepend if we are on the first page AND the notification matches current scope
-            // scope 'all' -> show everything
-            // scope 'me' -> show only if userId matches (assuming backend emits tailored events, which it does)
-            
-            // For 'me' scope, we rely on the fact that 'new-notification' event is emitted to user's room.
-            // However, Admin also joins 'admin' room which receives ALL events.
-            // So we need clientside filtering for 'me' scope if the event comes from 'admin' room?
-            // Actually, `NotificationBell.tsx` logic suggests `new-notification` is specific to user or filtered there.
-            // Let's rely on simple reload or optimistic update if it matches logic.
-            
-            // Simplified: If scope is 'me' and we receive a notif, check if it belongs to us?
-            // current User ID check might be needed if we want strict real-time filtering.
-            // For now, let's just append and let refresh handle strictness or assume socket routing is good.
-            
-           if (page === 1) {
-                // If scope is me, we theoretically want to check if notif.userId === user.id
-                // But `newNotification` from socket might not have userId on top level depending on structure.
-                // Let's just add it. The user can refresh if it looks wrong.
-                // Better: Check scope.
-                
-                if (scope === 'me' && newNotification.user?.email !== user?.email) {
-                     return; // Skip if it's someone else's action and we are in 'me' mode
-                }
-
-                setNotifications(prev => [{
-                    ...newNotification,
-                    id: `temp-${Date.now()}`,
-                    created_at: new Date().toISOString(),
-                    user: newNotification.user,
-                    ui: newNotification.ui
-                } as Notification, ...prev]);
-            }
-        };
-
-        socket.on('new-notification', handleNewNotification);
-
-        return () => {
-            socket.off('new-notification', handleNewNotification);
-        };
-    }, [socket, page, scope, user]);
 
     if (loading && notifications.length === 0) return <div className="text-white">Loading notifications...</div>;
 
@@ -109,7 +68,7 @@ const NotificationTable: React.FC = () => {
             <div className="p-6 border-b border-white/10 flex justify-between items-center">
                 <h2 className="text-xl font-semibold text-white">Notifications</h2>
                 <div className="flex items-center gap-4">
-                     {/* Scope Toggle */}
+                    {/* Scope Toggle */}
                     <div className="flex bg-zinc-900/50 rounded-lg p-1 border border-white/5">
                         <button
                             onClick={() => setScope('all')}

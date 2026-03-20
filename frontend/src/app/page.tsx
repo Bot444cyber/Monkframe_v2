@@ -9,7 +9,6 @@ import { Category } from '@/page/home/ts/types';
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { useSocket } from '@/context/SocketContext';
 
 // ... imports
 import Pagination from '@/components/Pagination';
@@ -111,62 +110,17 @@ function HomeContent() {
     const timeoutId = setTimeout(() => {
       fetchProducts();
     }, 300); // 300ms debounce for search
-    return () => clearTimeout(timeoutId);
-  }, [page, selectedCategory, searchQuery]);
 
-  // Real-time Updates
-  const { socket } = useSocket();
-
-  React.useEffect(() => {
-    if (!socket) return;
-
-    // Helper to format incoming UI object to Product shape
-    const formatUI = (ui: any): Product => ({
-      id: ui.id,
-      title: ui.title,
-      price: !ui.price || ui.price == 0 ? 'Free' : `$${ui.price}`,
-      author: ui.creator?.full_name || ui.author || 'Unknown',
-      category: ui.category,
-      imageSrc: ui.imageSrc,
-      sales: 0,
-      revenue: "0",
-      color: ui.color,
-      likes: ui.likes || 0,
-      liked: ui.liked || false,
-      wished: ui.wished || false,
-      rating: ui.rating || 4.8,
-      fileType: ui.fileType
-    });
-
-    const ITEMS_PER_PAGE = 12;
-
-    const handleNewUI = (data: { ui: any }) => {
-      setProducts(prev => {
-        const newList = [formatUI(data.ui), ...prev];
-        return newList.slice(0, ITEMS_PER_PAGE);
-      });
-      setTotalItems(prev => prev + 1);
-    };
-
-    const handleUpdatedUI = (data: { ui: any }) => {
-      setProducts(prev => prev.map(p => p.id === data.ui.id ? { ...p, ...formatUI(data.ui) } : p));
-    };
-
-    const handleDeletedUI = (data: { id: string }) => {
-      setProducts(prev => prev.filter(p => p.id !== data.id));
-      setTotalItems(prev => Math.max(0, prev - 1));
-    };
-
-    socket.on('ui:new', handleNewUI);
-    socket.on('ui:updated', handleUpdatedUI);
-    socket.on('ui:deleted', handleDeletedUI);
+    // Polling every 5 minutes
+    const interval = setInterval(() => {
+      fetchProducts();
+    }, 300000);
 
     return () => {
-      socket.off('ui:new', handleNewUI);
-      socket.off('ui:updated', handleUpdatedUI);
-      socket.off('ui:deleted', handleDeletedUI);
+      clearTimeout(timeoutId);
+      clearInterval(interval);
     };
-  }, [socket]);
+  }, [page, selectedCategory, searchQuery]);
 
   const filteredProducts = useMemo(() => {
     return products;

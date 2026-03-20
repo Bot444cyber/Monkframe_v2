@@ -5,7 +5,7 @@ import { eq, and, or, like, desc, count, sql } from 'drizzle-orm';
 import { google } from 'googleapis';
 import fs from 'fs';
 import path from 'path';
-import { uploadQueue } from '../config/queue';
+import { processUpload } from '../services/upload.service';
 import { uploadFileToDrive, deleteFileFromDrive } from '../services/drive.service';
 import { transformToProxy } from '../utils/helpers';
 import { randomUUID } from 'crypto';
@@ -403,7 +403,7 @@ export const updateUI = async (req: Request, res: Response) => {
         // 1. Banner
         if (files && files['banner'] && files['banner'][0]) {
             const file = files['banner'][0];
-            uploadQueue.add({
+            processUpload({
                 filePath: file.path,
                 fileName: file.originalname,
                 mimeType: file.mimetype,
@@ -417,7 +417,7 @@ export const updateUI = async (req: Request, res: Response) => {
         // 2. UI File
         if (files && files['uiFile'] && files['uiFile'][0]) {
             const file = files['uiFile'][0];
-            uploadQueue.add({
+            processUpload({
                 filePath: file.path,
                 fileName: file.originalname,
                 mimeType: file.mimetype,
@@ -431,7 +431,7 @@ export const updateUI = async (req: Request, res: Response) => {
         // 3. Showcase
         if (files && files['showcase']) {
             for (const file of files['showcase']) {
-                uploadQueue.add({
+                processUpload({
                     filePath: file.path,
                     fileName: file.originalname,
                     mimeType: file.mimetype,

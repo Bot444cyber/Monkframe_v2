@@ -11,7 +11,6 @@ import { useParams } from "next/navigation";
 import { InteractionService } from "@/services/interaction.service";
 import CommentSection from "@/components/CommentSection";
 import ProductIncludes from "@/components/product/ProductIncludes";
-import { useSocket } from "@/context/SocketContext";
 import { useAuth } from "@/context/AuthContext";
 
 export default function ProductDetailsPage() {
@@ -24,48 +23,7 @@ export default function ProductDetailsPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [isCommentsOpen, setIsCommentsOpen] = useState(false);
 
-    const { socket } = useSocket();
     const { user } = useAuth();
-
-    useEffect(() => {
-        if (!socket || !product) return;
-
-        socket.on("like:updated", (data: any) => {
-            if (data.uiId === product.id) {
-                setLikesCount(data.likesCount);
-                if (user && String(user.user_id) === String(data.userId)) {
-                    setIsLiked(data.liked);
-                }
-            }
-        });
-
-        socket.on("wishlist:updated", (data: any) => {
-            if (data.uiId === product.id) {
-                if (user && String(user.user_id) === String(data.userId)) {
-                    setIsWished(data.wished);
-                }
-            }
-        });
-
-        socket.on("ui:updated", (data: any) => {
-            if (data.ui.id === product.id) {
-                // Normalize incoming data to match component state structure
-                const raw = data.ui;
-                const normalized = {
-                    ...raw,
-                    price: !raw.price || raw.price == 0 ? 'Free' : `$${raw.price}`,
-                    author: raw.creator?.full_name || raw.author || "Unknown",
-                };
-                setProduct((prev: any) => ({ ...prev, ...normalized }));
-            }
-        });
-
-        return () => {
-            socket.off("like:updated");
-            socket.off("ui:updated");
-            socket.off("wishlist:updated");
-        };
-    }, [socket, product, user]);
 
     useEffect(() => {
         const fetchProduct = async () => {

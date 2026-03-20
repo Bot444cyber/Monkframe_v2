@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { InteractionService } from '../services/interaction.service';
 import { useAuth } from '@/context/AuthContext';
-import { useSocket } from '@/context/SocketContext';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import Pagination from './Pagination';
@@ -42,40 +41,20 @@ const CommentSection: React.FC<CommentSectionProps> = ({
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
 
-    const { socket } = useSocket();
-
     useEffect(() => {
         setMounted(true);
     }, []);
 
     useEffect(() => {
-        if (!socket) return;
-
-        socket.on("comment:added", (data: { uiId: string, comment: Comment }) => {
-            if (data.uiId === uiId) {
-                // Deduplicate — avoid adding if already in list (e.g. from handleSubmit)
-                setComments(prev => {
-                    if (prev.some(c => c.id === data.comment.id)) return prev;
-                    return [data.comment, ...prev];
-                });
-                setTotalItems(prev => prev + 1);
-            }
-        });
-
-        return () => {
-            socket.off("comment:added");
-        };
-    }, [socket, uiId]);
-
-    useEffect(() => {
-        if (onCommentsChange) {
-            onCommentsChange(totalItems);
-        }
-    }, [totalItems, onCommentsChange]);
-
-    useEffect(() => {
         if ((isOpen || variant === 'embedded') && uiId) {
             loadComments();
+
+            // Set up polling (every 2 minutes)
+            const interval = setInterval(() => {
+                loadComments();
+            }, 120000);
+
+            return () => clearInterval(interval);
         }
     }, [isOpen, uiId, variant, page]);
 
