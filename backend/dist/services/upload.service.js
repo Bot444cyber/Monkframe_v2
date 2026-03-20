@@ -88,6 +88,7 @@ const processUpload = (data) => __awaiter(void 0, void 0, void 0, function* () {
         }
     }
     catch (error) {
+        console.error(`❌ Upload Failed for UI ${uiId} (${type}):`, error.message || error);
         if (fs_1.default.existsSync(filePath)) {
             fs_1.default.unlinkSync(filePath);
         }

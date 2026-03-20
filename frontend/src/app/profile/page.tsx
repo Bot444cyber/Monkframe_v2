@@ -415,25 +415,6 @@ export default function ProfilePage() {
                                             </div>
                                         </div>
                                     </div>
-
-                                    {/* Action Footer */}
-                                    <div className="pt-8 mt-8 border-t border-white/5 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
-                                        <button
-                                            onClick={logout}
-                                            className={buttonStyles.danger + " w-full sm:w-auto flex items-center justify-center gap-2"}
-                                        >
-                                            <Icons.LogOut className="w-4 h-4" />
-                                            Sign Out
-                                        </button>
-
-                                        <button className={buttonStyles.primary + " w-full sm:w-auto"}>
-                                            <span className="relative z-10 flex items-center justify-center gap-2">
-                                                Save Changes
-                                            </span>
-                                            {/* Shine Effect */}
-                                            <div className="absolute top-0 -left-[100%] w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 group-hover:animate-shine" />
-                                        </button>
-                                    </div>
                                 </div>
                             </div>
 

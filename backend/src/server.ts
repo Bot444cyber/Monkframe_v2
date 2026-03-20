@@ -254,13 +254,21 @@ async function startApp() {
 
 // Catch unhandled promise rejections
 process.on('unhandledRejection', (reason) => {
-    logger.error('Unhandled promise rejection', { reason: String(reason) });
-    if (isProd) process.exit(1);
+    logger.error('CRITICAL: Unhandled promise rejection detected. Exiting...', {
+        reason: String(reason),
+        stack: (reason as Error)?.stack
+    });
+    if (isProd) {
+        setTimeout(() => process.exit(1), 1000); // Give logger a moment
+    }
 });
 
 process.on('uncaughtException', (err) => {
-    logger.error('Uncaught exception', { error: err.message, stack: err.stack });
-    process.exit(1);
+    logger.error('CRITICAL: Uncaught exception detected. Exiting...', {
+        error: err.message,
+        stack: err.stack
+    });
+    setTimeout(() => process.exit(1), 1000); // Give logger a moment
 });
 
 // Boot — startApp awaits DB init then opens the port

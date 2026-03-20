@@ -258,6 +258,13 @@ export const downloadUI = async (req: Request, res: Response) => {
 
         fileStream.data.pipe(res);
 
+        // Prevent memory leak: destroy stream if client disconnects
+        req.on('close', () => {
+            if (!res.writableEnded) {
+                fileStream.data.destroy();
+            }
+        });
+
     } catch (error) {
         console.error("Download Error:", error);
         res.status(500).json({ status: false, message: "Download failed or credentials missing" });
@@ -613,6 +620,13 @@ export const streamImage = async (req: Request, res: Response) => {
 
         // Pipe directly to client Response
         response.data.pipe(res);
+
+        // Prevent memory leak: destroy stream if client disconnects
+        req.on('close', () => {
+            if (!res.writableEnded) {
+                response.data.destroy();
+            }
+        });
 
         // Handle errors during streaming
         response.data.on('error', (err) => {

@@ -100,6 +100,7 @@ export const processUpload = async (data: UploadJobData) => {
         }
 
     } catch (error: any) {
+        console.error(`❌ Upload Failed for UI ${uiId} (${type}):`, error.message || error);
         if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);
         }

@@ -19,7 +19,7 @@ const drizzle_orm_1 = require("drizzle-orm");
 const googleapis_1 = require("googleapis");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const queue_1 = require("../config/queue");
+const upload_service_1 = require("../services/upload.service");
 const drive_service_1 = require("../services/drive.service");
 const helpers_1 = require("../utils/helpers");
 const crypto_1 = require("crypto");
@@ -211,6 +211,12 @@ const downloadUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         // Increment Download Counter
         yield db_1.db.update(schema_1.uis).set({ downloads: (0, drizzle_orm_1.sql) `${schema_1.uis.downloads} + 1` }).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id));
         fileStream.data.pipe(res);
+        // Prevent memory leak: destroy stream if client disconnects
+        req.on('close', () => {
+            if (!res.writableEnded) {
+                fileStream.data.destroy();
+            }
+        });
     }
     catch (error) {
         console.error("Download Error:", error);
@@ -338,7 +344,7 @@ const updateUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // 1. Banner
         if (files && files['banner'] && files['banner'][0]) {
             const file = files['banner'][0];
-            queue_1.uploadQueue.add({
+            (0, upload_service_1.processUpload)({
                 filePath: file.path,
                 fileName: file.originalname,
                 mimeType: file.mimetype,
@@ -351,7 +357,7 @@ const updateUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // 2. UI File
         if (files && files['uiFile'] && files['uiFile'][0]) {
             const file = files['uiFile'][0];
-            queue_1.uploadQueue.add({
+            (0, upload_service_1.processUpload)({
                 filePath: file.path,
                 fileName: file.originalname,
                 mimeType: file.mimetype,
@@ -364,7 +370,7 @@ const updateUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // 3. Showcase
         if (files && files['showcase']) {
             for (const file of files['showcase']) {
-                queue_1.uploadQueue.add({
+                (0, upload_service_1.processUpload)({
                     filePath: file.path,
                     fileName: file.originalname,
                     mimeType: file.mimetype,
@@ -503,6 +509,12 @@ const streamImage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
         // Pipe directly to client Response
         response.data.pipe(res);
+        // Prevent memory leak: destroy stream if client disconnects
+        req.on('close', () => {
+            if (!res.writableEnded) {
+                response.data.destroy();
+            }
+        });
         // Handle errors during streaming
         response.data.on('error', (err) => {
             console.error('Error streaming data:', err);
