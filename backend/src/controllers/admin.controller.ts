@@ -114,6 +114,50 @@ export const getAllUsers = async (req: Request, res: Response) => {
     }
 };
 
+export const updateUserRole = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { role } = req.body;
+
+        // Validate role - Must be one of the defined roles in schema
+        if (!['ADMIN', 'CUSTOMER', 'EDITOR'].includes(role)) {
+            return res.status(400).json({ status: false, message: "Invalid role specified" });
+        }
+
+        // Update in database
+        await db.update(users)
+            .set({ role: role as any })
+            .where(eq(users.user_id, parseInt(id)));
+
+        res.json({ status: true, message: `User role updated to ${role} successfully` });
+    } catch (error) {
+        console.error("Update User Role Error:", error);
+        res.status(500).json({ status: false, message: "Failed to update user role" });
+    }
+};
+
+export const updateUserStatus = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        // Validate status - Must be one of ACTIVE, INACTIVE, SUSPENDED
+        if (!['ACTIVE', 'INACTIVE', 'SUSPENDED'].includes(status)) {
+            return res.status(400).json({ status: false, message: "Invalid status specified" });
+        }
+
+        // Update in database
+        await db.update(users)
+            .set({ status: status as any })
+            .where(eq(users.user_id, parseInt(id)));
+
+        res.json({ status: true, message: `User status updated to ${status} successfully` });
+    } catch (error) {
+        console.error("Update User Status Error:", error);
+        res.status(500).json({ status: false, message: "Failed to update user status" });
+    }
+};
+
 export const getAllPayments = async (req: Request, res: Response) => {
     try {
         const page = parseInt(req.query.page as string) || 1;

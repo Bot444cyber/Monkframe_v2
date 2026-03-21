@@ -1,23 +1,94 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Pagination from '@/components/Pagination';
+import toast from 'react-hot-toast';
 
 interface UsersSectionProps {
     users: any[]; // Consider defining a User type
     usersPage: number;
     usersTotalPages: number;
     setUsersPage: (page: number) => void;
+    onRefresh: () => void;
 }
 
 const UsersSection: React.FC<UsersSectionProps> = ({
     users,
     usersPage,
     usersTotalPages,
-    setUsersPage
+    setUsersPage,
+    onRefresh
 }) => {
+    const [updatingId, setUpdatingId] = useState<number | null>(null);
+
+    const handleRoleChange = async (userId: number, newRole: string) => {
+        setUpdatingId(userId);
+        const loadingToast = toast.loading("Updating user role...");
+
+        try {
+            const token = localStorage.getItem('auth_token');
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
+
+            const res = await fetch(`${apiUrl}/api/admin/users/${userId}/role`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ role: newRole })
+            });
+
+            const data = await res.json();
+
+            if (data.status) {
+                toast.success(data.message, { id: loadingToast });
+                onRefresh(); // Refresh the list
+            } else {
+                toast.error(data.message || "Failed to update role", { id: loadingToast });
+            }
+        } catch (error) {
+            console.error("Role update error", error);
+            toast.error("An error occurred while updating the role", { id: loadingToast });
+        } finally {
+            setUpdatingId(null);
+        }
+    };
+
+    const handleStatusChange = async (userId: number, newStatus: string) => {
+        setUpdatingId(userId);
+        const loadingToast = toast.loading("Updating user status...");
+
+        try {
+            const token = localStorage.getItem('auth_token');
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
+
+            const res = await fetch(`${apiUrl}/api/admin/users/${userId}/status`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            const data = await res.json();
+
+            if (data.status) {
+                toast.success(data.message, { id: loadingToast });
+                onRefresh();
+            } else {
+                toast.error(data.message || "Failed to update status", { id: loadingToast });
+            }
+        } catch (error) {
+            console.error("Status update error", error);
+            toast.error("An error occurred while updating the status", { id: loadingToast });
+        } finally {
+            setUpdatingId(null);
+        }
+    };
+
     return (
-        <div className="bg-zinc-900/30 border border-white/5 rounded-[2rem] overflow-hidden animate-fade-in mb-20">
+        <div className="bg-zinc-900/30 border border-white/5 rounded-4xl overflow-hidden animate-fade-in mb-20">
             {/* Header with Summary Stats */}
-            <div className="p-5 sm:p-8 border-b border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-6 bg-white/[0.01]">
+            <div className="p-5 sm:p-8 border-b border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-6 bg-white/1">
                 <div>
                     <h3 className="text-xl font-bold text-white tracking-tight mb-1">Customer Ecosystem</h3>
                     <p className="text-sm text-gray-500">Relationship management and user engagement metrics</p>
@@ -33,7 +104,7 @@ const UsersSection: React.FC<UsersSectionProps> = ({
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="border-b border-white/5 text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-white/[0.01]">
+                        <tr className="border-b border-white/5 text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-white/1">
                             <th className="px-8 py-5 whitespace-nowrap">User Identity</th>
                             <th className="px-8 py-5 whitespace-nowrap">Status</th>
                             <th className="px-8 py-5 whitespace-nowrap">Role</th>
@@ -43,7 +114,7 @@ const UsersSection: React.FC<UsersSectionProps> = ({
                     </thead>
                     <tbody className="divide-y divide-white/5">
                         {users.map((user, idx) => (
-                            <tr key={user.user_id ?? user.id ?? idx} className="hover:bg-white/[0.02] transition-all group">
+                            <tr key={user.user_id ?? user.id ?? idx} className="hover:bg-white/2 transition-all group">
                                 <td className="px-8 py-6">
                                     <div className="flex flex-col">
                                         <p className="font-bold text-white text-sm group-hover:text-indigo-400 transition-colors">
@@ -55,21 +126,39 @@ const UsersSection: React.FC<UsersSectionProps> = ({
                                     </div>
                                 </td>
                                 <td className="px-8 py-6">
-                                    <span className="flex items-center gap-2">
-                                        <span className="relative flex h-2 w-2">
-                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                                        </span>
-                                        <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Active</span>
-                                    </span>
+                                    <div className="flex items-center gap-2">
+                                        <div className="relative flex h-2 w-2">
+                                            <div className={`absolute inline-flex h-full w-full rounded-full opacity-75 ${user.status === 'ACTIVE' ? 'animate-ping bg-emerald-400' : ''}`}></div>
+                                            <div className={`relative inline-flex rounded-full h-2 w-2 ${user.status === 'ACTIVE' ? 'bg-emerald-500' : user.status === 'SUSPENDED' ? 'bg-red-500' : 'bg-zinc-500'}`}></div>
+                                        </div>
+                                        <select
+                                            value={user.status}
+                                            onChange={(e) => handleStatusChange(user.user_id, e.target.value)}
+                                            disabled={updatingId === user.user_id}
+                                            className="bg-transparent text-[10px] font-bold uppercase tracking-widest text-zinc-400 outline-none cursor-pointer hover:text-white transition-colors disabled:opacity-50 appearance-none"
+                                        >
+                                            <option value="ACTIVE" className="bg-[#0a0a0a] text-emerald-500">Active</option>
+                                            <option value="INACTIVE" className="bg-[#0a0a0a] text-zinc-500">Inactive</option>
+                                            <option value="SUSPENDED" className="bg-[#0a0a0a] text-red-500">Suspended</option>
+                                        </select>
+                                    </div>
                                 </td>
                                 <td className="px-8 py-6">
-                                    <span className={`text-[10px] font-bold uppercase tracking-[0.2em] px-3 py-1.5 rounded-lg border ${user.role === 'ADMIN'
-                                        ? 'text-purple-400 bg-purple-500/10 border-purple-500/20 shadow-[0_0_10px_rgba(168,85,247,0.1)]'
-                                        : 'text-blue-400 bg-blue-500/5 border-blue-500/20'
-                                        }`}>
-                                        {user.role}
-                                    </span>
+                                    <select
+                                        value={user.role}
+                                        onChange={(e) => handleRoleChange(user.user_id, e.target.value)}
+                                        disabled={updatingId === user.user_id}
+                                        className={`text-[10px] font-bold uppercase tracking-[0.2em] px-3 py-1.5 rounded-lg border bg-transparent outline-none cursor-pointer transition-all hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed ${user.role === 'ADMIN'
+                                            ? 'text-purple-400 border-purple-500/20 shadow-[0_0_10px_rgba(168,85,247,0.1)]'
+                                            : user.role === 'EDITOR'
+                                                ? 'text-amber-400 border-amber-500/20 shadow-[0_0_10px_rgba(245,158,11,0.05)]'
+                                                : 'text-blue-400 border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.05)]'
+                                            }`}
+                                    >
+                                        <option value="CUSTOMER" className="bg-[#0a0a0a] text-blue-400">CUSTOMER</option>
+                                        <option value="EDITOR" className="bg-[#0a0a0a] text-amber-400">EDITOR</option>
+                                        <option value="ADMIN" className="bg-[#0a0a0a] text-purple-400">ADMIN</option>
+                                    </select>
                                 </td>
                                 <td className="px-8 py-6 text-xs font-bold text-gray-500 uppercase tracking-wider font-mono">{user.joinedDate}</td>
                                 <td className="px-8 py-6 text-right">

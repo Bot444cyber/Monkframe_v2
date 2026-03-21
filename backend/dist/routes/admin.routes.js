@@ -9,6 +9,8 @@ const auth_middleware_1 = require("../middlewares/auth.middleware");
 const router = express_1.default.Router();
 // Define routes - Restricted to ADMIN only
 router.get('/users', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN'), admin_controller_1.getAllUsers);
+router.patch('/users/:id/role', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN'), admin_controller_1.updateUserRole);
+router.patch('/users/:id/status', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN'), admin_controller_1.updateUserStatus);
 router.get('/payments', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN'), admin_controller_1.getAllPayments);
 router.get('/stats', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN'), admin_controller_1.getOverviewStats);
 router.get('/activity', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN'), admin_controller_1.getRecentActivity);

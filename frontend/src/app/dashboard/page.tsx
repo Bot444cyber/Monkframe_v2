@@ -630,6 +630,7 @@ export default function Dashboard() {
                             usersPage={usersPage}
                             usersTotalPages={usersTotalPages}
                             setUsersPage={setUsersPage}
+                            onRefresh={fetchUsers}
                         />
                     )}
                 </div>

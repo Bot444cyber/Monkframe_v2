@@ -42,7 +42,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetData = exports.getRecentActivity = exports.getAllPayments = exports.getAllUsers = exports.getOverviewStats = void 0;
+exports.resetData = exports.getRecentActivity = exports.getAllPayments = exports.updateUserStatus = exports.updateUserRole = exports.getAllUsers = exports.getOverviewStats = void 0;
 const db_1 = require("../db");
 const schema_1 = require("../db/schema");
 const drizzle_orm_1 = require("drizzle-orm");
@@ -150,6 +150,46 @@ const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.getAllUsers = getAllUsers;
+const updateUserRole = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const { role } = req.body;
+        // Validate role - Must be one of the defined roles in schema
+        if (!['ADMIN', 'CUSTOMER', 'EDITOR'].includes(role)) {
+            return res.status(400).json({ status: false, message: "Invalid role specified" });
+        }
+        // Update in database
+        yield db_1.db.update(schema_1.users)
+            .set({ role: role })
+            .where((0, drizzle_orm_1.eq)(schema_1.users.user_id, parseInt(id)));
+        res.json({ status: true, message: `User role updated to ${role} successfully` });
+    }
+    catch (error) {
+        console.error("Update User Role Error:", error);
+        res.status(500).json({ status: false, message: "Failed to update user role" });
+    }
+});
+exports.updateUserRole = updateUserRole;
+const updateUserStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        // Validate status - Must be one of ACTIVE, INACTIVE, SUSPENDED
+        if (!['ACTIVE', 'INACTIVE', 'SUSPENDED'].includes(status)) {
+            return res.status(400).json({ status: false, message: "Invalid status specified" });
+        }
+        // Update in database
+        yield db_1.db.update(schema_1.users)
+            .set({ status: status })
+            .where((0, drizzle_orm_1.eq)(schema_1.users.user_id, parseInt(id)));
+        res.json({ status: true, message: `User status updated to ${status} successfully` });
+    }
+    catch (error) {
+        console.error("Update User Status Error:", error);
+        res.status(500).json({ status: false, message: "Failed to update user status" });
+    }
+});
+exports.updateUserStatus = updateUserStatus;
 const getAllPayments = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const page = parseInt(req.query.page) || 1;
