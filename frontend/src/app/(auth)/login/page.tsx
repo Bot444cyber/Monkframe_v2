@@ -79,6 +79,38 @@ export default function LoginPage() {
     }
   };
 
+  const handleVerifyOTP = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (otp.length < 6) return;
+
+    setLoading(true);
+    const toastId = toast.loading("Verifying code...");
+
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1000";
+      const res = await fetch(`${apiUrl}/api/auth/forgot-password/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          otp: parseInt(otp),
+        }),
+      });
+      const data = await res.json();
+
+      if (data.status) {
+        toast.success("Identity verified!", { id: toastId });
+        setFlow('forgot-reset');
+      } else {
+        toast.error(data.message || "Invalid OTP.", { id: toastId });
+      }
+    } catch (err) {
+      toast.error("Something went wrong. Please try again.", { id: toastId });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
@@ -308,7 +340,7 @@ export default function LoginPage() {
           )}
 
           {flow === 'forgot-otp' && (
-            <form onSubmit={(e) => { e.preventDefault(); setFlow('forgot-reset'); }} className="space-y-8">
+            <form onSubmit={handleVerifyOTP} className="space-y-8">
               <div className="space-y-4">
                 <div className="relative group">
                   <input
@@ -328,10 +360,10 @@ export default function LoginPage() {
               <div className="space-y-4">
                 <button
                   type="submit"
-                  disabled={otp.length < 6}
+                  disabled={otp.length < 6 || loading}
                   className="w-full bg-white hover:bg-zinc-200 text-black h-14 rounded-full font-bold text-sm uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-[0.99] disabled:opacity-50"
                 >
-                  Verify Code
+                  {loading ? "Verifying..." : "Verify Code"}
                 </button>
                 <button
                   type="button"

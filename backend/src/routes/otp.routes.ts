@@ -12,6 +12,7 @@ router.post('/auth/register', validateResource(registerSchema), AuthController.r
 
 // Forgot Password
 router.post('/auth/forgot-password/otp', validateResource(forgotPasswordSchema), AuthController.forgotPasswordOTP);
+router.post('/auth/forgot-password/verify', validateResource(verifyOtpSchema), AuthController.verifyForgotPasswordOTP);
 router.post('/auth/forgot-password/reset', validateResource(resetPasswordSchema), AuthController.resetPassword);
 
 export default router;

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetPassword = exports.forgotPasswordOTP = exports.register = exports.VerifyEmailByOTP = exports.login = void 0;
+exports.verifyForgotPasswordOTP = exports.resetPassword = exports.forgotPasswordOTP = exports.register = exports.VerifyEmailByOTP = exports.login = void 0;
 const Otp_1 = __importDefault(require("../design/Otp"));
 const Auth_1 = require("../design/Auth");
 const db_1 = require("../db");
@@ -190,3 +190,21 @@ const resetPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.resetPassword = resetPassword;
+const verifyForgotPasswordOTP = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { email, otp } = req.body;
+        if (!email || !otp) {
+            return res.status(400).json({ status: false, message: 'Email and OTP are required' });
+        }
+        const isValid = yield Otp_1.default.isValidOTP(email, parseInt(otp));
+        if (!isValid) {
+            return res.status(400).json({ status: false, message: 'Invalid or expired OTP' });
+        }
+        return res.json({ status: true, message: 'OTP verified successfully' });
+    }
+    catch (error) {
+        console.error('Error during OTP verification:', error);
+        return res.status(500).json({ status: false, message: 'Internal server error' });
+    }
+});
+exports.verifyForgotPasswordOTP = verifyForgotPasswordOTP;

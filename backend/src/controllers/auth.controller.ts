@@ -208,3 +208,24 @@ export const resetPassword = async (req: Request, res: Response) => {
         return res.status(500).json({ status: false, message: 'Internal server error' });
     }
 }
+
+export const verifyForgotPasswordOTP = async (req: Request, res: Response) => {
+    try {
+        const { email, otp } = req.body;
+
+        if (!email || !otp) {
+            return res.status(400).json({ status: false, message: 'Email and OTP are required' });
+        }
+
+        const isValid = await OTP.isValidOTP(email, parseInt(otp));
+        if (!isValid) {
+            return res.status(400).json({ status: false, message: 'Invalid or expired OTP' });
+        }
+
+        return res.json({ status: true, message: 'OTP verified successfully' });
+
+    } catch (error) {
+        console.error('Error during OTP verification:', error);
+        return res.status(500).json({ status: false, message: 'Internal server error' });
+    }
+}
