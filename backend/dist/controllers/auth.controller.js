@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.register = exports.VerifyEmailByOTP = exports.login = void 0;
+exports.resetPassword = exports.forgotPasswordOTP = exports.register = exports.VerifyEmailByOTP = exports.login = void 0;
 const Otp_1 = __importDefault(require("../design/Otp"));
 const Auth_1 = require("../design/Auth");
 const db_1 = require("../db");
@@ -133,3 +133,60 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.register = register;
+const forgotPasswordOTP = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ status: false, message: 'Email is required' });
+        }
+        // Check if user exists
+        const [user] = yield db_1.db.select().from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.email, email)).limit(1);
+        if (!user) {
+            return res.status(404).json({ status: false, message: 'User with this email does not exist' });
+        }
+        // Generate and Send OTP
+        const generatedOTP = yield Otp_1.default.SetupOTP(email);
+        if (!generatedOTP) {
+            return res.status(500).json({ status: false, message: 'Failed to generate OTP' });
+        }
+        // Update or Insert OTP in authOtp table
+        const [existingOtp] = yield db_1.db.select().from(schema_1.authOtp).where((0, drizzle_orm_1.eq)(schema_1.authOtp.email, email)).limit(1);
+        if (existingOtp) {
+            yield db_1.db.update(schema_1.authOtp)
+                .set({ otp: parseInt(generatedOTP), updatedAt: new Date() })
+                .where((0, drizzle_orm_1.eq)(schema_1.authOtp.email, email));
+        }
+        else {
+            yield db_1.db.insert(schema_1.authOtp).values({
+                email,
+                otp: parseInt(generatedOTP)
+            });
+        }
+        // Send OTP via Email
+        yield (0, email_service_1.default)(email, generatedOTP);
+        return res.json({ status: true, message: 'OTP sent successfully to your email' });
+    }
+    catch (error) {
+        console.error('Error during forgot password OTP:', error);
+        return res.status(500).json({ status: false, message: 'Internal server error' });
+    }
+});
+exports.forgotPasswordOTP = forgotPasswordOTP;
+const resetPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { email, otp, newPassword } = req.body;
+        if (!email || !otp || !newPassword) {
+            return res.status(400).json({ status: false, message: 'All fields are required' });
+        }
+        const result = yield Auth_1.Auth.instance.resetPassword(email, parseInt(otp), newPassword);
+        if (!result.status) {
+            return res.status(400).json({ status: false, message: result.message });
+        }
+        return res.json({ status: true, message: result.message });
+    }
+    catch (error) {
+        console.error('Error during password reset:', error);
+        return res.status(500).json({ status: false, message: 'Internal server error' });
+    }
+});
+exports.resetPassword = resetPassword;

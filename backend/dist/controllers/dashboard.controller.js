@@ -51,17 +51,6 @@ const getStats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // 4. Total Downloads
         const [totalDownloadsAgg] = yield db_1.db.select({ value: (0, drizzle_orm_1.sum)(schema_1.uis.downloads) }).from(schema_1.uis);
         const totalDownloads = parseInt(totalDownloadsAgg.value || '0');
-        // 5. Engagement Rate
-        // Logic: (Total Likes + Comments) / Total Downloads (approximate)
-        const [totalLikesRow] = yield db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.likes);
-        const totalLikes = totalLikesRow.value;
-        const [totalCommentsRow] = yield db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.comments);
-        const totalComments = totalCommentsRow.value;
-        // Avoid division by zero
-        const engagementRateValue = totalDownloads > 0
-            ? ((totalLikes + totalComments) / totalDownloads * 100)
-            : 0;
-        const engagementRate = engagementRateValue.toFixed(1) + '%';
         // 6. Payment Status Distribution (For Financial Health)
         const paymentGroup = yield db_1.db.select({
             status: schema_1.payments.status,
@@ -237,7 +226,6 @@ const getStats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     { label: 'Total Revenue', value: totalRevenue.toLocaleString(), change: revenueChangeStr, color: 'emerald' },
                     { label: 'Active Users', value: activeUsers < 1000 ? activeUsers.toString() : (activeUsers / 1000).toFixed(1) + 'k', change: '+0', color: 'indigo' },
                     { label: 'Live UIs', value: liveUis.toString(), change: '+5.1%', color: 'amber' },
-                    { label: 'Engagement Rate', value: engagementRate, change: '+1.2%', color: 'rose' },
                 ],
                 graphData: finalGraphData,
                 hourlyStats,

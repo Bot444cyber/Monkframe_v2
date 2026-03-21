@@ -45,4 +45,7 @@ const router = express_1.default.Router();
 router.post('/auth/login', (0, validateResource_1.default)(auth_schema_1.loginSchema), AuthController.login);
 router.post('/auth/otp', (0, validateResource_1.default)(auth_schema_1.verifyOtpSchema), AuthController.VerifyEmailByOTP);
 router.post('/auth/register', (0, validateResource_1.default)(auth_schema_1.registerSchema), AuthController.register);
+// Forgot Password
+router.post('/auth/forgot-password/otp', (0, validateResource_1.default)(auth_schema_1.forgotPasswordSchema), AuthController.forgotPasswordOTP);
+router.post('/auth/forgot-password/reset', (0, validateResource_1.default)(auth_schema_1.resetPasswordSchema), AuthController.resetPassword);
 exports.default = router;

@@ -126,6 +126,33 @@ class Auth {
             }
         });
     }
+    resetPassword(email, otp, newPassword) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // Verify OTP first
+                const isValid = yield Otp_1.default.isValidOTP(email, otp);
+                if (!isValid) {
+                    return { status: false, message: "Invalid or expired OTP" };
+                }
+                // Check if user exists
+                const [user] = yield db_1.db.select().from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.email, email)).limit(1);
+                if (!user) {
+                    return { status: false, message: "User not found" };
+                }
+                // Hash new password
+                const passwordHash = yield bcrypt_1.default.hash(newPassword, 10);
+                // Update Password
+                yield db_1.db.update(schema_1.users)
+                    .set({ password_hash: passwordHash })
+                    .where((0, drizzle_orm_1.eq)(schema_1.users.email, email));
+                return { status: true, message: "Password reset successful" };
+            }
+            catch (error) {
+                console.error(`Reset password failed: ${error}`);
+                return { status: false, message: "Internal server error" };
+            }
+        });
+    }
 }
 exports.Auth = Auth;
 Auth.instance = new Auth();

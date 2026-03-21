@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyOtpSchema = exports.registerSchema = exports.loginSchema = void 0;
+exports.resetPasswordSchema = exports.forgotPasswordSchema = exports.verifyOtpSchema = exports.registerSchema = exports.loginSchema = void 0;
 const zod_1 = require("zod");
 exports.loginSchema = (0, zod_1.object)({
     body: (0, zod_1.object)({
@@ -20,5 +20,17 @@ exports.verifyOtpSchema = (0, zod_1.object)({
     body: (0, zod_1.object)({
         email: (0, zod_1.string)().email("Not a valid email"),
         otp: (0, zod_1.number)().optional().or((0, zod_1.string)().optional().transform(val => val ? parseInt(val, 10) : undefined)),
+    }),
+});
+exports.forgotPasswordSchema = (0, zod_1.object)({
+    body: (0, zod_1.object)({
+        email: (0, zod_1.string)().email("Not a valid email"),
+    }),
+});
+exports.resetPasswordSchema = (0, zod_1.object)({
+    body: (0, zod_1.object)({
+        email: (0, zod_1.string)().email("Not a valid email"),
+        otp: (0, zod_1.number)().or((0, zod_1.string)().transform(val => parseInt(val, 10))),
+        newPassword: (0, zod_1.string)().min(6, "Password too short - should be 6 chars minimum"),
     }),
 });
