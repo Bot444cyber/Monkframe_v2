@@ -128,19 +128,42 @@ const UsersSection: React.FC<UsersSectionProps> = ({
                                 <td className="px-8 py-6">
                                     <div className="flex items-center gap-2">
                                         <div className="relative flex h-2 w-2">
-                                            <div className={`absolute inline-flex h-full w-full rounded-full opacity-75 ${user.status === 'ACTIVE' ? 'animate-ping bg-emerald-400' : ''}`}></div>
-                                            <div className={`relative inline-flex rounded-full h-2 w-2 ${user.status === 'ACTIVE' ? 'bg-emerald-500' : user.status === 'SUSPENDED' ? 'bg-red-500' : 'bg-zinc-500'}`}></div>
+                                            {(() => {
+                                                const lastActive = user.last_active_at ? new Date(user.last_active_at).getTime() : 0;
+                                                const isOnline = Date.now() - lastActive < 300000; // 5 minutes
+
+                                                if (isOnline) {
+                                                    return (
+                                                        <>
+                                                            <div className="absolute inline-flex h-full w-full rounded-full animate-ping bg-emerald-400 opacity-75"></div>
+                                                            <div className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></div>
+                                                        </>
+                                                    );
+                                                }
+                                                return (
+                                                    <div className={`relative inline-flex rounded-full h-2 w-2 ${user.status === 'SUSPENDED' ? 'bg-red-500' : user.status === 'ACTIVE' ? 'bg-emerald-500/50' : 'bg-zinc-600'
+                                                        }`}></div>
+                                                );
+                                            })()}
                                         </div>
-                                        <select
-                                            value={user.status}
-                                            onChange={(e) => handleStatusChange(user.user_id, e.target.value)}
-                                            disabled={updatingId === user.user_id}
-                                            className="bg-transparent text-[10px] font-bold uppercase tracking-widest text-zinc-400 outline-none cursor-pointer hover:text-white transition-colors disabled:opacity-50 appearance-none"
-                                        >
-                                            <option value="ACTIVE" className="bg-[#0a0a0a] text-emerald-500">Active</option>
-                                            <option value="INACTIVE" className="bg-[#0a0a0a] text-zinc-500">Inactive</option>
-                                            <option value="SUSPENDED" className="bg-[#0a0a0a] text-red-500">Suspended</option>
-                                        </select>
+                                        <div className="flex flex-col">
+                                            <select
+                                                value={user.status}
+                                                onChange={(e) => handleStatusChange(user.user_id, e.target.value)}
+                                                disabled={updatingId === user.user_id}
+                                                className="bg-transparent text-[10px] font-bold uppercase tracking-widest text-zinc-400 outline-none cursor-pointer hover:text-white transition-colors disabled:opacity-50 appearance-none"
+                                            >
+                                                <option value="ACTIVE" className="bg-[#0a0a0a] text-emerald-500">Active</option>
+                                                <option value="INACTIVE" className="bg-[#0a0a0a] text-zinc-500">Inactive</option>
+                                                <option value="SUSPENDED" className="bg-[#0a0a0a] text-red-500">Suspended</option>
+                                            </select>
+                                            {(() => {
+                                                const lastActive = user.last_active_at ? new Date(user.last_active_at).getTime() : 0;
+                                                const isOnline = Date.now() - lastActive < 300000;
+                                                if (isOnline) return <span className="text-[8px] font-bold text-emerald-500/80 uppercase tracking-tighter -mt-1">Online Now</span>;
+                                                return null;
+                                            })()}
+                                        </div>
                                     </div>
                                 </td>
                                 <td className="px-8 py-6">

@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { Toaster } from "react-hot-toast";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import PresenceHandler from "@/components/PresenceHandler";
 
 const interTight = Inter_Tight({
   subsets: ["latin"],
@@ -37,6 +38,7 @@ export default function RootLayout({
               border: '1px solid rgba(255,255,255,0.1)'
             }
           }} />
+          <PresenceHandler />
           <ErrorBoundary>
             {children}
           </ErrorBoundary>

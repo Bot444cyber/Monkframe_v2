@@ -321,3 +321,24 @@ export const getUserProfile = async (req: Request, res: Response) => {
         res.status(500).json({ status: false, message: "Failed to fetch profile" });
     }
 };
+
+// Update user heartbeat for presence tracking
+export const heartbeat = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user?.user_id;
+        if (!userId) {
+            return res.status(401).json({ status: false, message: "Unauthorized" });
+        }
+
+        // Update last_active_at to current timestamp
+        await db.update(users)
+            .set({ last_active_at: new Date() })
+            .where(eq(users.user_id, userId));
+
+        res.json({ status: true, message: "Heartbeat received" });
+    } catch (error) {
+        console.error("Heartbeat Error:", error);
+        res.status(500).json({ status: false, message: "Failed to process heartbeat" });
+    }
+};
+

@@ -140,7 +140,8 @@ const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             email: schema_1.users.email,
             role: schema_1.users.role,
             status: schema_1.users.status,
-            created_at: schema_1.users.created_at
+            created_at: schema_1.users.created_at,
+            last_active_at: schema_1.users.last_active_at
         }).from(schema_1.users).orderBy((0, drizzle_orm_1.desc)(schema_1.users.created_at));
         res.json({ status: true, data: usersList });
     }

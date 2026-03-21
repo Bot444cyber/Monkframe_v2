@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserProfile = exports.getCurrentUser = exports.logout = exports.googleAuthCallback = exports.googleAuth = void 0;
+exports.heartbeat = exports.getUserProfile = exports.getCurrentUser = exports.logout = exports.googleAuthCallback = exports.googleAuth = void 0;
 const passport_1 = __importDefault(require("passport"));
 const db_1 = require("../db");
 const schema_1 = require("../db/schema");
@@ -320,3 +320,23 @@ const getUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.getUserProfile = getUserProfile;
+// Update user heartbeat for presence tracking
+const heartbeat = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.user_id;
+        if (!userId) {
+            return res.status(401).json({ status: false, message: "Unauthorized" });
+        }
+        // Update last_active_at to current timestamp
+        yield db_1.db.update(schema_1.users)
+            .set({ last_active_at: new Date() })
+            .where((0, drizzle_orm_1.eq)(schema_1.users.user_id, userId));
+        res.json({ status: true, message: "Heartbeat received" });
+    }
+    catch (error) {
+        console.error("Heartbeat Error:", error);
+        res.status(500).json({ status: false, message: "Failed to process heartbeat" });
+    }
+});
+exports.heartbeat = heartbeat;

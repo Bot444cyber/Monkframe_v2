@@ -14,6 +14,7 @@ exports.users = (0, mysql_core_1.mysqlTable)('users', {
     status: (0, mysql_core_1.mysqlEnum)('status', ['ACTIVE', 'INACTIVE', 'SUSPENDED']).default('ACTIVE').notNull(),
     created_at: (0, mysql_core_1.timestamp)('created_at').defaultNow().notNull(),
     updated_at: (0, mysql_core_1.timestamp)('updated_at').defaultNow().onUpdateNow().notNull(),
+    last_active_at: (0, mysql_core_1.timestamp)('last_active_at').defaultNow().onUpdateNow().notNull(),
 });
 exports.usersRelations = (0, drizzle_orm_1.relations)(exports.users, ({ many }) => ({
     payments: many(exports.payments),

@@ -11,5 +11,6 @@ router.get('/callback/google', userController.googleAuthCallback);
 router.get('/logout', userController.logout);
 router.get('/current_user', userController.getCurrentUser);
 router.get('/profile', authenticateUser, userController.getUserProfile);
+router.post('/heartbeat', authenticateUser, userController.heartbeat);
 
 export default router;

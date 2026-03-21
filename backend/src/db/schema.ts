@@ -23,6 +23,7 @@ export const users = mysqlTable('users', {
   status: mysqlEnum('status', ['ACTIVE', 'INACTIVE', 'SUSPENDED']).default('ACTIVE').notNull(),
   created_at: timestamp('created_at').defaultNow().notNull(),
   updated_at: timestamp('updated_at').defaultNow().onUpdateNow().notNull(),
+  last_active_at: timestamp('last_active_at').defaultNow().onUpdateNow().notNull(),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({

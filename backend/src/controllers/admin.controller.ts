@@ -105,7 +105,8 @@ export const getAllUsers = async (req: Request, res: Response) => {
             email: users.email,
             role: users.role,
             status: users.status,
-            created_at: users.created_at
+            created_at: users.created_at,
+            last_active_at: users.last_active_at
         }).from(users).orderBy(desc(users.created_at));
         res.json({ status: true, data: usersList });
     } catch (error) {
