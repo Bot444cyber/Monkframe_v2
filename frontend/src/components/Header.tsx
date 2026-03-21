@@ -11,7 +11,7 @@ export default function Header({ searchQuery, onSearchChange, onSearchClick }: a
     const { user, logout } = useAuth();
     const pathname = usePathname();
     // Assuming role is accessible on user object. Adjust if role is nested or named differently.
-    const isAdmin = String(user?.role).toUpperCase() === 'ADMIN';
+    const canAccessDashboard = ['ADMIN', 'EDITOR'].includes(String(user?.role).toUpperCase());
 
     const [isScrolled, setIsScrolled] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -110,7 +110,7 @@ export default function Header({ searchQuery, onSearchChange, onSearchClick }: a
                                         <div className="p-1.5">
                                             {[
                                                 { label: 'Profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z', href: '/profile' },
-                                                ...(isAdmin ? [{ label: 'Dashboard', icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z', href: '/dashboard' }] : [])
+                                                ...(canAccessDashboard ? [{ label: 'Dashboard', icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z', href: '/dashboard' }] : [])
                                             ].map((item) => (
                                                 <Link key={item.label} href={item.href} className="flex items-center gap-3 px-3 py-2 text-xs text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
                                                     <svg className="w-4 h-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -185,6 +185,15 @@ export default function Header({ searchQuery, onSearchChange, onSearchClick }: a
                                     <p className="text-xs text-zinc-500">{user.email}</p>
                                 </div>
                             </div>
+                            {canAccessDashboard && (
+                                <Link
+                                    href="/dashboard"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className="block w-full text-center py-4 rounded-2xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 transition-all border border-indigo-500/20 shadow-lg shadow-indigo-600/20"
+                                >
+                                    Go to Dashboard
+                                </Link>
+                            )}
                             <button onClick={() => logout()} className="w-full py-4 rounded-2xl bg-red-500/10 text-red-500 font-bold hover:bg-red-500/20 transition-all border border-red-500/20">Sign Out</button>
                         </div>
                     ) : (

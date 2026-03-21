@@ -3,7 +3,7 @@ import express from 'express';
 import * as uiController from '../controllers/ui.controller';
 import validateResource from '../middlewares/validateResource';
 import { createUiSchema, updateUiSchema } from '../schema/ui.schema';
-import { authenticateUser, optionalAuthenticate } from '../middlewares/auth.middleware';
+import { authenticateUser, optionalAuthenticate, authorizeRoles } from '../middlewares/auth.middleware';
 import fs from 'fs';
 import path from 'path';
 
@@ -40,17 +40,18 @@ router.get('/:id/download', uiController.downloadUI);
 router.get('/image/:fileId', uiController.streamImage);
 
 // CRUD
-router.post('/', authenticateUser, upload.fields([
+router.post('/', authenticateUser, authorizeRoles('ADMIN', 'EDITOR'), upload.fields([
     { name: 'banner', maxCount: 1 },
     { name: 'uiFile', maxCount: 1 },
     { name: 'showcase', maxCount: 3 }
 ]), validateResource(createUiSchema), uiController.createUI);
 
-router.put('/:id', authenticateUser, upload.fields([
+router.put('/:id', authenticateUser, authorizeRoles('ADMIN', 'EDITOR'), upload.fields([
     { name: 'banner', maxCount: 1 },
     { name: 'uiFile', maxCount: 1 },
     { name: 'showcase', maxCount: 3 }
 ]), validateResource(updateUiSchema), uiController.updateUI);
-router.delete('/:id', authenticateUser, uiController.deleteUI);
+
+router.delete('/:id', authenticateUser, authorizeRoles('ADMIN', 'EDITOR'), uiController.deleteUI);
 
 export default router;

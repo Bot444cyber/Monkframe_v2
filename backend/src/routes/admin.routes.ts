@@ -1,19 +1,17 @@
 import express from 'express';
 import { getAllUsers, getAllPayments, getOverviewStats, getRecentActivity, resetData } from '../controllers/admin.controller';
 
-import { authenticateUser } from '../middlewares/auth.middleware';
+import { authenticateUser, authorizeRoles } from '../middlewares/auth.middleware';
 
 const router = express.Router();
 
-// Define routes - Protected by Admin/User check? 
-// Assuming all admin routes need at least a valid token.
-// The controller checks req.user for specific logic.
-router.get('/users', authenticateUser, getAllUsers);
-router.get('/payments', authenticateUser, getAllPayments);
-router.get('/stats', authenticateUser, getOverviewStats);
-router.get('/activity', authenticateUser, getRecentActivity);
+// Define routes - Restricted to ADMIN only
+router.get('/users', authenticateUser, authorizeRoles('ADMIN'), getAllUsers);
+router.get('/payments', authenticateUser, authorizeRoles('ADMIN'), getAllPayments);
+router.get('/stats', authenticateUser, authorizeRoles('ADMIN'), getOverviewStats);
+router.get('/activity', authenticateUser, authorizeRoles('ADMIN'), getRecentActivity);
 
 // Destructive
-router.delete('/reset', authenticateUser, resetData);
+router.delete('/reset', authenticateUser, authorizeRoles('ADMIN'), resetData);
 
 export default router;

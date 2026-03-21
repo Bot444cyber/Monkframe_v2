@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.optionalAuthenticate = exports.authenticateUser = void 0;
+exports.authorizeRoles = exports.optionalAuthenticate = exports.authenticateUser = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const authenticateUser = (req, res, next) => {
     // 1. Check Passport Session
@@ -69,3 +69,16 @@ const optionalAuthenticate = (req, res, next) => {
     next();
 };
 exports.optionalAuthenticate = optionalAuthenticate;
+const authorizeRoles = (...allowedRoles) => {
+    return (req, res, next) => {
+        if (!req.user) {
+            return res.status(401).json({ status: false, message: 'Unauthorized' });
+        }
+        const userRole = req.user.role;
+        if (!allowedRoles.includes(userRole)) {
+            return res.status(403).json({ status: false, message: 'Forbidden: You do not have permission to access this resource' });
+        }
+        next();
+    };
+};
+exports.authorizeRoles = authorizeRoles;

@@ -69,3 +69,18 @@ export const optionalAuthenticate = (req: Request, res: Response, next: NextFunc
     // Proceed whether authenticated or not
     next();
 };
+
+export const authorizeRoles = (...allowedRoles: string[]) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        if (!req.user) {
+            return res.status(401).json({ status: false, message: 'Unauthorized' });
+        }
+
+        const userRole = (req.user as any).role;
+        if (!allowedRoles.includes(userRole)) {
+            return res.status(403).json({ status: false, message: 'Forbidden: You do not have permission to access this resource' });
+        }
+
+        next();
+    };
+};

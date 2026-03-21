@@ -10,7 +10,7 @@ exports.users = (0, mysql_core_1.mysqlTable)('users', {
     email: (0, mysql_core_1.varchar)('email', { length: 191 }).notNull().unique(),
     password_hash: (0, mysql_core_1.varchar)('password_hash', { length: 255 }),
     google_id: (0, mysql_core_1.varchar)('google_id', { length: 191 }).unique(),
-    role: (0, mysql_core_1.mysqlEnum)('role', ['ADMIN', 'CUSTOMER']).default('CUSTOMER').notNull(),
+    role: (0, mysql_core_1.mysqlEnum)('role', ['ADMIN', 'CUSTOMER', 'EDITOR']).default('CUSTOMER').notNull(),
     status: (0, mysql_core_1.mysqlEnum)('status', ['ACTIVE', 'INACTIVE', 'SUSPENDED']).default('ACTIVE').notNull(),
     created_at: (0, mysql_core_1.timestamp)('created_at').defaultNow().notNull(),
     updated_at: (0, mysql_core_1.timestamp)('updated_at').defaultNow().onUpdateNow().notNull(),

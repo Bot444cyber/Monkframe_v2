@@ -19,7 +19,7 @@ export const users = mysqlTable('users', {
   email: varchar('email', { length: 191 }).notNull().unique(),
   password_hash: varchar('password_hash', { length: 255 }),
   google_id: varchar('google_id', { length: 191 }).unique(),
-  role: mysqlEnum('role', ['ADMIN', 'CUSTOMER']).default('CUSTOMER').notNull(),
+  role: mysqlEnum('role', ['ADMIN', 'CUSTOMER', 'EDITOR']).default('CUSTOMER').notNull(),
   status: mysqlEnum('status', ['ACTIVE', 'INACTIVE', 'SUSPENDED']).default('ACTIVE').notNull(),
   created_at: timestamp('created_at').defaultNow().notNull(),
   updated_at: timestamp('updated_at').defaultNow().onUpdateNow().notNull(),

@@ -7,6 +7,7 @@
     "build": "tsc",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
+    "db:migrate": "drizzle-kit migrate",
     "start": "node dist/server.js",
     "prod": "npm run build && npm run db:push && npm run start"
   },

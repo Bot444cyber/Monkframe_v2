@@ -185,9 +185,9 @@ export default function Dashboard() {
 
     React.useEffect(() => {
         if (!authLoading) {
-            if (!user || user.role !== 'ADMIN') {
+            if (!user || (user.role !== 'ADMIN' && user.role !== 'EDITOR')) {
                 router.push('/');
-                toast.error("Unauthorized access");
+                toast.error("Unauthorized access", { id: 'unauthorized-access-toast', duration: 5000 });
             }
         }
     }, [user, authLoading, router]);
@@ -311,6 +311,13 @@ export default function Dashboard() {
         }
     };
 
+    // Auto-select UIs tab for Editor
+    React.useEffect(() => {
+        if (user?.role === 'EDITOR' && (activeTab !== 'uis')) {
+            setActiveTab('uis');
+        }
+    }, [user, activeTab]);
+
     const navItems = [
         {
             id: 'overview',
@@ -418,6 +425,10 @@ export default function Dashboard() {
         }
     };
 
+    if (authLoading || !user || (user.role !== 'ADMIN' && user.role !== 'EDITOR')) {
+        return null;
+    }
+
     return (
         <div className="min-h-screen bg-black flex flex-col lg:flex-row">
             {/* Mobile Header (Dashboard Specific) */}
@@ -474,7 +485,10 @@ export default function Dashboard() {
                     <div className="mb-8">
                         <h2 className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-4 pl-4">Main Menu</h2>
                         <nav className="space-y-1">
-                            {navItems.map((item) => (
+                            {navItems.filter(item => {
+                                if (user?.role === 'EDITOR') return item.id === 'uis';
+                                return true;
+                            }).map((item) => (
                                 <button
                                     key={item.id}
                                     onClick={() => { setActiveTab(item.id as Tab); setIsSidebarOpen(false); }}
@@ -516,17 +530,19 @@ export default function Dashboard() {
                             View Live Site
                         </Link>
 
-                        <button
-                            onClick={() => setIsResetOpen(true)}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-rose-500/70 hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all text-sm font-medium group"
-                        >
-                            <span className="p-1 rounded-lg bg-zinc-900 group-hover:bg-rose-500/20 text-rose-500/70 group-hover:text-rose-400 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 group-hover:rotate-12 transition-transform">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                                </svg>
-                            </span>
-                            Reset System Data
-                        </button>
+                        {user?.role === 'ADMIN' && (
+                            <button
+                                onClick={() => setIsResetOpen(true)}
+                                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-rose-500/70 hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all text-sm font-medium group"
+                            >
+                                <span className="p-1 rounded-lg bg-zinc-900 group-hover:bg-rose-500/20 text-rose-500/70 group-hover:text-rose-400 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 group-hover:rotate-12 transition-transform">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                                    </svg>
+                                </span>
+                                Reset System Data
+                            </button>
+                        )}
 
                         <button
                             onClick={logout}
@@ -548,7 +564,7 @@ export default function Dashboard() {
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-10 animate-fade-in relative z-10">
                     <div>
                         <h1 className="text-3xl font-black text-white tracking-tight mb-2">Dashboard</h1>
-                        <p className="text-gray-400">Welcome back, {user?.full_name?.split(' ')[0] || 'Admin'}</p>
+                        <p className="text-gray-400">Welcome back, {user?.full_name?.split(' ')[0] || user?.role || 'User'}</p>
                     </div>
                     {/* Action Toolbar */}
                     <div className="hidden lg:flex items-center gap-4 animate-fade-in-up [animation-delay:100ms]">
