@@ -41,7 +41,7 @@ export default function ProductDetailsPage() {
                     setLikesCount(raw.likes || 0);
                     setIsLiked(raw.liked || false);
                     setIsWished(raw.wished || false);
-                    if (raw.comments) setCommentsCount(raw.comments.length);
+                    if (raw.commentsCount !== undefined) setCommentsCount(raw.commentsCount);
                 }
             } catch (error) {
                 console.error("Failed to fetch product", error);
@@ -148,7 +148,6 @@ export default function ProductDetailsPage() {
                     likesCount={likesCount}
                     commentsCount={commentsCount}
                     fileType={product.fileType}
-                    previewUrl={product.previewUrl || product.link || "https://lumina-ui.com/demo"}
                     onToggleLike={handleToggleLike}
                     onToggleWishlist={handleToggleWishlist}
                 />

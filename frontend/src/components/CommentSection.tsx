@@ -64,8 +64,10 @@ const CommentSection: React.FC<CommentSectionProps> = ({
             const response = await InteractionService.getComments(uiId, { page, limit: 5 });
             if (response.status) {
                 setComments(response.data);
+                const total = response.meta?.total || 0;
                 setTotalPages(response.meta?.totalPages || 1);
-                setTotalItems(response.meta?.total || 0);
+                setTotalItems(total);
+                if (onCommentsChange) onCommentsChange(total);
             }
         } catch (error) {
             console.error(error);
@@ -90,7 +92,11 @@ const CommentSection: React.FC<CommentSectionProps> = ({
                 if (prev.some(c => c.id === addedComment.id)) return prev;
                 return [addedComment, ...prev];
             });
-            setTotalItems(prev => prev + 1);
+            setTotalItems(prev => {
+                const newCount = prev + 1;
+                if (onCommentsChange) onCommentsChange(newCount);
+                return newCount;
+            });
             setNewComment('');
             toast.success("Comment added");
         } catch (error) {
@@ -104,6 +110,11 @@ const CommentSection: React.FC<CommentSectionProps> = ({
         try {
             await InteractionService.deleteComment(commentId);
             setComments(comments.filter(c => c.id !== commentId));
+            setTotalItems(prev => {
+                const newCount = Math.max(0, prev - 1);
+                if (onCommentsChange) onCommentsChange(newCount);
+                return newCount;
+            });
             toast.success("Comment deleted");
         } catch (e) {
             console.error(e);
