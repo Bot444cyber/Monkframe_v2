@@ -98,7 +98,7 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                             onChange={e => setCurrentUI({ ...currentUI, rating: parseFloat(e.target.value) })}
                         />
                     </div>
-                    {(isAddOpen || isEditOpen) && (
+                    {isAddOpen && (
                         <div className="space-y-4">
                             <label className="text-xs text-gray-400 font-bold uppercase tracking-widest pl-1">Banner Image</label>
                             <div className="relative group">
@@ -142,7 +142,7 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                         </div>
                     )}
 
-                    {(isAddOpen || isEditOpen) && (
+                    {isAddOpen && (
                         <div className="space-y-4">
                             <label className="text-xs text-gray-400 font-bold uppercase tracking-widest pl-1">UI Asset File</label>
                             <div className="relative">
@@ -194,7 +194,7 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                         </div>
                     )}
 
-                    {(isAddOpen || isEditOpen) && (
+                    {isAddOpen && (
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <label className="text-xs text-gray-400 font-bold uppercase tracking-widest pl-1">Showcase Gallery (Max 3)</label>
