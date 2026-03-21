@@ -52,39 +52,6 @@ const UsersSection: React.FC<UsersSectionProps> = ({
         }
     };
 
-    const handleStatusChange = async (userId: number, newStatus: string) => {
-        setUpdatingId(userId);
-        const loadingToast = toast.loading("Updating user status...");
-
-        try {
-            const token = localStorage.getItem('auth_token');
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
-
-            const res = await fetch(`${apiUrl}/api/admin/users/${userId}/status`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ status: newStatus })
-            });
-
-            const data = await res.json();
-
-            if (data.status) {
-                toast.success(data.message, { id: loadingToast });
-                onRefresh();
-            } else {
-                toast.error(data.message || "Failed to update status", { id: loadingToast });
-            }
-        } catch (error) {
-            console.error("Status update error", error);
-            toast.error("An error occurred while updating the status", { id: loadingToast });
-        } finally {
-            setUpdatingId(null);
-        }
-    };
-
     return (
         <div className="bg-zinc-900/30 border border-white/5 rounded-4xl overflow-hidden animate-fade-in mb-20">
             {/* Header with Summary Stats */}
@@ -106,7 +73,6 @@ const UsersSection: React.FC<UsersSectionProps> = ({
                     <thead>
                         <tr className="border-b border-white/5 text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-white/1">
                             <th className="px-8 py-5 whitespace-nowrap">User Identity</th>
-                            <th className="px-8 py-5 whitespace-nowrap">Status</th>
                             <th className="px-8 py-5 whitespace-nowrap">Role</th>
                             <th className="px-8 py-5 whitespace-nowrap">Ingress Date</th>
                             <th className="px-8 py-5 whitespace-nowrap text-right">Lifetime Value</th>
@@ -116,22 +82,11 @@ const UsersSection: React.FC<UsersSectionProps> = ({
                         {users.map((user, idx) => (
                             <tr key={user.user_id ?? user.id ?? idx} className="hover:bg-white/2 transition-all group">
                                 <td className="px-8 py-6">
-                                    <div className="flex flex-col">
-                                        <p className="font-bold text-white text-sm group-hover:text-indigo-400 transition-colors">
-                                            {user.name && user.name !== 'Unknown' ? user.name : user.email}
-                                        </p>
-                                        {user.name && user.name !== 'Unknown' && (
-                                            <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest mt-0.5">{user.email}</p>
-                                        )}
-                                    </div>
-                                </td>
-                                <td className="px-8 py-6">
-                                    <div className="flex items-center gap-2">
-                                        <div className="relative flex h-2 w-2">
+                                    <div className="flex items-center gap-3">
+                                        <div className="relative flex h-2 w-2 shrink-0">
                                             {(() => {
                                                 const lastActive = user.last_active_at ? new Date(user.last_active_at).getTime() : 0;
-                                                const isOnline = Date.now() - lastActive < 300000; // 5 minutes
-
+                                                const isOnline = Date.now() - lastActive < 300000;
                                                 if (isOnline) {
                                                     return (
                                                         <>
@@ -140,29 +95,24 @@ const UsersSection: React.FC<UsersSectionProps> = ({
                                                         </>
                                                     );
                                                 }
-                                                return (
-                                                    <div className={`relative inline-flex rounded-full h-2 w-2 ${user.status === 'SUSPENDED' ? 'bg-red-500' : user.status === 'ACTIVE' ? 'bg-emerald-500/50' : 'bg-zinc-600'
-                                                        }`}></div>
-                                                );
+                                                return <div className="relative inline-flex rounded-full h-2 w-2 bg-zinc-700"></div>;
                                             })()}
                                         </div>
                                         <div className="flex flex-col">
-                                            <select
-                                                value={user.status}
-                                                onChange={(e) => handleStatusChange(user.user_id, e.target.value)}
-                                                disabled={updatingId === user.user_id}
-                                                className="bg-transparent text-[10px] font-bold uppercase tracking-widest text-zinc-400 outline-none cursor-pointer hover:text-white transition-colors disabled:opacity-50 appearance-none"
-                                            >
-                                                <option value="ACTIVE" className="bg-[#0a0a0a] text-emerald-500">Active</option>
-                                                <option value="INACTIVE" className="bg-[#0a0a0a] text-zinc-500">Inactive</option>
-                                                <option value="SUSPENDED" className="bg-[#0a0a0a] text-red-500">Suspended</option>
-                                            </select>
-                                            {(() => {
-                                                const lastActive = user.last_active_at ? new Date(user.last_active_at).getTime() : 0;
-                                                const isOnline = Date.now() - lastActive < 300000;
-                                                if (isOnline) return <span className="text-[8px] font-bold text-emerald-500/80 uppercase tracking-tighter -mt-1">Online Now</span>;
-                                                return null;
-                                            })()}
+                                            <p className="font-bold text-white text-sm group-hover:text-indigo-400 transition-colors">
+                                                {user.name && user.name !== 'Unknown' ? user.name : user.email}
+                                            </p>
+                                            <div className="flex items-center gap-2">
+                                                {user.name && user.name !== 'Unknown' && (
+                                                    <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">{user.email}</p>
+                                                )}
+                                                {(() => {
+                                                    const lastActive = user.last_active_at ? new Date(user.last_active_at).getTime() : 0;
+                                                    const isOnline = Date.now() - lastActive < 300000;
+                                                    if (isOnline) return <span className="text-[8px] font-bold text-emerald-500/60 uppercase tracking-tighter">Online</span>;
+                                                    return null;
+                                                })()}
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
