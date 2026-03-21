@@ -148,43 +148,64 @@ export default function SignupPage() {
 
                     {!otpStep ? (
                         <>
-                            <form onSubmit={handleSignupSubmit} className="space-y-8">
-                                <div className="space-y-6">
-                                    <div className="group space-y-2">
-                                        <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest group-focus-within:text-white transition-colors">Full Name</label>
-                                        <input
-                                            type="text"
-                                            name="fullName"
-                                            value={formData.fullName}
-                                            onChange={handleInputChange}
-                                            required
-                                            className="w-full bg-transparent border-b border-zinc-800 focus:border-white py-3 text-white text-lg placeholder-zinc-700 outline-none transition-all"
-                                            placeholder="John Doe"
-                                        />
+                            <form onSubmit={handleSignupSubmit} className="space-y-6">
+                                <div className="space-y-5">
+                                    <div className="space-y-2">
+                                        <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-[0.2em] pl-1">Full Name</label>
+                                        <div className="relative group">
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-white transition-colors duration-300">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                                                </svg>
+                                            </div>
+                                            <input
+                                                type="text"
+                                                name="fullName"
+                                                value={formData.fullName}
+                                                onChange={handleInputChange}
+                                                required
+                                                className="w-full bg-zinc-900/40 border border-white/5 focus:border-white/20 focus:bg-zinc-900/60 pl-12 pr-4 py-4 rounded-2xl text-white text-sm placeholder-zinc-700 outline-none transition-all duration-300 shadow-inner"
+                                                placeholder="John Doe"
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="group space-y-2">
-                                        <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest group-focus-within:text-white transition-colors">Email Address</label>
-                                        <input
-                                            type="email"
-                                            name="email"
-                                            value={formData.email}
-                                            onChange={handleInputChange}
-                                            required
-                                            className="w-full bg-transparent border-b border-zinc-800 focus:border-white py-3 text-white text-lg placeholder-zinc-700 outline-none transition-all"
-                                            placeholder="name@monkframe.com"
-                                        />
+                                    <div className="space-y-2">
+                                        <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-[0.2em] pl-1">Email Address</label>
+                                        <div className="relative group">
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-white transition-colors duration-300">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                                                </svg>
+                                            </div>
+                                            <input
+                                                type="email"
+                                                name="email"
+                                                value={formData.email}
+                                                onChange={handleInputChange}
+                                                required
+                                                className="w-full bg-zinc-900/40 border border-white/5 focus:border-white/20 focus:bg-zinc-900/60 pl-12 pr-4 py-4 rounded-2xl text-white text-sm placeholder-zinc-700 outline-none transition-all duration-300 shadow-inner"
+                                                placeholder="name@monkframe.com"
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="group space-y-2">
-                                        <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest group-focus-within:text-white transition-colors">Password</label>
-                                        <input
-                                            type="password"
-                                            name="password"
-                                            value={formData.password}
-                                            onChange={handleInputChange}
-                                            required
-                                            className="w-full bg-transparent border-b border-zinc-800 focus:border-white py-3 text-white text-lg placeholder-zinc-700 outline-none transition-all"
-                                            placeholder="••••••••"
-                                        />
+                                    <div className="space-y-2">
+                                        <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-[0.2em] pl-1">Password</label>
+                                        <div className="relative group">
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-white transition-colors duration-300">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                                                </svg>
+                                            </div>
+                                            <input
+                                                type="password"
+                                                name="password"
+                                                value={formData.password}
+                                                onChange={handleInputChange}
+                                                required
+                                                className="w-full bg-zinc-900/40 border border-white/5 focus:border-white/20 focus:bg-zinc-900/60 pl-12 pr-4 py-4 rounded-2xl text-white text-sm placeholder-zinc-700 outline-none transition-all duration-300 shadow-inner"
+                                                placeholder="••••••••"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 
@@ -222,16 +243,19 @@ export default function SignupPage() {
                         <div className="space-y-6">
                             <form onSubmit={handleOtpVerify} className="space-y-8">
                                 <div className="space-y-4">
-                                    <input
-                                        type="text"
-                                        maxLength={6}
-                                        value={otp}
-                                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                                        className="w-full bg-transparent border-b-2 border-zinc-800 focus:border-white py-6 text-center text-4xl font-black tracking-[0.5em] text-white outline-none transition-all placeholder-zinc-800"
-                                        placeholder="000000"
-                                        autoFocus
-                                    />
-                                    <p className="text-center text-zinc-500 text-xs uppercase tracking-widest">Enter Verification Code</p>
+                                    <div className="relative group">
+                                        <input
+                                            type="text"
+                                            maxLength={6}
+                                            value={otp}
+                                            onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                                            className="w-full bg-zinc-900/60 border border-white/10 focus:border-white/30 py-6 text-center text-5xl font-black tracking-[0.3em] text-white rounded-2xl outline-none transition-all duration-300 placeholder-zinc-800 shadow-2xl"
+                                            placeholder="000000"
+                                            autoFocus
+                                        />
+                                        <div className="absolute inset-x-0 -bottom-px h-px bg-linear-to-r from-transparent via-indigo-500/50 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity" />
+                                    </div>
+                                    <p className="text-center text-zinc-500 text-[10px] font-bold uppercase tracking-[0.2em]">Secret Verification Code</p>
                                 </div>
 
                                 <button

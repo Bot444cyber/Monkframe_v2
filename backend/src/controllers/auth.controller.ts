@@ -142,3 +142,69 @@ export const register = async (req: Request, res: Response) => {
         return res.json({ status: false, message: 'Internal server error' });
     }
 }
+
+export const forgotPasswordOTP = async (req: Request, res: Response) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ status: false, message: 'Email is required' });
+        }
+
+        // Check if user exists
+        const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+        if (!user) {
+            return res.status(404).json({ status: false, message: 'User with this email does not exist' });
+        }
+
+        // Generate and Send OTP
+        const generatedOTP = await OTP.SetupOTP(email);
+        if (!generatedOTP) {
+            return res.status(500).json({ status: false, message: 'Failed to generate OTP' });
+        }
+
+        // Update or Insert OTP in authOtp table
+        const [existingOtp] = await db.select().from(authOtp).where(eq(authOtp.email, email)).limit(1);
+        if (existingOtp) {
+            await db.update(authOtp)
+                .set({ otp: parseInt(generatedOTP), updatedAt: new Date() })
+                .where(eq(authOtp.email, email));
+        } else {
+            await db.insert(authOtp).values({
+                email,
+                otp: parseInt(generatedOTP)
+            });
+        }
+
+        // Send OTP via Email
+        await sendOTPEmail(email, generatedOTP);
+
+        return res.json({ status: true, message: 'OTP sent successfully to your email' });
+
+    } catch (error) {
+        console.error('Error during forgot password OTP:', error);
+        return res.status(500).json({ status: false, message: 'Internal server error' });
+    }
+}
+
+export const resetPassword = async (req: Request, res: Response) => {
+    try {
+        const { email, otp, newPassword } = req.body;
+
+        if (!email || !otp || !newPassword) {
+            return res.status(400).json({ status: false, message: 'All fields are required' });
+        }
+
+        const result = await Auth.instance.resetPassword(email, parseInt(otp), newPassword);
+
+        if (!result.status) {
+            return res.status(400).json({ status: false, message: result.message });
+        }
+
+        return res.json({ status: true, message: result.message });
+
+    } catch (error) {
+        console.error('Error during password reset:', error);
+        return res.status(500).json({ status: false, message: 'Internal server error' });
+    }
+}

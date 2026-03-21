@@ -37,7 +37,7 @@ export default function Dashboard() {
             { label: 'Total Downloads', value: '0', change: '+0%', color: 'emerald' },
             { label: 'Active Users', value: '0', change: '+0%', color: 'indigo' },
             { label: 'Live UIs', value: '0', change: '+0%', color: 'amber' },
-            { label: 'Engagement Rate', value: '0%', change: '0%', color: 'rose' },
+
         ],
         graphData: [],
 

@@ -56,7 +56,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
         if (label.includes('download')) { icon = Icons.Download; colorKey = 'emerald'; }
         else if (label.includes('active user')) { icon = Icons.TrendingUp; colorKey = 'indigo'; }
         else if (label.includes('live ui')) { icon = Icons.Layers; colorKey = 'amber'; }
-        else if (label.includes('engagement')) { icon = Icons.Zap; colorKey = 'rose'; }
+
 
         return { ...stat, icon, styles: getColorStyles(colorKey) };
     });
@@ -64,7 +64,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
     return (
         <div className="space-y-8 pb-20">
             {/* HERO METRICS */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {displayStats.map((stat, idx) => {
                     // Custom Revenue Widget (Replacing Total Downloads)
                     if (stat.label === 'Total Revenue') {
@@ -225,7 +225,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
                             {recentActivities.map((activity, i) => (
                                 <div key={i} className="flex gap-4 p-3.5 rounded-2xl bg-white/2 border border-white/5 hover:border-indigo-500/20 hover:bg-white/4 transition-all cursor-pointer group">
                                     <div className={`mt-0.5 min-w-[32px] h-8 rounded-lg flex items-center justify-center border ${activity.type === 'PAYMENT' ? 'bg-emerald-500/10 border-emerald-500/10 text-emerald-400' : 'bg-indigo-500/10 border-indigo-500/10 text-indigo-400'}`}>
-                                        <svg className="w-4 h-4 fill-none stroke-current stroke-[2]" viewBox="0 0 24 24">
+                                        <svg className="w-4 h-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
                                             {activity.type === 'PAYMENT' ? <Icons.Zap /> : <Icons.TrendingUp />}
                                         </svg>
                                     </div>
@@ -292,7 +292,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {trendingUIs.slice(0, 3).map((ui: TrendingUI, idx: number) => (
-                        <div key={idx} className="flex items-center gap-5 p-5 rounded-[2rem] bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/10 transition-all group cursor-pointer hover:-translate-y-1 duration-300">
+                        <div key={idx} className="flex items-center gap-5 p-5 rounded-4xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/10 transition-all group cursor-pointer hover:-translate-y-1 duration-300">
                             <div className="h-20 w-24 bg-zinc-900 rounded-2xl overflow-hidden border border-white/5 relative shrink-0 shadow-lg">
                                 <img src={ui.imageSrc} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={ui.title} referrerPolicy="no-referrer" />
                             </div>

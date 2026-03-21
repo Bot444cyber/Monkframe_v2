@@ -23,6 +23,22 @@ export const verifyOtpSchema = object({
     }),
 });
 
+export const forgotPasswordSchema = object({
+    body: object({
+        email: string().email("Not a valid email"),
+    }),
+});
+
+export const resetPasswordSchema = object({
+    body: object({
+        email: string().email("Not a valid email"),
+        otp: number().or(string().transform(val => parseInt(val, 10))),
+        newPassword: string().min(6, "Password too short - should be 6 chars minimum"),
+    }),
+});
+
 export type LoginInput = TypeOf<typeof loginSchema>;
 export type RegisterInput = TypeOf<typeof registerSchema>;
 export type VerifyOtpInput = TypeOf<typeof verifyOtpSchema>;
+export type ForgotPasswordInput = TypeOf<typeof forgotPasswordSchema>;
+export type ResetPasswordInput = TypeOf<typeof resetPasswordSchema>;

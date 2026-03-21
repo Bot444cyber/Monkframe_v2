@@ -98,7 +98,7 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                             onChange={e => setCurrentUI({ ...currentUI, rating: parseFloat(e.target.value) })}
                         />
                     </div>
-                    {isAddOpen && (
+                    {(isAddOpen || isEditOpen) && (
                         <div className="space-y-4">
                             <label className="text-xs text-gray-400 font-bold uppercase tracking-widest pl-1">Banner Image</label>
                             <div className="relative group">
@@ -117,21 +117,23 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                                 />
                                 <label
                                     htmlFor="banner-upload"
-                                    className={`flex flex-col items-center justify-center w-full h-48 rounded-xl border-2 border-dashed transition-all cursor-pointer ${previews.banner ? 'border-indigo-500/50 bg-indigo-500/5' : 'border-white/10 hover:border-white/20 hover:bg-white/5'
+                                    className={`flex flex-col items-center justify-center w-full h-48 rounded-xl border-2 border-dashed transition-all cursor-pointer overflow-hidden ${previews.banner || currentUI.imageSrc ? 'border-indigo-500/50 bg-indigo-500/5' : 'border-white/10 hover:border-white/20 hover:bg-white/5'
                                         }`}
                                 >
-                                    {previews.banner ? (
+                                    {previews.banner || currentUI.imageSrc ? (
                                         <div className="relative w-full h-full p-2">
-                                            <img src={previews.banner} className="w-full h-full object-cover rounded-lg" />
+                                            <img src={previews.banner || currentUI.imageSrc} className="w-full h-full object-cover rounded-lg" />
                                             <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
-                                                <span className="text-xs font-bold text-white uppercase tracking-widest">Change Image</span>
+                                                <span className="text-xs font-bold text-white uppercase tracking-widest bg-black/50 px-4 py-2 rounded-full backdrop-blur-sm">Change Banner Image</span>
                                             </div>
                                         </div>
                                     ) : (
                                         <div className="flex flex-col items-center gap-2 text-gray-500">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                                            </svg>
+                                            <div className="p-3 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                                                </svg>
+                                            </div>
                                             <span className="text-xs font-bold uppercase tracking-wider">Click to upload banner</span>
                                         </div>
                                     )}
@@ -140,7 +142,7 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                         </div>
                     )}
 
-                    {isAddOpen && (
+                    {(isAddOpen || isEditOpen) && (
                         <div className="space-y-4">
                             <label className="text-xs text-gray-400 font-bold uppercase tracking-widest pl-1">UI Asset File</label>
                             <div className="relative">
@@ -156,7 +158,7 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                                     className={`flex items-center gap-4 w-full p-4 rounded-xl border cursor-pointer transition-all ${files.uiFile ? 'bg-amber-500/10 border-amber-500/50' : 'bg-black/50 border-white/10 hover:bg-white/5 hover:border-white/20'
                                         }`}
                                 >
-                                    <div className={`p-3 rounded-lg ${files.uiFile ? 'bg-amber-500/20 text-amber-500' : 'bg-white/5 text-gray-500'}`}>
+                                    <div className={`p-3 rounded-lg ${files.uiFile || currentUI.google_file_id ? 'bg-amber-500/20 text-amber-500' : 'bg-white/5 text-gray-500'}`}>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                                         </svg>
@@ -172,6 +174,11 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                                                 </div>
                                                 <p className="text-[10px] text-amber-500 font-medium lowercase">{(files.uiFile.size / 1024 / 1024).toFixed(2)} MB</p>
                                             </>
+                                        ) : currentUI.google_file_id ? (
+                                            <>
+                                                <p className="text-sm font-medium text-amber-400">G-Drive File Linked</p>
+                                                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">ID: {currentUI.google_file_id.slice(0, 8)}...</p>
+                                            </>
                                         ) : (
                                             <>
                                                 <p className="text-sm font-medium text-gray-400">Upload Source File</p>
@@ -179,76 +186,129 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                                             </>
                                         )}
                                     </div>
-                                    <div className="px-4 py-2 bg-white/5 rounded-lg text-xs font-bold text-white uppercase tracking-wider">
-                                        {files.uiFile ? 'Change' : 'Browse'}
+                                    <div className="px-4 py-2 bg-white/5 rounded-lg text-xs font-bold text-white uppercase tracking-wider group-hover:bg-white/10 transition-colors">
+                                        {files.uiFile || currentUI.google_file_id ? 'Change' : 'Browse'}
                                     </div>
                                 </label>
                             </div>
                         </div>
                     )}
 
-                    {isAddOpen && (
+                    {(isAddOpen || isEditOpen) && (
                         <div className="space-y-4">
-                            <label className="text-xs text-gray-400 font-bold uppercase tracking-widest pl-1">Showcase Images (Max 3)</label>
+                            <div className="flex items-center justify-between">
+                                <label className="text-xs text-gray-400 font-bold uppercase tracking-widest pl-1">Showcase Gallery (Max 3)</label>
+                                <span className="text-[10px] text-zinc-600 font-bold uppercase">
+                                    {Math.max(previews.showcase.length, (currentUI.showcase?.length || 0))}/3 Images
+                                </span>
+                            </div>
                             <div className="grid grid-cols-3 gap-4">
-                                {[0, 1, 2].map((idx) => (
-                                    <div key={idx} className="relative group aspect-square">
-                                        {previews.showcase[idx] ? (
-                                            <div className="w-full h-full relative rounded-xl overflow-hidden border border-white/10">
-                                                <img src={previews.showcase[idx]} className="w-full h-full object-cover" />
-                                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-2">
-                                                    <button
-                                                        onClick={() => {
-                                                            const newFiles = [...files.showcase];
-                                                            const newPreviews = [...previews.showcase];
-                                                            newFiles.splice(idx, 1);
-                                                            newPreviews.splice(idx, 1);
-                                                            setFiles(prev => ({ ...prev, showcase: newFiles }));
-                                                            setPreviews(prev => ({ ...prev, showcase: newPreviews }));
-                                                        }}
-                                                        className="p-2 bg-red-500/20 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors"
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                                        </svg>
-                                                    </button>
+                                {[0, 1, 2].map((idx) => {
+                                    const preview = previews.showcase[idx];
+                                    const existing = currentUI.showcase && currentUI.showcase[idx];
+                                    const displayUrl = preview || existing;
+
+                                    return (
+                                        <div key={idx} className="relative group aspect-square">
+                                            {displayUrl ? (
+                                                <div className="w-full h-full relative rounded-2xl overflow-hidden border border-white/10 shadow-lg group-hover:border-indigo-500/30 transition-all">
+                                                    <img src={displayUrl} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex flex-col items-center justify-center gap-2 backdrop-blur-sm">
+                                                        <input
+                                                            type="file"
+                                                            accept="image/*"
+                                                            className="hidden"
+                                                            id={`showcase-change-${idx}`}
+                                                            onChange={e => {
+                                                                if (e.target.files && e.target.files[0]) {
+                                                                    const file = e.target.files[0];
+                                                                    setFiles(prev => {
+                                                                        const newShowcase = [...prev.showcase];
+                                                                        newShowcase[idx] = file;
+                                                                        return { ...prev, showcase: newShowcase };
+                                                                    });
+                                                                    setPreviews(prev => {
+                                                                        const newShowcase = [...prev.showcase];
+                                                                        newShowcase[idx] = URL.createObjectURL(file);
+                                                                        return { ...prev, showcase: newShowcase };
+                                                                    });
+                                                                }
+                                                            }}
+                                                        />
+                                                        <label
+                                                            htmlFor={`showcase-change-${idx}`}
+                                                            className="p-2 bg-indigo-500/20 text-indigo-400 rounded-lg hover:bg-indigo-500 hover:text-white transition-all cursor-pointer transform hover:scale-110"
+                                                            title="Replace Image"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7l3.181 3.182m-4.722 4.99v-4.99m0 0h-4.992m4.993 0l-3.181-3.181a8.25 8.25 0 00-13.803 3.7l3.181-3.182m.051-4.99V7.042m0 0h4.992m-4.993 0l3.181-3.183a8.25 8.25 0 0013.803 3.7l3.181 3.182" />
+                                                            </svg>
+                                                        </label>
+                                                        <button
+                                                            onClick={() => {
+                                                                const newFiles = [...files.showcase];
+                                                                const newPreviews = [...previews.showcase];
+                                                                const newShowcase = currentUI.showcase ? [...currentUI.showcase] : [];
+
+                                                                if (preview) {
+                                                                    newFiles.splice(idx, 1);
+                                                                    newPreviews.splice(idx, 1);
+                                                                } else {
+                                                                    newShowcase.splice(idx, 1);
+                                                                    setCurrentUI({ ...currentUI, showcase: newShowcase });
+                                                                }
+
+                                                                setFiles(prev => ({ ...prev, showcase: newFiles }));
+                                                                setPreviews(prev => ({ ...prev, showcase: newPreviews }));
+                                                            }}
+                                                            className="p-2 bg-red-500/20 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-all transform hover:scale-110"
+                                                            title="Remove Image"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ) : (
-                                            <>
-                                                <input
-                                                    type="file"
-                                                    accept="image/*"
-                                                    className="hidden"
-                                                    id={`showcase-${idx}`}
-                                                    onChange={e => {
-                                                        if (e.target.files && e.target.files[0]) {
-                                                            const file = e.target.files[0];
-                                                            setFiles(prev => {
-                                                                const newShowcase = [...prev.showcase];
-                                                                newShowcase[idx] = file;
-                                                                return { ...prev, showcase: newShowcase };
-                                                            });
-                                                            setPreviews(prev => {
-                                                                const newShowcase = [...prev.showcase];
-                                                                newShowcase[idx] = URL.createObjectURL(file);
-                                                                return { ...prev, showcase: newShowcase };
-                                                            });
-                                                        }
-                                                    }}
-                                                />
-                                                <label
-                                                    htmlFor={`showcase-${idx}`}
-                                                    className="flex items-center justify-center w-full h-full rounded-xl border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all cursor-pointer"
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-gray-500">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                                    </svg>
-                                                </label>
-                                            </>
-                                        )}
-                                    </div>
-                                ))}
+                                            ) : (
+                                                <>
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        className="hidden"
+                                                        id={`showcase-${idx}`}
+                                                        onChange={e => {
+                                                            if (e.target.files && e.target.files[0]) {
+                                                                const file = e.target.files[0];
+                                                                setFiles(prev => {
+                                                                    const newShowcase = [...prev.showcase];
+                                                                    newShowcase[idx] = file;
+                                                                    return { ...prev, showcase: newShowcase };
+                                                                });
+                                                                setPreviews(prev => {
+                                                                    const newShowcase = [...prev.showcase];
+                                                                    newShowcase[idx] = URL.createObjectURL(file);
+                                                                    return { ...prev, showcase: newShowcase };
+                                                                });
+                                                            }
+                                                        }}
+                                                    />
+                                                    <label
+                                                        htmlFor={`showcase-${idx}`}
+                                                        className="flex flex-col items-center justify-center w-full h-full rounded-2xl border-2 border-dashed border-white/5 bg-white/2 hover:border-indigo-500/30 hover:bg-indigo-500/5 transition-all cursor-pointer group/item ring-offset-black focus-within:ring-2 focus-within:ring-indigo-500/50"
+                                                    >
+                                                        <div className="p-2 rounded-lg bg-zinc-900 group-hover/item:bg-indigo-500/20 transition-colors">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 text-zinc-500 group-hover/item:text-indigo-400">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                                            </svg>
+                                                        </div>
+                                                        <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest mt-2 group-hover/item:text-zinc-400">Add</span>
+                                                    </label>
+                                                </>
+                                            )}
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     )}

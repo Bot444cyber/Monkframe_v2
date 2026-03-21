@@ -49,20 +49,7 @@ export const getStats = async (req: Request, res: Response) => {
         const [totalDownloadsAgg] = await db.select({ value: sum(uis.downloads) }).from(uis);
         const totalDownloads = parseInt(totalDownloadsAgg.value || '0');
 
-        // 5. Engagement Rate
-        // Logic: (Total Likes + Comments) / Total Downloads (approximate)
-        const [totalLikesRow] = await db.select({ value: count() }).from(likes);
-        const totalLikes = totalLikesRow.value;
 
-        const [totalCommentsRow] = await db.select({ value: count() }).from(comments);
-        const totalComments = totalCommentsRow.value;
-
-        // Avoid division by zero
-        const engagementRateValue = totalDownloads > 0
-            ? ((totalLikes + totalComments) / totalDownloads * 100)
-            : 0;
-
-        const engagementRate = engagementRateValue.toFixed(1) + '%';
 
         // 6. Payment Status Distribution (For Financial Health)
         const paymentGroup = await db.select({
@@ -264,7 +251,6 @@ export const getStats = async (req: Request, res: Response) => {
                     { label: 'Total Revenue', value: totalRevenue.toLocaleString(), change: revenueChangeStr, color: 'emerald' },
                     { label: 'Active Users', value: activeUsers < 1000 ? activeUsers.toString() : (activeUsers / 1000).toFixed(1) + 'k', change: '+0', color: 'indigo' },
                     { label: 'Live UIs', value: liveUis.toString(), change: '+5.1%', color: 'amber' },
-                    { label: 'Engagement Rate', value: engagementRate, change: '+1.2%', color: 'rose' },
                 ],
                 graphData: finalGraphData,
                 hourlyStats,

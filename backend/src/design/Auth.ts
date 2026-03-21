@@ -137,9 +137,38 @@ class Auth {
 
             // Return Token
             return { status: true, message: "Registration successful", token: GenerateToken(tokenData) };
-
         } catch (error) {
             console.error(`Registration failed: ${error}`);
+            return { status: false, message: "Internal server error" };
+        }
+    }
+
+    public async resetPassword(email: string, otp: number, newPassword: string): Promise<AuthResponse> {
+        try {
+            // Verify OTP first
+            const isValid = await OTP.isValidOTP(email, otp);
+            if (!isValid) {
+                return { status: false, message: "Invalid or expired OTP" };
+            }
+
+            // Check if user exists
+            const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+            if (!user) {
+                return { status: false, message: "User not found" };
+            }
+
+            // Hash new password
+            const passwordHash = await bcrypt.hash(newPassword, 10);
+
+            // Update Password
+            await db.update(users)
+                .set({ password_hash: passwordHash })
+                .where(eq(users.email, email));
+
+            return { status: true, message: "Password reset successful" };
+
+        } catch (error) {
+            console.error(`Reset password failed: ${error}`);
             return { status: false, message: "Internal server error" };
         }
     }
