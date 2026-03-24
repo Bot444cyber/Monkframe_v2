@@ -25,9 +25,8 @@ function PaymentContent() {
     };
 
     return (
-        <div className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-8 bg-[#0a0a0a] border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
-            {/* Left Side Summary */}
-            <div className="p-5 md:p-8 bg-zinc-900/50 border-b md:border-b-0 md:border-r border-white/5 flex flex-col justify-between min-h-[400px]">
+        <div className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-8 bg-[#0d0d0d] border border-white/8 rounded-3xl overflow-hidden shadow-2xl">
+            <div className="p-5 md:p-8 bg-[#0d0d0d] border-b md:border-b-0 md:border-r border-white/8 flex flex-col justify-between min-h-[400px]">
                 <div>
                     <h2 className="text-2xl font-bold text-white mb-6">Order Summary</h2>
                     <div className="flex items-start gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
@@ -70,18 +69,14 @@ function PaymentContent() {
 export default function PaymentPage() {
     return (
         <div className="min-h-screen bg-black text-white flex flex-col font-sans">
-            {/* Background Ambient Glow */}
-            <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/10 rounded-full blur-[120px]" />
-                <div className="absolute top-[20%] right-[-10%] w-[30%] h-[50%] bg-purple-500/10 rounded-full blur-[100px]" />
-            </div>
+            {/* No colored orbs — pure black */}
 
             <Header />
 
             <main className="flex-1 flex items-center justify-center p-6 py-24 relative z-10 opacity-0 animate-in fade-in duration-500 forwards animation-delay-300" style={{ animationFillMode: 'forwards' }}>
                 <Suspense fallback={
                     <div className="flex flex-col items-center gap-4">
-                        <div className="h-10 w-10 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+                        <div className="h-10 w-10 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                         <p className="text-zinc-500">Loading checkout...</p>
                     </div>
                 }>

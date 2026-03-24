@@ -161,7 +161,7 @@ self.__SERVER_FILES_MANIFEST={
       "isExperimentalCompile": false
     }
   },
-  "appDir": "E:\\Professional Projects\\Development\\UI Management System\\app",
+  "appDir": "E:\\Professional Projects\\Development\\Monkframe_v2\\frontend",
   "relativeAppDir": "",
   "files": [
     ".next\\routes-manifest.json",

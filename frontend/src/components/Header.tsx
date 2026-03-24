@@ -38,10 +38,10 @@ export default function Header({ searchQuery, onSearchChange, onSearchClick }: a
         <>
             <div className="fixed top-0 left-0 right-0 z-[100] flex justify-center pointer-events-none">
                 <header
-                    className={`pointer-events-auto flex items-center justify-between px-6 transition-all duration-500 ease-out border border-white/5 
+                    className={`pointer-events-auto flex items-center justify-between px-6 transition-all duration-500 ease-out
                     ${isScrolled
-                            ? 'mt-6 w-[90%] md:w-[80%] lg:w-[75%] h-14 rounded-2xl bg-[#0a0a0a]/80 backdrop-blur-xl backdrop-saturate-150 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.05)]'
-                            : 'mt-0 w-full h-20 bg-transparent border-transparent'}`}
+                            ? 'mt-5 w-[90%] md:w-[78%] lg:w-[70%] h-14 rounded-2xl bg-black/95 backdrop-blur-xl border border-white/8 shadow-[0_8px_40px_rgba(0,0,0,0.9)]'
+                            : 'mt-0 w-full h-20 bg-transparent border border-transparent'}`}
                 >
                     {/* Logo Section */}
                     <div className="flex items-center gap-3 shrink-0">
@@ -63,10 +63,10 @@ export default function Header({ searchQuery, onSearchChange, onSearchClick }: a
                                 <Link
                                     key={item}
                                     href={href}
-                                    className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 relative group overflow-hidden
+                                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200
                                     ${isActive
-                                            ? 'text-white bg-white/10 shadow-[0_0_20px_rgba(255,255,255,0.1)] border border-white/5'
-                                            : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
+                                            ? 'text-white bg-white/8 border border-white/10'
+                                            : 'text-zinc-500 hover:text-white hover:bg-white/5'}`}
                                 >
                                     <span className="relative z-10">{item}</span>
                                     {isActive && (
@@ -90,9 +90,9 @@ export default function Header({ searchQuery, onSearchChange, onSearchClick }: a
                             <div className="relative" ref={dropdownRef}>
                                 <button
                                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                    className="flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-all group"
+                                    className="flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-xl border border-white/8 bg-white/[0.04] hover:bg-white/8 hover:border-white/15 transition-all"
                                 >
-                                    <div className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-[10px] font-bold text-white shadow-lg group-hover:scale-105 transition-transform">
+                                    <div className="w-7 h-7 rounded-lg bg-white/10 border border-white/10 flex items-center justify-center text-[10px] font-bold text-white">
                                         {user.full_name ? user.full_name.charAt(0) : user.email?.charAt(0) || "U"}
                                     </div>
                                     <span className="text-sm font-medium text-white hidden sm:block">Account</span>
@@ -102,8 +102,8 @@ export default function Header({ searchQuery, onSearchChange, onSearchClick }: a
                                 </button>
 
                                 {isDropdownOpen && (
-                                    <div className="absolute right-0 mt-3 w-56 bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 origin-top-right">
-                                        <div className="p-4 border-b border-white/5 bg-[#111]">
+                                    <div className="absolute right-0 mt-3 w-52 bg-black border border-white/10 rounded-2xl shadow-[0_24px_60px_rgba(0,0,0,0.95)] overflow-hidden animate-in fade-in zoom-in-95 duration-200 origin-top-right">
+                                        <div className="p-4 border-b border-white/5 bg-white/[0.03]">
                                             <p className="text-xs font-bold text-white">{user.full_name || "User"}</p>
                                             <p className="text-[10px] text-zinc-500 mt-0.5">{user.email}</p>
                                         </div>
@@ -161,7 +161,7 @@ export default function Header({ searchQuery, onSearchChange, onSearchClick }: a
                     className={`absolute inset-0 bg-black/60 backdrop-blur-2xl transition-opacity duration-500 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0'}`}
                     onClick={() => setIsMobileMenuOpen(false)}
                 />
-                <div className={`absolute top-0 right-0 h-full w-[80%] max-w-sm bg-[#0a0a0a] border-l border-white/5 flex flex-col p-8 transition-transform duration-500 ease-out ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                <div className={`absolute top-0 right-0 h-full w-[80%] max-w-sm bg-black border-l border-white/8 flex flex-col p-8 transition-transform duration-500 ease-out ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
                     <div className="mt-20 space-y-6">
                         {['Explore', 'Licenses', 'FAQ', 'Contact'].map((item, i) => (
                             <Link
@@ -177,7 +177,7 @@ export default function Header({ searchQuery, onSearchChange, onSearchClick }: a
                     {user ? (
                         <div className="mt-auto pb-10 space-y-4">
                             <div className="flex items-center gap-3 mb-6 p-4 rounded-2xl bg-white/5 border border-white/10">
-                                <div className="h-10 w-10 rounded-full bg-indigo-600 flex items-center justify-center text-sm font-bold text-white shadow-inner">
+                                <div className="h-10 w-10 rounded-xl bg-white/8 border border-white/10 flex items-center justify-center text-sm font-bold text-white">
                                     {user.full_name ? user.full_name.charAt(0) : user.email?.charAt(0) || "U"}
                                 </div>
                                 <div>

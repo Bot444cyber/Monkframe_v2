@@ -16,7 +16,7 @@ export const useHeartbeat = () => {
 
             // Use fetch with no-cors or standard depending on your API setup
             // Heartbeat is lightweight, no body needed
-            await fetch(`${apiUrl}/api/users/heartbeat`, {
+            await fetch(`${apiUrl}/api/auth/heartbeat`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`

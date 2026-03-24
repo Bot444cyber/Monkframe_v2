@@ -15,7 +15,7 @@ export default function ContactPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] flex flex-col font-sans">
+        <div className="min-h-screen bg-black flex flex-col font-sans">
             <Header />
             <main className="flex-1 pt-32 pb-16 px-6">
                 <div className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
@@ -43,7 +43,7 @@ export default function ContactPage() {
                     </div>
 
                     {/* Form */}
-                    <div className="bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-xl">
+                    <div className="bg-[#0d0d0d] border border-white/8 rounded-3xl p-8">
                         {status === 'sent' ? (
                             <div className="h-full flex flex-col items-center justify-center text-center py-20">
                                 <div className="w-16 h-16 rounded-full bg-white text-black flex items-center justify-center mb-4">
