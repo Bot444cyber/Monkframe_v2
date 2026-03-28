@@ -125,6 +125,11 @@ export const confirmPayment = async (req: Request, res: Response) => {
 
             res.json({ success: true, status: 'COMPLETED' });
         } else {
+            // Update local database to FAILED if it was not successful
+            await db.update(payments)
+                .set({ status: 'FAILED', updated_at: new Date() })
+                .where(eq(payments.stripePaymentIntentId, paymentIntentId));
+
             res.status(400).json({ success: false, status: paymentIntent.status });
         }
     } catch (error: any) {

@@ -215,6 +215,26 @@ export const getAllPayments = async (req: Request, res: Response) => {
     }
 };
 
+export const deletePayment = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        // Check if payment exists
+        const [payment] = await db.select().from(payments).where(eq(payments.id, id)).limit(1);
+        if (!payment) {
+            return res.status(404).json({ status: false, message: "Payment record not found" });
+        }
+
+        // Delete from database
+        await db.delete(payments).where(eq(payments.id, id));
+
+        res.json({ status: true, message: "Payment record deleted successfully from dashboard" });
+    } catch (error) {
+        console.error("Delete Payment Error:", error);
+        res.status(500).json({ status: false, message: "Failed to delete payment record" });
+    }
+};
+
 export const getRecentActivity = async (req: Request, res: Response) => {
     try {
         const rows = await db

@@ -622,6 +622,7 @@ export default function Dashboard() {
                             paymentsPage={paymentsPage}
                             paymentsTotalPages={paymentsTotalPages}
                             setPaymentsPage={setPaymentsPage}
+                            onRefresh={fetchPayments}
                         />
                     )}
                     {activeTab === 'users' && (
