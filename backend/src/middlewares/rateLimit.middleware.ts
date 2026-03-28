@@ -19,12 +19,12 @@ export const generalLimiter = rateLimit({
 });
 
 /**
- * Strict auth rate limiter — 10 requests per 15 minutes per IP.
+ * Strict auth rate limiter — 35 requests per 10 minutes per IP.
  * Applied to login, register, OTP endpoints.
  */
 export const authLimiter = rateLimit({
     windowMs: 10 * 60 * 1000,
-    max: 10,
+    max: 35,
     standardHeaders: true,
     legacyHeaders: false,
     message: {
