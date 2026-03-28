@@ -133,7 +133,13 @@ const UsersSection: React.FC<UsersSectionProps> = ({
                                         <option value="ADMIN" className="bg-[#0a0a0a] text-purple-400">ADMIN</option>
                                     </select>
                                 </td>
-                                <td className="px-8 py-6 text-xs font-bold text-gray-500 uppercase tracking-wider font-mono">{user.joinedDate}</td>
+                                <td className="px-8 py-6 text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] font-mono">
+                                    {user.created_at ? new Date(user.created_at).toLocaleDateString('en-US', {
+                                        month: 'short',
+                                        day: 'numeric',
+                                        year: 'numeric'
+                                    }) : 'N/A'}
+                                </td>
                                 <td className="px-8 py-6 text-right">
                                     <div className="flex flex-col items-end">
                                         <span className="text-sm font-bold text-white">{user.purchases} <span className="text-[10px] text-gray-600 font-bold ml-1 uppercase tracking-widest">Orders</span></span>

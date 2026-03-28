@@ -115,8 +115,8 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
                                             disabled={status === 'COMPLETED'}
                                             className={`p-2 rounded-lg border transition-all 
                                                 ${status === 'COMPLETED'
-                                                    ? 'bg-zinc-800/50 border-white/5 text-zinc-600 cursor-not-allowed opacity-40'
-                                                    : 'bg-rose-500/5 border-rose-500/10 text-rose-500/60 hover:text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/30 opacity-0 group-hover:opacity-100'
+                                                    ? 'bg-zinc-800/50 border-white/5 text-zinc-600 cursor-not-allowed opacity-20'
+                                                    : 'bg-rose-500/10 border-rose-500/20 text-rose-500/80 hover:text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/30'
                                                 }`}
                                             title={status === 'COMPLETED' ? "Completed payments cannot be deleted" : "Delete Record"}
                                         >
