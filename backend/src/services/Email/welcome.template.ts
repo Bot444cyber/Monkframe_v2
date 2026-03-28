@@ -9,11 +9,11 @@ export function welcomeTemplate(name: string): string {
     <ul>
       <li>Complete your profile</li>
       <li>Explore our premium UI components</li>
-      <li>Start your first project</li>
+      <li>Start your journey with us.</li>
     </ul>
 
     <div class="button-container">
-      <a href="https://monkframer.online/dashboard" class="button">Explore Dashboard</a>
+      <a href="https://www.monkframer.online" class="button">Explore Website</a>
     </div>
 
     <p>If you have any questions, feel free to reply to this email or visit our help center.</p>
