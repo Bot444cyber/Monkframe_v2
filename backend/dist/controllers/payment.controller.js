@@ -18,6 +18,7 @@ const db_1 = require("../db");
 const schema_1 = require("../db/schema");
 const drizzle_orm_1 = require("drizzle-orm");
 const crypto_1 = require("crypto");
+const email_service_1 = require("../services/email.service");
 const stripe = new stripe_1.default(process.env.STRIPE_SECRET_KEY, {
     // @ts-ignore
     apiVersion: '2024-12-18.acacia',
@@ -111,7 +112,16 @@ const confirmPayment = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 uiId: paymentIntent.metadata.uiId,
                 isRead: false
             });
-            // Here you can unlock content, send email, etc.
+            // Send Payment Success Email
+            const [user] = yield db_1.db.select({ email: schema_1.users.email }).from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.user_id, parseInt(paymentIntent.metadata.userId))).limit(1);
+            if (user === null || user === void 0 ? void 0 : user.email) {
+                yield (0, email_service_1.sendPaymentSuccessEmail)(user.email, {
+                    orderId: paymentIntent.id.slice(-8).toUpperCase(),
+                    amount: `$${(paymentIntent.amount / 100).toFixed(2)}`,
+                    date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+                    planName: uiTitle
+                });
+            }
             res.json({ success: true, status: 'COMPLETED' });
         }
         else {

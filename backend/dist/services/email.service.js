@@ -12,156 +12,55 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.sendOTPEmail = sendOTPEmail;
+exports.sendWelcomeEmail = sendWelcomeEmail;
+exports.sendPasswordChangeSuccessEmail = sendPasswordChangeSuccessEmail;
+exports.sendPaymentSuccessEmail = sendPaymentSuccessEmail;
 const dotenv_1 = __importDefault(require("dotenv"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
+const welcome_template_1 = require("./Email/welcome.template");
+const otp_template_1 = require("./Email/otp.template");
+const password_change_template_1 = require("./Email/password-change.template");
+const payment_success_template_1 = require("./Email/payment-success.template");
 // Load environment variables from .env file
 dotenv_1.default.config();
+/**
+ * Creates and returns the nodemailer transport
+ */
+function createTransport() {
+    return nodemailer_1.default.createTransport({
+        host: process.env.SMTP_HOST,
+        port: Number(process.env.SMTP_PORT),
+        auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_TOKKEN,
+        },
+    });
+}
+const DEFAULT_FROM = '"Monkframer | UI/UX" <noreply@monkframer.online>';
 /**
  * Sends a professional OTP email with the Monkframer branding.
  * @param userEmail Recipient email address
  * @param otp The 6-digit OTP code
+ * @param isForgotPassword Whether this is for a password reset
  * @returns boolean indicating success
  */
-function sendOTPEmail(userEmail, otp) {
-    return __awaiter(this, void 0, void 0, function* () {
+function sendOTPEmail(userEmail_1, otp_1) {
+    return __awaiter(this, arguments, void 0, function* (userEmail, otp, isForgotPassword = false) {
         if (!userEmail || !otp) {
             console.error('❌ Email and OTP are required');
             return false;
         }
         try {
-            // Production Mailtrap SMTP Configuration
-            const transport = nodemailer_1.default.createTransport({
-                host: process.env.SMTP_HOST,
-                port: Number(process.env.SMTP_PORT),
-                auth: {
-                    user: process.env.SMTP_USER,
-                    pass: process.env.SMTP_TOKKEN, // Using your real token variable
-                },
-            });
-            // Email content using your verified domain
+            const transport = createTransport();
+            const subject = isForgotPassword ? 'Reset Your Password | Monkframer' : 'Your Verification Code | Monkframer';
+            const html = (0, otp_template_1.otpTemplate)(otp.toString(), isForgotPassword);
             const mailOptions = {
-                from: '"Monkframer | UI/UX" <noreply@monkframer.online>',
+                from: DEFAULT_FROM,
                 to: userEmail,
-                subject: 'Your Verification Code | Monkframer',
+                subject,
                 text: `Your verification code is ${otp}`,
-                html: `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Monkframer Verification</title>
-      <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-        
-        body { 
-          margin: 0; 
-          padding: 0; 
-          background-color: #f4f6f8;
-          font-family: 'Roboto', Arial, sans-serif;
-          color: #333333;
-          -webkit-font-smoothing: antialiased;
-        }
-        
-        .container { 
-          max-width: 600px; 
-          margin: 0 auto; 
-          padding: 40px 20px;
-        }
-        
-        .card {
-          background: #ffffff;
-          border-radius: 8px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-          overflow: hidden;
-          text-align: center;
-        }
-        
-        .header {
-          padding: 30px 0;
-          background: #2c3e50;
-        }
-        
-        .brand-text {
-          color: #ffffff;
-          font-size: 24px;
-          font-weight: 700;
-          letter-spacing: 0.5px;
-          text-transform: uppercase;
-        }
-        
-        .content {
-          padding: 40px 30px;
-        }
-        
-        h2 {
-          margin: 0 0 15px 0;
-          font-size: 22px;
-          font-weight: 500;
-          color: #2c3e50;
-        }
-        
-        p {
-          margin: 0 0 25px 0;
-          font-size: 16px;
-          line-height: 1.6;
-          color: #555555;
-        }
-        
-        .otp-box {
-          display: inline-block;
-          background: #ebf5ff;
-          border: 2px solid #3b82f6;
-          color: #1d4ed8;
-          font-size: 36px;
-          font-weight: 700;
-          letter-spacing: 5px;
-          padding: 20px 50px;
-          border-radius: 8px;
-          margin-bottom: 30px;
-        }
-        
-        .warning-text {
-          font-size: 14px;
-          color: #7f8c8d;
-          max-width: 80%;
-          margin: 0 auto;
-        }
-
-        .footer {
-          padding: 20px;
-          border-top: 1px solid #eeeeee;
-          background: #fafafa;
-          font-size: 12px;
-          color: #999999;
-        }
-      </style>
-    </head>
-    <body style="background-color: #f4f6f8;">
-      <div class="container">
-        <div class="card">
-          <div class="header">
-            <div class="brand-text">MONKFRAMER UI/UX</div>
-          </div>
-          
-          <div class="content">
-            <h2>Authentication Required</h2>
-            <p>Please use the verification code below to securely sign in to your account.</p>
-            
-            <div class="otp-box">${otp}</div>
-            
-            <p class="warning-text">This code will expire in 10 minutes.<br>If you did not request this, please ignore this email.</p>
-          </div>
-          
-          <div class="footer">
-            &copy; ${new Date().getFullYear()} Monkframer. All rights reserved.<br>
-            Sent securely via monkframer.online
-          </div>
-        </div>
-      </div>
-    </body>
-    </html>
-    `
+                html,
             };
             const info = yield transport.sendMail(mailOptions);
             console.log('✅ OTP Email sent:', info.messageId);
@@ -169,6 +68,90 @@ function sendOTPEmail(userEmail, otp) {
         }
         catch (error) {
             console.error('❌ Error sending OTP email:', error instanceof Error ? error.message : error);
+            return false;
+        }
+    });
+}
+/**
+ * Sends a warm Welcome email to new users.
+ */
+function sendWelcomeEmail(userEmail, name) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!userEmail || !name) {
+            console.error('❌ Email and Name are required');
+            return false;
+        }
+        try {
+            const transport = createTransport();
+            const html = (0, welcome_template_1.welcomeTemplate)(name);
+            const mailOptions = {
+                from: DEFAULT_FROM,
+                to: userEmail,
+                subject: 'Welcome to Monkframer | Premium UI/UX',
+                html,
+            };
+            const info = yield transport.sendMail(mailOptions);
+            console.log('✅ Welcome Email sent:', info.messageId);
+            return true;
+        }
+        catch (error) {
+            console.error('❌ Error sending welcome email:', error instanceof Error ? error.message : error);
+            return false;
+        }
+    });
+}
+/**
+ * Sends a notification after a successful password change.
+ */
+function sendPasswordChangeSuccessEmail(userEmail) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!userEmail) {
+            console.error('❌ Email is required');
+            return false;
+        }
+        try {
+            const transport = createTransport();
+            const html = (0, password_change_template_1.passwordChangeTemplate)();
+            const mailOptions = {
+                from: DEFAULT_FROM,
+                to: userEmail,
+                subject: 'Security Alert: Password Changed | Monkframer',
+                html,
+            };
+            const info = yield transport.sendMail(mailOptions);
+            console.log('✅ Password Change Success Email sent:', info.messageId);
+            return true;
+        }
+        catch (error) {
+            console.error('❌ Error sending password change success email:', error instanceof Error ? error.message : error);
+            return false;
+        }
+    });
+}
+/**
+ * Sends a payment success receipt to the user.
+ */
+function sendPaymentSuccessEmail(userEmail, details) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!userEmail || !details) {
+            console.error('❌ Email and Details are required');
+            return false;
+        }
+        try {
+            const transport = createTransport();
+            const html = (0, payment_success_template_1.paymentSuccessTemplate)(details);
+            const mailOptions = {
+                from: DEFAULT_FROM,
+                to: userEmail,
+                subject: 'Payment Successful | Monkframer Receipt',
+                html,
+            };
+            const info = yield transport.sendMail(mailOptions);
+            console.log('✅ Payment Success Email sent:', info.messageId);
+            return true;
+        }
+        catch (error) {
+            console.error('❌ Error sending payment success email:', error instanceof Error ? error.message : error);
             return false;
         }
     });

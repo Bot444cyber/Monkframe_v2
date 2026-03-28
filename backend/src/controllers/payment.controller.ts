@@ -4,6 +4,7 @@ import { db } from '../db';
 import { payments, uis, notifications, users } from '../db/schema';
 import { eq } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
+import { sendPaymentSuccessEmail } from '../services/email.service';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
     // @ts-ignore
@@ -111,7 +112,16 @@ export const confirmPayment = async (req: Request, res: Response) => {
                 isRead: false
             });
 
-            // Here you can unlock content, send email, etc.
+            // Send Payment Success Email
+            const [user] = await db.select({ email: users.email }).from(users).where(eq(users.user_id, parseInt(paymentIntent.metadata.userId))).limit(1);
+            if (user?.email) {
+                await sendPaymentSuccessEmail(user.email, {
+                    orderId: paymentIntent.id.slice(-8).toUpperCase(),
+                    amount: `$${(paymentIntent.amount / 100).toFixed(2)}`,
+                    date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+                    planName: uiTitle
+                });
+            }
 
             res.json({ success: true, status: 'COMPLETED' });
         } else {

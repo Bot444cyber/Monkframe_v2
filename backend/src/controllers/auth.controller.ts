@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { db } from '../db';
 import { authOtp, users } from '../db/schema';
 import { eq } from 'drizzle-orm';
-import sendOTPEmail from '../services/email.service';
+import sendOTPEmail, { sendWelcomeEmail, sendPasswordChangeSuccessEmail } from '../services/email.service';
 import { randomUUID } from 'crypto';
 
 export const login = async (req: Request, res: Response) => {
@@ -136,6 +136,9 @@ export const register = async (req: Request, res: Response) => {
             };
         }
 
+        // Send Welcome Email
+        await sendWelcomeEmail(email, fullName);
+
         return res.json({ status: true, message: 'Registration successful', token: result.token });
     } catch (error) {
         console.error('Error during registration:', error);
@@ -176,8 +179,8 @@ export const forgotPasswordOTP = async (req: Request, res: Response) => {
             });
         }
 
-        // Send OTP via Email
-        await sendOTPEmail(email, generatedOTP);
+        // Send OTP via Email (Forgot Password context)
+        await sendOTPEmail(email, generatedOTP, true);
 
         return res.json({ status: true, message: 'OTP sent successfully to your email' });
 
@@ -200,6 +203,9 @@ export const resetPassword = async (req: Request, res: Response) => {
         if (!result.status) {
             return res.status(400).json({ status: false, message: result.message });
         }
+
+        // Send Password Change Success Email
+        await sendPasswordChangeSuccessEmail(email);
 
         return res.json({ status: true, message: result.message });
 
