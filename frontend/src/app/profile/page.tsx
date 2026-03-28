@@ -329,57 +329,86 @@ export default function ProfilePage() {
                                 <>
                                     <div className="space-y-2">
                                         {payments.map((p) => (
-                                            <Link
+                                            <div
                                                 key={p.id}
-                                                href={`/product/${p.uiId}`}
-                                                className="flex flex-col xs:flex-row xs:items-center justify-between gap-4 p-5 bg-white/[0.03] border border-white/8 rounded-2xl hover:border-white/20 hover:bg-white/5 transition-all duration-300 group"
+                                                className="group relative flex flex-col xl:flex-row xl:items-center gap-6 p-6 bg-zinc-900/40 border border-white/5 rounded-[2rem] hover:border-white/20 transition-all duration-500 hover:shadow-2xl hover:shadow-black/50"
                                             >
-                                                <div className="flex items-center gap-4 min-w-0">
-                                                    <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center shrink-0 border border-white/5 group-hover:border-white/20 transition-colors">
-                                                        <Icons.CreditCard className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors" />
-                                                    </div>
-                                                    <div className="min-w-0 flex-1">
-                                                        <div className="flex items-center gap-2 mb-0.5">
-                                                            <p className="font-black text-sm text-white truncate max-w-[200px] xs:max-w-none">{p.ui?.title || 'Digital Asset'}</p>
+                                                {/* ── Asset Thumbnail ── */}
+                                                <div className="relative w-full xl:w-48 aspect-video xl:aspect-square rounded-2xl overflow-hidden bg-zinc-800 shrink-0 border border-white/5">
+                                                    <img
+                                                        src={p.ui?.imageSrc || '/img/placeholder.jpg'}
+                                                        alt={p.ui?.title}
+                                                        className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700"
+                                                    />
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                                </div>
+
+                                                {/* ── Order Details ── */}
+                                                <div className="flex-1 min-w-0 space-y-4">
+                                                    <div className="flex flex-col gap-1.5">
+                                                        <div className="flex items-center flex-wrap gap-2">
+                                                            <h3 className="text-lg font-black text-white truncate max-w-[300px]">{p.ui?.title || 'Digital Asset'}</h3>
+                                                            <span className="px-2 py-0.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-[9px] font-black text-indigo-400 uppercase tracking-widest uppercase">
+                                                                {p.ui?.category || 'Asset'}
+                                                            </span>
                                                             {p.ui?.fileType && (
-                                                                <span className="px-1.5 py-0.5 rounded-md bg-white/5 border border-white/10 text-[8px] font-black text-zinc-500 uppercase tracking-widest">
+                                                                <span className="px-2 py-0.5 rounded-lg bg-white/5 border border-white/10 text-[9px] font-black text-zinc-500 uppercase tracking-widest">
                                                                     {p.ui.fileType}
                                                                 </span>
                                                             )}
                                                         </div>
-                                                        <div className="flex items-center gap-3">
-                                                            <p className="text-zinc-600 text-[11px] font-medium">
-                                                                {new Date(p.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                                            </p>
+                                                        <div className="flex items-center gap-3 text-zinc-500 text-[11px] font-bold">
+                                                            <span className="flex items-center gap-1.5">
+                                                                <Icons.CreditCard className="w-3.5 h-3.5" />
+                                                                Paid via Stripe
+                                                            </span>
                                                             <span className="w-1 h-1 rounded-full bg-zinc-800" />
-                                                            <p className="text-[10px] font-mono text-zinc-700 uppercase tracking-tighter">
-                                                                Ref: {p.id.slice(0, 8)}...
-                                                            </p>
+                                                            <span>{new Date(p.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-2 sm:flex sm:items-center gap-6 sm:gap-12">
+                                                        <div className="flex flex-col gap-1">
+                                                            <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Reference ID</span>
+                                                            <span className="text-xs font-mono text-zinc-400 font-bold tracking-tight uppercase">{p.id.slice(0, 14)}...</span>
+                                                        </div>
+                                                        <div className="flex flex-col gap-1">
+                                                            <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Order Status</span>
+                                                            <div className="flex items-center gap-2">
+                                                                <div className={`w-1.5 h-1.5 rounded-full ${p.status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                                                                <span className={`text-[11px] font-black uppercase tracking-widest ${p.status === 'COMPLETED' ? 'text-emerald-400' : 'text-amber-400'}`}>
+                                                                    {p.status}
+                                                                </span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center justify-between xs:justify-end gap-6 shrink-0 border-t border-white/5 xs:border-none pt-4 xs:pt-0">
-                                                    <div className="flex flex-col items-end gap-1">
-                                                        <span className={`text-[9px] font-black uppercase tracking-[0.15em] px-2.5 py-1 rounded-lg border ${p.status === 'COMPLETED'
-                                                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]'
-                                                            : p.status === 'FAILED'
-                                                                ? 'bg-rose-500/10 text-rose-400 border-rose-500/20'
-                                                                : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-                                                            }`}>
-                                                            {p.status}
-                                                        </span>
-                                                        <span className="text-[10px] text-zinc-600 font-bold group-hover:text-zinc-400 transition-colors">Digital Delivery</span>
+
+                                                {/* ── Price & Actions ── */}
+                                                <div className="flex flex-col sm:flex-row xl:flex-col items-center justify-between xl:justify-center gap-4 xl:pl-6 xl:border-l border-white/5 shrink-0 min-w-[140px]">
+                                                    <div className="text-center xl:mb-2">
+                                                        <span className="text-2xl font-black text-white italic tracking-tighter">${p.amount}</span>
+                                                        <p className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest mt-1">Total Paid</p>
                                                     </div>
-                                                    <div className="flex items-center gap-3">
-                                                        <span className="text-xl font-black text-white italic tracking-tighter">${p.amount}</span>
-                                                        <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:bg-white group-hover:text-black transition-all duration-300 -translate-x-2 group-hover:translate-x-0">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-3.5 h-3.5">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" />
+
+                                                    <div className="flex items-center gap-2 w-full sm:w-auto xl:w-full">
+                                                        <Link
+                                                            href={`/product/${p.uiId}`}
+                                                            className="flex-1 sm:flex-none xl:flex-1 h-10 px-4 bg-white text-black rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center hover:bg-zinc-200 transition-all active:scale-95"
+                                                        >
+                                                            Download
+                                                        </Link>
+                                                        <button
+                                                            title="View Invoice"
+                                                            className="h-10 w-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                                                             </svg>
-                                                        </div>
+                                                        </button>
                                                     </div>
                                                 </div>
-                                            </Link>
+                                            </div>
                                         ))}
                                     </div>
                                     <div className="mt-10">
