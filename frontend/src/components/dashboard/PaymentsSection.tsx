@@ -24,7 +24,7 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
                 <table className="w-full text-left">
                     <thead>
                         <tr className="border-b border-white/5 text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-white/[0.01]">
-                            <th className="px-8 py-5 whitespace-nowrap">Trace ID</th>
+                            <th className="px-8 py-5 whitespace-nowrap">Order ID</th>
                             <th className="px-8 py-5 whitespace-nowrap">Customer Identity</th>
                             <th className="px-8 py-5 whitespace-nowrap">Timestamp</th>
                             <th className="px-8 py-5 whitespace-nowrap">Amount</th>
@@ -37,11 +37,15 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
                             const userName = tx.user?.full_name || tx.customerName || 'Anonymous';
                             const userEmail = tx.user?.email || tx.email || 'No email';
                             const initial = userName.charAt(0).toUpperCase();
+                            const orderId = tx.stripePaymentIntentId ? tx.stripePaymentIntentId.slice(-8).toUpperCase() : tx.id.slice(0, 8).toUpperCase();
 
                             return (
                                 <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors group">
                                     <td className="px-8 py-6 font-mono text-[10px] text-zinc-500 group-hover:text-zinc-300 transition-colors">
-                                        <span title={tx.id}>{tx.id.split('-')[0]}...</span>
+                                        <div className="flex flex-col">
+                                            <span className="text-white font-bold">{orderId}</span>
+                                            <span className="text-[9px] opacity-30" title={tx.id}>UUID: {tx.id.slice(0, 8)}...</span>
+                                        </div>
                                     </td>
                                     <td className="px-8 py-6">
                                         <div className="flex items-center gap-3">
