@@ -23,13 +23,13 @@ export const generalLimiter = rateLimit({
  * Applied to login, register, OTP endpoints.
  */
 export const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
+    windowMs: 10 * 60 * 1000,
     max: 10,
     standardHeaders: true,
     legacyHeaders: false,
     message: {
         status: false,
-        message: 'Too many authentication attempts, please try again after 15 minutes.',
+        message: 'Too many authentication attempts, please try again after 10 minutes.',
     },
 });
 
