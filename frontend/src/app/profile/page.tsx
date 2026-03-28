@@ -99,7 +99,7 @@ export default function ProfilePage() {
 
     useEffect(() => {
         if (user) fetchProfile(wishlistPage, paymentsPage);
-    }, [user, wishlistPage, paymentsPage]);
+    }, [user, wishlistPage, paymentsPage, activeTab]);
 
     // Close sidebar on tab change (mobile)
     const handleTabChange = (tab: Tab) => {
@@ -169,11 +169,10 @@ export default function ProfilePage() {
                         <button
                             key={id}
                             onClick={() => handleTabChange(id)}
-                            className={`w-full flex items-center gap-3.5 px-3 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                                isActive
-                                    ? 'bg-white text-black shadow-lg shadow-white/5'
-                                    : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
-                            }`}
+                            className={`w-full flex items-center gap-3.5 px-3 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${isActive
+                                ? 'bg-white text-black shadow-lg shadow-white/5'
+                                : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
+                                }`}
                         >
                             <Icon className="w-[18px] h-[18px] shrink-0" />
                             {label}
@@ -198,7 +197,7 @@ export default function ProfilePage() {
 
             {/* ── Footer: User Profile & Actions ── */}
             <div className="mt-6 pt-6 border-t border-white/[0.06] flex flex-col gap-5 px-1">
-                
+
                 {/* User Info */}
                 <div className="flex items-center gap-3 px-1">
                     <div className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center text-sm font-black text-white shrink-0 shadow-inner">
@@ -227,7 +226,7 @@ export default function ProfilePage() {
     );
 
     return (
-        <main className="min-h-screen bg-black text-white flex font-sans antialiased">
+        <main className="min-h-screen bg-black text-white flex font-sans antialiased overflow-x-hidden">
 
             {/* ── Mobile overlay ── */}
             {sidebarOpen && (
@@ -262,7 +261,7 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Page content */}
-                <div className="flex-1 px-6 py-10 lg:px-12 lg:py-12 max-w-6xl w-full">
+                <div className="flex-1 px-6 py-10 lg:px-12 lg:py-12 w-full max-w-[1600px] mx-auto">
 
                     {/* Page header */}
                     <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10">
@@ -273,12 +272,12 @@ export default function ProfilePage() {
                         </div>
 
                         {/* Mini stats */}
-                        <div className="flex gap-3 shrink-0">
-                            <div className="px-5 py-3 bg-white/[0.04] border border-white/8 rounded-xl text-center min-w-[80px]">
+                        <div className="grid grid-cols-2 sm:flex gap-3 shrink-0">
+                            <div className="px-5 py-3 bg-white/[0.04] border border-white/8 rounded-xl text-center sm:min-w-[80px]">
                                 <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest block mb-1">Saved</span>
                                 <span className="text-xl font-black">{displayUser.meta?.wishlist?.total ?? wishlist.length}</span>
                             </div>
-                            <div className="px-5 py-3 bg-white/[0.04] border border-white/8 rounded-xl text-center min-w-[80px]">
+                            <div className="px-5 py-3 bg-white/[0.04] border border-white/8 rounded-xl text-center sm:min-w-[80px]">
                                 <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest block mb-1">Orders</span>
                                 <span className="text-xl font-black">{displayUser.meta?.payments?.total ?? payments.length}</span>
                             </div>
@@ -296,7 +295,7 @@ export default function ProfilePage() {
                                 </div>
                             ) : wishlist.length > 0 ? (
                                 <>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5">
                                         {wishlist.map((ui) => <ProductCard key={ui.id} product={ui} />)}
                                     </div>
                                     <div className="mt-10">
@@ -304,17 +303,17 @@ export default function ProfilePage() {
                                     </div>
                                 </>
                             ) : (
-                                <div className="flex flex-col items-center justify-center py-28 rounded-3xl border border-dashed border-white/8 text-center gap-4">
-                                    <div className="w-14 h-14 rounded-2xl bg-white/[0.04] flex items-center justify-center">
-                                        <Icons.Heart className="w-6 h-6 text-zinc-600" />
+                                <div className="flex flex-col items-center justify-center min-h-[500px] py-28 rounded-[2.5rem] border border-dashed border-white/10 text-center gap-6 bg-white/1">
+                                    <div className="w-20 h-20 rounded-3xl bg-white/[0.04] flex items-center justify-center">
+                                        <Icons.Heart className="w-8 h-8 text-zinc-600" />
                                     </div>
-                                    <div>
-                                        <p className="text-white font-bold mb-1">Your collection is empty</p>
-                                        <p className="text-zinc-600 text-sm">Save assets you love to find them here.</p>
+                                    <div className="max-w-xs">
+                                        <p className="text-xl text-white font-black mb-2 italic">Your collection is empty</p>
+                                        <p className="text-zinc-500 text-sm leading-relaxed">Save assets you love to find them here and build your personal design library.</p>
                                     </div>
                                     <Link
                                         href="/"
-                                        className="mt-2 px-6 py-2.5 bg-white text-black rounded-xl text-sm font-bold hover:bg-zinc-100 transition-all"
+                                        className="mt-4 px-8 py-3 bg-white text-black rounded-2xl text-sm font-black hover:bg-zinc-100 transition-all shadow-xl shadow-white/5 active:scale-95 translate-y-0"
                                     >
                                         Browse Assets
                                     </Link>
@@ -330,31 +329,57 @@ export default function ProfilePage() {
                                 <>
                                     <div className="space-y-2">
                                         {payments.map((p) => (
-                                            <div
+                                            <Link
                                                 key={p.id}
-                                                className="flex items-center justify-between gap-4 p-5 bg-white/[0.03] border border-white/8 rounded-2xl hover:border-white/15 hover:bg-white/[0.05] transition-all duration-150"
+                                                href={`/product/${p.uiId}`}
+                                                className="flex flex-col xs:flex-row xs:items-center justify-between gap-4 p-5 bg-white/[0.03] border border-white/8 rounded-2xl hover:border-white/20 hover:bg-white/5 transition-all duration-300 group"
                                             >
                                                 <div className="flex items-center gap-4 min-w-0">
-                                                    <div className="w-10 h-10 bg-white/[0.06] rounded-xl flex items-center justify-center shrink-0">
-                                                        <Icons.CreditCard className="w-4 h-4 text-white" />
+                                                    <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center shrink-0 border border-white/5 group-hover:border-white/20 transition-colors">
+                                                        <Icons.CreditCard className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors" />
                                                     </div>
-                                                    <div className="min-w-0">
-                                                        <p className="font-bold text-sm text-white truncate">{p.ui?.title || 'Digital Asset'}</p>
-                                                        <p className="text-zinc-600 text-[11px] mt-0.5">
-                                                            {new Date(p.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                                        </p>
+                                                    <div className="min-w-0 flex-1">
+                                                        <div className="flex items-center gap-2 mb-0.5">
+                                                            <p className="font-black text-sm text-white truncate max-w-[200px] xs:max-w-none">{p.ui?.title || 'Digital Asset'}</p>
+                                                            {p.ui?.fileType && (
+                                                                <span className="px-1.5 py-0.5 rounded-md bg-white/5 border border-white/10 text-[8px] font-black text-zinc-500 uppercase tracking-widest">
+                                                                    {p.ui.fileType}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex items-center gap-3">
+                                                            <p className="text-zinc-600 text-[11px] font-medium">
+                                                                {new Date(p.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                            </p>
+                                                            <span className="w-1 h-1 rounded-full bg-zinc-800" />
+                                                            <p className="text-[10px] font-mono text-zinc-700 uppercase tracking-tighter">
+                                                                Ref: {p.id.slice(0, 8)}...
+                                                            </p>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-4 shrink-0">
-                                                    <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg border ${p.status === 'COMPLETED'
-                                                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                                                        : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-                                                        }`}>
-                                                        {p.status}
-                                                    </span>
-                                                    <span className="text-lg font-black text-white">${p.amount}</span>
+                                                <div className="flex items-center justify-between xs:justify-end gap-6 shrink-0 border-t border-white/5 xs:border-none pt-4 xs:pt-0">
+                                                    <div className="flex flex-col items-end gap-1">
+                                                        <span className={`text-[9px] font-black uppercase tracking-[0.15em] px-2.5 py-1 rounded-lg border ${p.status === 'COMPLETED'
+                                                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]'
+                                                            : p.status === 'FAILED'
+                                                                ? 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                                                                : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                                                            }`}>
+                                                            {p.status}
+                                                        </span>
+                                                        <span className="text-[10px] text-zinc-600 font-bold group-hover:text-zinc-400 transition-colors">Digital Delivery</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-xl font-black text-white italic tracking-tighter">${p.amount}</span>
+                                                        <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:bg-white group-hover:text-black transition-all duration-300 -translate-x-2 group-hover:translate-x-0">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-3.5 h-3.5">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" />
+                                                            </svg>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            </Link>
                                         ))}
                                     </div>
                                     <div className="mt-10">
@@ -362,14 +387,20 @@ export default function ProfilePage() {
                                     </div>
                                 </>
                             ) : (
-                                <div className="flex flex-col items-center justify-center py-28 rounded-3xl border border-dashed border-white/8 text-center gap-4">
-                                    <div className="w-14 h-14 rounded-2xl bg-white/[0.04] flex items-center justify-center">
-                                        <Icons.CreditCard className="w-6 h-6 text-zinc-600" />
+                                <div className="flex flex-col items-center justify-center min-h-[500px] py-28 rounded-[2.5rem] border border-dashed border-white/10 text-center gap-6 bg-white/1">
+                                    <div className="w-20 h-20 rounded-3xl bg-white/[0.04] flex items-center justify-center">
+                                        <Icons.CreditCard className="w-8 h-8 text-zinc-600" />
                                     </div>
-                                    <div>
-                                        <p className="text-white font-bold mb-1">No purchases yet</p>
-                                        <p className="text-zinc-600 text-sm">Your purchase history will appear here.</p>
+                                    <div className="max-w-xs">
+                                        <p className="text-xl text-white font-black mb-2 italic">No purchases yet</p>
+                                        <p className="text-zinc-500 text-sm leading-relaxed">Your purchase history will appear here once you start building your collection.</p>
                                     </div>
+                                    <Link
+                                        href="/"
+                                        className="mt-4 px-8 py-3 bg-white text-black rounded-2xl text-sm font-black hover:bg-zinc-100 transition-all shadow-xl shadow-white/5 active:scale-95 translate-y-0"
+                                    >
+                                        Browse Assets
+                                    </Link>
                                 </div>
                             )}
                         </div>
@@ -398,7 +429,7 @@ export default function ProfilePage() {
                             )}
 
                             {/* Detail rows — all from backend */}
-                            <div className="w-full max-w-md space-y-2">
+                            <div className="w-full max-w-2xl space-y-3">
                                 {[
                                     {
                                         label: 'Full Name',
@@ -469,17 +500,17 @@ export default function ProfilePage() {
                                 ].map(({ label, value, icon, badge }) => (
                                     <div
                                         key={label}
-                                        className="flex items-center justify-between gap-4 px-5 py-4 bg-white/[0.03] border border-white/8 rounded-2xl hover:bg-white/5 transition-all duration-150"
+                                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-5 py-4 bg-white/[0.03] border border-white/8 rounded-2xl hover:bg-white/5 transition-all duration-150"
                                     >
                                         <div className="flex items-center gap-3 min-w-0">
                                             <span className="text-zinc-600 shrink-0">{icon}</span>
                                             <div className="min-w-0">
                                                 <p className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.18em] mb-0.5">{label}</p>
-                                                <p className="text-sm font-semibold text-white truncate">{value}</p>
+                                                <p className="text-sm font-semibold text-white truncate max-w-[250px] sm:max-w-none">{value}</p>
                                             </div>
                                         </div>
                                         {badge && (
-                                            <span className={`shrink-0 text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg border ${badge.color}`}>
+                                            <span className={`w-fit shrink-0 text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg border ${badge.color}`}>
                                                 {badge.text}
                                             </span>
                                         )}

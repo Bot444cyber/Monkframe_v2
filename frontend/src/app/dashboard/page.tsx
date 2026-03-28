@@ -9,14 +9,12 @@ import CommentSection from '@/components/CommentSection';
 // Imports from new components
 import NotificationTable from '@/components/dashboard/NotificationTable';
 import OverviewSection from '@/components/dashboard/OverviewSection';
-import InventorySection from '@/components/dashboard/InventorySection'; // Renamed locally if needed, but exported as InventorySection
+import InventorySection from '@/components/dashboard/InventorySection';
 import PaymentsSection from '@/components/dashboard/PaymentsSection';
 import UsersSection from '@/components/dashboard/UsersSection';
 import DashboardModals from '@/components/dashboard/DashboardModals';
 import ResetDataModal from '@/components/dashboard/ResetDataModal';
 import { OverviewData } from '@/components/dashboard/types';
-
-
 import NotificationBell from '@/components/NotificationBell';
 
 type Tab = 'overview' | 'uis' | 'payments' | 'users' | 'activity';
@@ -442,7 +440,7 @@ export default function Dashboard() {
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
-                    <NotificationBell />
+                    <NotificationBell align="right" />
                     <button
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                         className="p-2 -mr-2 text-zinc-400 hover:text-white"
