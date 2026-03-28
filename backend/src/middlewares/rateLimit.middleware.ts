@@ -1,16 +1,16 @@
 import rateLimit from 'express-rate-limit';
 
 /**
- * General API rate limiter — 100 requests per 15 minutes per IP.
+ * General API rate limiter — 350 requests per 5 minutes per IP.
  */
 export const generalLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100,
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 350,
     standardHeaders: true,  // Return `RateLimit-*` headers
     legacyHeaders: false,
     message: {
         status: false,
-        message: 'Too many requests from this IP, please try again after 15 minutes.',
+        message: 'Too many requests from this IP, please try again after 5 minutes.',
     },
     skip: (req) => {
         // Skip rate limiting for health checks

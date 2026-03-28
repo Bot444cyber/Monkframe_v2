@@ -32,22 +32,49 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
-                        {payments.map((tx) => (
-                            <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors">
-                                <td className="px-8 py-6 font-mono text-xs text-gray-600">{tx.id}</td>
-                                <td className="px-8 py-6 font-medium text-white text-sm">{tx.customerName}</td>
-                                <td className="px-8 py-6 text-gray-500 text-xs font-medium">{tx.date}</td>
-                                <td className="px-8 py-6 font-medium text-white text-lg">{tx.amount}</td>
-                                <td className="px-8 py-6">
-                                    <span className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full border ${tx.status === 'completed' ? 'border-emerald-500/10 text-emerald-400 bg-emerald-500/5' :
-                                        tx.status === 'pending' ? 'border-amber-500/10 text-amber-400 bg-amber-500/5' :
-                                            'border-rose-500/10 text-rose-400 bg-rose-500/5'
-                                        }`}>
-                                        {tx.status}
-                                    </span>
-                                </td>
-                            </tr>
-                        ))}
+                        {payments.map((tx) => {
+                            const status = tx.status?.toUpperCase();
+                            const userName = tx.user?.full_name || tx.customerName || 'Anonymous';
+                            const userEmail = tx.user?.email || tx.email || 'No email';
+                            const initial = userName.charAt(0).toUpperCase();
+
+                            return (
+                                <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors group">
+                                    <td className="px-8 py-6 font-mono text-[10px] text-zinc-500 group-hover:text-zinc-300 transition-colors">
+                                        <span title={tx.id}>{tx.id.split('-')[0]}...</span>
+                                    </td>
+                                    <td className="px-8 py-6">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-zinc-800 border border-white/5 flex items-center justify-center text-[10px] font-bold text-indigo-400">
+                                                {initial}
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-semibold text-white">{userName}</span>
+                                                <span className="text-[10px] text-zinc-500">{userEmail}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-6 text-zinc-500 text-xs font-medium">
+                                        {tx.created_at ? new Date(tx.created_at).toLocaleDateString('en-US', {
+                                            month: 'short',
+                                            day: 'numeric',
+                                            year: 'numeric'
+                                        }) : tx.date || 'N/A'}
+                                    </td>
+                                    <td className="px-8 py-6 font-black text-white text-base tracking-tight">
+                                        ${Number(tx.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                    </td>
+                                    <td className="px-8 py-6">
+                                        <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border ${status === 'COMPLETED' ? 'border-emerald-500/20 text-emerald-400 bg-emerald-500/10' :
+                                            status === 'PENDING' ? 'border-amber-500/20 text-amber-400 bg-amber-500/10' :
+                                                'border-rose-500/20 text-rose-400 bg-rose-500/10'
+                                            }`}>
+                                            {status}
+                                        </span>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
                 <Pagination
