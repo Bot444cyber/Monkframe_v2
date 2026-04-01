@@ -31,7 +31,7 @@ function createTransport() {
   });
 }
 
-const DEFAULT_FROM = '"Monkframer | UI/UX" <noreply@monkframer.online>';
+const DEFAULT_FROM = '"Monkframer | UI/UX" <noreply@www.mockupidea.com>';
 
 /**
  * Sends a professional OTP email with the Monkframer branding.
