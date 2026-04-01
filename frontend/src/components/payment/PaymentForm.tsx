@@ -54,9 +54,9 @@ export default function PaymentForm({ productTitle, productPrice, onSuccess, onC
     return (
         <div className="flex flex-col h-full">
             <div className="flex justify-between items-center mb-8">
-                <h3 className="text-xl font-bold text-white">Payment Details</h3>
+                <h3 className="text-xl font-bold text-foreground">Payment Details</h3>
                 {onCancel && (
-                    <button onClick={onCancel} className="text-zinc-500 hover:text-white transition-colors">
+                    <button onClick={onCancel} className="text-muted-foreground hover:text-foreground transition-colors">
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -73,13 +73,13 @@ export default function PaymentForm({ productTitle, productPrice, onSuccess, onC
                     type="submit"
                     disabled={isProcessing || !stripe || !elements}
                     className={`mt-4 w-full h-14 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-lg ${isProcessing || !stripe || !elements
-                        ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed'
-                        : 'bg-white text-black hover:bg-zinc-200 hover:scale-[1.02] active:scale-[0.98] shadow-white/10'
+                        ? 'bg-secondary text-muted-foreground cursor-not-allowed opacity-50'
+                        : 'bg-primary text-primary-foreground hover:opacity-90 hover:scale-[1.02] active:scale-[0.98]'
                         }`}
                 >
                     {isProcessing ? (
                         <>
-                            <svg className="animate-spin h-5 w-5 text-zinc-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <svg className="animate-spin h-5 w-5 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
@@ -95,7 +95,7 @@ export default function PaymentForm({ productTitle, productPrice, onSuccess, onC
                     )}
                 </button>
 
-                <div className="flex items-center justify-center gap-2 text-zinc-500 text-xs">
+                <div className="flex items-center justify-center gap-2 text-muted-foreground/60 text-xs">
                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
                     </svg>

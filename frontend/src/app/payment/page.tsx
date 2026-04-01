@@ -25,29 +25,29 @@ function PaymentContent() {
     };
 
     return (
-        <div className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-8 bg-[#0d0d0d] border border-white/8 rounded-3xl overflow-hidden shadow-2xl">
-            <div className="p-5 md:p-8 bg-[#0d0d0d] border-b md:border-b-0 md:border-r border-white/8 flex flex-col justify-between min-h-[400px]">
+        <div className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-8 bg-card border border-border rounded-3xl overflow-hidden shadow-2xl transition-colors duration-500">
+            <div className="p-5 md:p-8 bg-card border-b md:border-b-0 md:border-r border-border flex flex-col justify-between min-h-[400px]">
                 <div>
-                    <h2 className="text-2xl font-bold text-white mb-6">Order Summary</h2>
-                    <div className="flex items-start gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
-                        <div className="w-16 h-16 rounded-xl bg-linear-to-br from-indigo-500 to-purple-500 shrink-0" />
+                    <h2 className="text-2xl font-bold text-foreground mb-6">Order Summary</h2>
+                    <div className="flex items-start gap-4 p-4 bg-secondary/3 rounded-2xl border border-border">
+                        <div className="w-16 h-16 rounded-xl bg-linear-to-br from-primary/50 to-primary shrink-0" />
                         <div>
-                            <h3 className="font-bold text-white leading-tight mb-1">{title}</h3>
-                            <span className="text-xs text-zinc-400 font-mono uppercase tracking-wide">Digital License</span>
+                            <h3 className="font-bold text-foreground leading-tight mb-1">{title}</h3>
+                            <span className="text-xs text-muted-foreground font-mono uppercase tracking-wide">Digital License</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="space-y-3 pt-6 border-t border-white/5">
-                    <div className="flex justify-between text-zinc-400">
+                <div className="space-y-3 pt-6 border-t border-border">
+                    <div className="flex justify-between text-muted-foreground">
                         <span>Subtotal</span>
                         <span>{price}</span>
                     </div>
-                    <div className="flex justify-between text-zinc-400">
+                    <div className="flex justify-between text-muted-foreground">
                         <span>Tax</span>
                         <span>$0.00</span>
                     </div>
-                    <div className="flex justify-between text-xl font-bold text-white pt-2 border-t border-white/5 mt-2">
+                    <div className="flex justify-between text-xl font-bold text-foreground pt-2 border-t border-border mt-2">
                         <span>Total</span>
                         <span>{price}</span>
                     </div>
@@ -55,7 +55,7 @@ function PaymentContent() {
             </div>
 
             {/* Right Side Form */}
-            <div className="p-5 md:p-8 bg-black">
+            <div className="p-5 md:p-8 bg-background transition-colors duration-500">
                 <PaymentForm
                     productTitle={title}
                     productPrice={price}
@@ -68,7 +68,7 @@ function PaymentContent() {
 
 export default function PaymentPage() {
     return (
-        <div className="min-h-screen bg-black text-white flex flex-col font-sans">
+        <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-primary/30 transition-colors duration-500">
             {/* No colored orbs — pure black */}
 
             <Header />
@@ -76,8 +76,8 @@ export default function PaymentPage() {
             <main className="flex-1 flex items-center justify-center p-6 py-24 relative z-10 opacity-0 animate-in fade-in duration-500 forwards animation-delay-300" style={{ animationFillMode: 'forwards' }}>
                 <Suspense fallback={
                     <div className="flex flex-col items-center gap-4">
-                        <div className="h-10 w-10 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                        <p className="text-zinc-500">Loading checkout...</p>
+                        <div className="h-10 w-10 border-2 border-border border-t-foreground rounded-full animate-spin" />
+                        <p className="text-muted-foreground font-medium animate-pulse">Loading checkout...</p>
                     </div>
                 }>
                     <PaymentContent />

@@ -52,7 +52,7 @@ export default function ProductHeader({
         if (lower.includes('react')) return <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#61DAFB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="2" /><path d="M12 2C16.5 2 20 6.5 20 12C20 17.5 16.5 22 12 22C7.5 22 4 17.5 4 12C4 6.5 7.5 2 12 2Z" /><path d="M12 2C7.5 2 3 6.5 3 12C3 17.5 7.5 22 12 22C16.5 22 21 17.5 21 12C21 6.5 16.5 2 12 2Z" transform="rotate(60 12 12)" /><path d="M12 2C7.5 2 3 6.5 3 12C3 17.5 7.5 22 12 22C16.5 22 21 17.5 21 12C21 6.5 16.5 2 12 2Z" transform="rotate(-60 12 12)" /></svg>;
         // Default
         return (
-            <div className="w-3.5 h-3.5 rounded-[3px] bg-zinc-600 flex items-center justify-center text-[7px] font-bold text-white uppercase">
+            <div className="w-3.5 h-3.5 rounded-[3px] bg-secondary flex items-center justify-center text-[7px] font-bold text-foreground uppercase">
                 {type.slice(0, 1)}
             </div>
         );
@@ -72,22 +72,22 @@ export default function ProductHeader({
     return (
         <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
             <div className="flex flex-col gap-5 max-w-2xl">
-                <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
+                <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground leading-tight">
                     {title}
                 </h1>
 
                 {/* Highlights / Categories Row */}
                 <div className="flex flex-wrap items-center gap-3">
                     {/* Category Badge - Solid Color */}
-                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-300 text-sm font-semibold hover:bg-zinc-700/80 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-zinc-400">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 border border-border text-muted-foreground text-sm font-semibold hover:bg-secondary/80 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-muted-foreground/60">
                             <path fillRule="evenodd" d="M3 6a3 3 0 013-3h2.25a3 3 0 013 3v2.25a3 3 0 01-3 3H6a3 3 0 01-3-3V6zm9.75 0a3 3 0 013-3H18a3 3 0 013 3v2.25a3 3 0 01-3 3h-2.25a3 3 0 01-3-3V6zM3 15.75a3 3 0 013-3h2.25a3 3 0 013 3V18a3 3 0 01-3 3H6a3 3 0 01-3-3v-2.25zm9.75 0a3 3 0 013-3H18a3 3 0 013 3V18a3 3 0 01-3 3h-2.25a3 3 0 01-3-3v-2.25z" clipRule="evenodd" />
                         </svg>
                         {subtitle}
                     </div>
 
                     {/* Verified High Quality Badge - Solid Color */}
-                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-800 border border-zinc-700 text-emerald-400 text-sm font-medium">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 border border-border text-emerald-500 dark:text-emerald-400 text-sm font-medium">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
                             <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
                         </svg>
@@ -96,7 +96,7 @@ export default function ProductHeader({
 
                     {/* File Type Badge - Brand Icon */}
                     {fileType && (
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-800 border border-zinc-700 text-white text-sm font-medium">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 border border-border text-foreground text-sm font-medium">
                             {getFileIcon(fileType)}
                             <span className="">{fileType}</span>
                         </div>
@@ -106,16 +106,16 @@ export default function ProductHeader({
                 {/* Author Info */}
                 <div className="flex items-center gap-3 text-sm mt-1">
                     <div className="flex -space-x-2">
-                        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-amber-200 to-yellow-400 ring-2 ring-black flex items-center justify-center text-xs font-bold text-amber-900 shadow-lg">
+                        <div className="h-8 w-8 rounded-full bg-linear-to-br from-amber-200 to-yellow-400 ring-2 ring-background flex items-center justify-center text-xs font-bold text-amber-900 shadow-lg">
                             {author.charAt(0)}
                         </div>
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-zinc-400 text-xs font-medium uppercase tracking-wide">Created by</span>
+                        <span className="text-muted-foreground text-xs font-medium uppercase tracking-wide">Created by</span>
                         <div className="flex items-center gap-2">
-                            <span className="text-white font-semibold hover:text-indigo-400 transition-colors cursor-pointer">{author}</span>
-                            <span className="h-1 w-1 rounded-full bg-zinc-600"></span>
-                            <span className="text-zinc-500">Updated recently</span>
+                            <span className="text-foreground font-semibold hover:text-primary transition-colors cursor-pointer">{author}</span>
+                            <span className="h-1 w-1 rounded-full bg-border"></span>
+                            <span className="text-muted-foreground/60">Updated recently</span>
                         </div>
                     </div>
                 </div>
@@ -127,7 +127,7 @@ export default function ProductHeader({
                     onClick={handleLikeClick}
                     className={`flex h-10 items-center justify-center gap-2 rounded-full border px-4 text-sm font-medium transition-all duration-300 hover:scale-105 active:scale-95 ${isLiked
                         ? "bg-rose-500 border-rose-400 text-white shadow-lg shadow-rose-500/20"
-                        : "border-white/10 bg-white/5 text-white hover:bg-white/10"
+                        : "border-border bg-secondary/50 text-foreground hover:bg-secondary"
                         }`}
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" fill={isLiked ? "currentColor" : "none"} viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
@@ -137,7 +137,7 @@ export default function ProductHeader({
                 </button>
 
                 {/* Comment Button */}
-                <button className="flex h-10 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 text-sm font-medium text-white transition-colors hover:bg-white/10">
+                <button className="flex h-10 items-center justify-center gap-2 rounded-full border border-border bg-secondary/50 px-4 text-sm font-medium text-foreground transition-colors hover:bg-secondary">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
                     </svg>
@@ -150,10 +150,10 @@ export default function ProductHeader({
                         href={previewUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="h-10 rounded-full border border-white/10 bg-white/5 px-6 text-sm font-medium text-white transition-colors hover:bg-white/10 hidden sm:flex items-center gap-2 group"
+                        className="h-10 rounded-full border border-border bg-secondary/50 px-6 text-sm font-medium text-foreground transition-colors hover:bg-secondary hidden sm:flex items-center gap-2 group"
                     >
                         <span>Preview</span>
-                        <svg className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                         </svg>
                     </a>
@@ -164,7 +164,7 @@ export default function ProductHeader({
                     onClick={(e) => onToggleWishlist && onToggleWishlist(e)}
                     className={`flex h-10 w-10 items-center justify-center rounded-full border text-sm font-medium transition-all duration-300 hover:scale-105 active:scale-95 ${isWished
                         ? "bg-pink-500 border-pink-400 text-white shadow-lg shadow-pink-500/20"
-                        : "border-white/10 bg-white/5 text-white hover:bg-white/10"
+                        : "border-border bg-secondary/50 text-foreground hover:bg-secondary"
                         }`}
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" fill={isWished ? "currentColor" : "none"} viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
@@ -175,7 +175,7 @@ export default function ProductHeader({
                 {isFree ? (
                     <a
                         href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000'}/api/uis/${id}/download`}
-                        className="h-10 rounded-full bg-white text-black px-6 text-sm font-bold flex items-center gap-2 transition-all hover:bg-zinc-200 hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+                        className="h-10 rounded-full bg-foreground text-background px-6 text-sm font-bold flex items-center gap-2 transition-all hover:opacity-90 hover:scale-105 active:scale-95 shadow-lg"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M12 12.75l-3-3m3 3l3-3m-3 3V3" />
@@ -191,7 +191,7 @@ export default function ProductHeader({
                             }
                             setIsPaymentOpen(true);
                         }}
-                        className="h-10 rounded-full bg-white text-black px-6 text-sm font-bold flex items-center gap-2 transition-all hover:bg-zinc-200 hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+                        className="h-10 rounded-full bg-foreground text-background px-6 text-sm font-bold flex items-center gap-2 transition-all hover:opacity-90 hover:scale-105 active:scale-95 shadow-lg"
                     >
                         Purchase for {price}
                     </button>

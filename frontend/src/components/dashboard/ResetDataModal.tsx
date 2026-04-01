@@ -124,8 +124,8 @@ const ResetDataModal: React.FC<ResetDataModalProps> = ({ isOpen, onClose }) => {
     // TERMINAL VIEW
     if (isDeleting) {
         return (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 font-mono">
-                <div className="w-full max-w-3xl p-8 border border-rose-900/30 bg-black rounded-lg shadow-[0_0_50px_rgba(225,29,72,0.1)] relative overflow-hidden">
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/95 font-mono">
+                <div className="w-full max-w-3xl p-8 border border-rose-900/30 bg-card rounded-lg shadow-[0_0_50px_rgba(225,29,72,0.1)] relative overflow-hidden">
                     {/* Scanline */}
                     <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-20 pointer-events-none bg-[length:100%_2px,3px_100%] pointer-events-none" />
 
@@ -151,8 +151,8 @@ const ResetDataModal: React.FC<ResetDataModalProps> = ({ isOpen, onClose }) => {
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl">
-            <div className="bg-[#050505] border border-zinc-800 rounded-lg w-full max-w-2xl overflow-hidden shadow-2xl animate-fade-in relative flex flex-col max-h-[90vh] ring-1 ring-white/5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/90 backdrop-blur-xl">
+            <div className="bg-card border border-border rounded-lg w-full max-w-2xl overflow-hidden shadow-2xl animate-fade-in relative flex flex-col max-h-[90vh] ring-1 ring-white/5">
 
                 {/* Hazard Header */}
                 <div className="relative h-2 overflow-hidden w-full">
@@ -160,14 +160,14 @@ const ResetDataModal: React.FC<ResetDataModalProps> = ({ isOpen, onClose }) => {
                 </div>
 
                 {/* Header */}
-                <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-zinc-900/20">
+                <div className="px-8 py-6 border-b border-border flex items-center justify-between bg-secondary/20">
                     <div>
-                        <h3 className="text-2xl font-bold text-white flex items-center gap-3 tracking-tight">
+                        <h3 className="text-2xl font-bold text-foreground flex items-center gap-3 tracking-tight">
                             <span className="text-rose-500 text-3xl">☢</span> FACTORY RESET
                         </h3>
                         <p className="text-xs text-rose-500/80 mt-1 font-mono uppercase tracking-widest border border-rose-900/30 px-2 py-0.5 inline-block rounded bg-rose-950/20">Admin Authorization Required</p>
                     </div>
-                    <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-white transition-colors">
+                    <button onClick={onClose} className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors">
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -175,7 +175,7 @@ const ResetDataModal: React.FC<ResetDataModalProps> = ({ isOpen, onClose }) => {
                 </div>
 
                 {/* Body - Scrollable */}
-                <div className="p-8 overflow-y-auto custom-scrollbar flex-1 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900/20 via-black to-black">
+                <div className="p-8 overflow-y-auto custom-scrollbar flex-1 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-secondary/20 via-background to-background">
 
                     {/* Master Toggle */}
                     <div className="flex items-center justify-between mb-8 p-5 rounded border border-rose-900/20 bg-rose-950/5 group hover:border-rose-900/40 transition-colors">
@@ -185,9 +185,9 @@ const ResetDataModal: React.FC<ResetDataModalProps> = ({ isOpen, onClose }) => {
                         </div>
                         <button
                             onClick={toggleAll}
-                            className={`w-6 h-6 border-2 flex items-center justify-center transition-all ${isAllSelected ? 'border-rose-500 bg-rose-500' : 'border-zinc-700 hover:border-rose-500/50'}`}
+                            className={`w-6 h-6 border-2 flex items-center justify-center transition-all ${isAllSelected ? 'border-rose-500 bg-rose-500' : 'border-border hover:border-rose-500/50'}`}
                         >
-                            {isAllSelected && <svg className="w-4 h-4 text-black font-bold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+                            {isAllSelected && <svg className="w-4 h-4 text-background font-bold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
                         </button>
                     </div>
 
@@ -199,25 +199,25 @@ const ResetDataModal: React.FC<ResetDataModalProps> = ({ isOpen, onClose }) => {
                                 onClick={() => toggleTarget(cat.id as keyof typeof targets)}
                                 className={`relative group p-4 border transition-all duration-200 cursor-pointer overflow-hidden ${targets[cat.id as keyof typeof targets]
                                     ? 'bg-rose-950/10 border-rose-500/50 shadow-[0_0_15px_rgba(225,29,72,0.1)]'
-                                    : 'bg-zinc-900/20 border-white/5 hover:border-white/10 hover:bg-zinc-900/40'
+                                    : 'bg-secondary/20 border-border hover:border-border/80 hover:bg-secondary/40'
                                     }`}
                             >
                                 <div className="relative z-10 flex items-start gap-4">
-                                    <div className={`w-10 h-10 flex items-center justify-center text-xl transition-colors ${targets[cat.id as keyof typeof targets] ? 'text-rose-500' : 'text-zinc-600 grayscale'}`}>
+                                    <div className={`w-10 h-10 flex items-center justify-center text-xl transition-colors ${targets[cat.id as keyof typeof targets] ? 'text-rose-500' : 'text-muted-foreground grayscale'}`}>
                                         {cat.icon}
                                     </div>
                                     <div className="flex-1">
-                                        <h4 className={`text-xs font-bold font-mono tracking-wider mb-1 ${targets[cat.id as keyof typeof targets] ? 'text-rose-400' : 'text-zinc-400'}`}>
+                                        <h4 className={`text-xs font-bold font-mono tracking-wider mb-1 ${targets[cat.id as keyof typeof targets] ? 'text-rose-400' : 'text-muted-foreground'}`}>
                                             {cat.label}
                                         </h4>
-                                        <p className="text-[10px] text-zinc-500 uppercase tracking-wide">
+                                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide">
                                             {cat.desc}
                                         </p>
 
                                         {/* Linked Cloud Storage Badge - Only for UIS */}
                                         {cat.id === 'uis' && targets.uis && (
                                             <div className="flex items-center gap-2 mt-2 animate-pulse">
-                                                <div className="w-px h-3 bg-zinc-700"></div>
+                                                <div className="w-px h-3 bg-border"></div>
                                                 <span className="text-[10px] font-mono text-cyan-500/80 flex items-center gap-1 border border-cyan-900/40 bg-cyan-950/20 px-1.5 rounded">
                                                     <span className="text-cyan-400">☁️</span> Google Drive Files
                                                 </span>
@@ -225,7 +225,7 @@ const ResetDataModal: React.FC<ResetDataModalProps> = ({ isOpen, onClose }) => {
                                         )}
                                     </div>
                                     {/* Indicator */}
-                                    <div className={`w-3 h-3 border transition-colors ${targets[cat.id as keyof typeof targets] ? 'bg-rose-500 border-rose-500' : 'border-zinc-700'}`} />
+                                    <div className={`w-3 h-3 border transition-colors ${targets[cat.id as keyof typeof targets] ? 'bg-rose-500 border-rose-500' : 'border-border'}`} />
                                 </div>
 
                                 {/* Active corner accent */}
@@ -237,15 +237,15 @@ const ResetDataModal: React.FC<ResetDataModalProps> = ({ isOpen, onClose }) => {
                     </div>
 
                     {/* Danger Zone Confirmation */}
-                    <div className="border-t border-white/5 pt-8">
-                        <label className="block text-xs font-bold text-zinc-500 font-mono mb-3 flex items-center gap-2">
-                            CONFIRMATION CODE: <span className="text-white bg-zinc-800 px-1 py-0.5 rounded">DELETE</span>
+                    <div className="border-t border-border pt-8">
+                        <label className="block text-xs font-bold text-muted-foreground font-mono mb-3 flex items-center gap-2">
+                            CONFIRMATION CODE: <span className="text-foreground bg-secondary px-1 py-0.5 rounded">DELETE</span>
                         </label>
                         <input
                             type="text"
                             value={confirmText}
                             onChange={(e) => setConfirmText(e.target.value)}
-                            className="w-full bg-black border border-white/10 px-6 py-4 text-white placeholder-zinc-800 focus:outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500/50 transition-all font-mono text-lg tracking-widest text-center"
+                            className="w-full bg-background border border-border px-6 py-4 text-foreground placeholder-muted focus:outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500/50 transition-all font-mono text-lg tracking-widest text-center"
                             placeholder="Type DELETE to Unlock"
                             autoComplete="off"
                         />
@@ -253,14 +253,14 @@ const ResetDataModal: React.FC<ResetDataModalProps> = ({ isOpen, onClose }) => {
                 </div>
 
                 {/* Footer */}
-                <div className="p-6 border-t border-white/5 bg-zinc-900/30 backdrop-blur-sm flex justify-between items-center">
-                    <div className="text-[10px] text-zinc-600 font-mono uppercase tracking-wider">
+                <div className="p-6 border-t border-border bg-secondary/20 backdrop-blur-sm flex justify-between items-center">
+                    <div className="text-[10px] text-muted-foreground font-mono uppercase tracking-wider">
                         Secure System / v4.2.0
                     </div>
                     <div className="flex gap-4">
                         <button
                             onClick={onClose}
-                            className="px-6 py-3 text-xs font-bold text-zinc-500 hover:text-white transition-colors font-mono tracking-wider"
+                            className="px-6 py-3 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors font-mono tracking-wider"
                         >
                             CANCEL
                         </button>
@@ -270,7 +270,7 @@ const ResetDataModal: React.FC<ResetDataModalProps> = ({ isOpen, onClose }) => {
                             className={`px-8 py-3 text-xs font-bold transition-all shadow-lg flex items-center gap-2 font-mono tracking-widest relative overflow-hidden group
                                 ${confirmText === 'DELETE' && Object.values(targets).some(v => v)
                                     ? 'bg-rose-600 text-white hover:bg-rose-500 shadow-rose-900/30'
-                                    : 'bg-zinc-800 text-zinc-600 cursor-not-allowed'}
+                                    : 'bg-muted text-muted-foreground cursor-not-allowed'}
                             `}
                         >
                             {confirmText === 'DELETE' && Object.values(targets).some(v => v) && (

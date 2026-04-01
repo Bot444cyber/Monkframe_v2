@@ -12,11 +12,11 @@ const CI = (color: string): Cell => ({ type: 'shape', shape: 'circle', color });
 const RS = (color: string): Cell => ({ type: 'shape', shape: 'rsq', color });
 const EM = (): Cell => ({ type: 'empty' });
 
-// Slightly brighter on pure black for better depth perception
-const C1 = '#1c1c1f';
-const C2 = '#2a2a2e';
-const C3 = '#3a3a40';
-const C4 = '#4a4a52';
+// Slim decorative shape colors — theme-aware
+const C1 = 'var(--shape-1)';
+const C2 = 'var(--shape-2)';
+const C3 = 'var(--shape-3)';
+const C4 = 'var(--shape-4)';
 
 // 5 rows × 11 columns
 const rows: Cell[][] = [
@@ -56,7 +56,7 @@ function MosaicCell({ cell }: { cell: Cell }) {
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function SocialProof() {
     return (
-        <section className="relative w-full bg-black py-20 sm:py-28 overflow-hidden border-t border-white/5">
+        <section className="relative w-full bg-background py-20 sm:py-28 overflow-hidden border-t border-border">
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
@@ -76,30 +76,30 @@ export default function SocialProof() {
                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                         <div
                             className="px-8 py-6 sm:px-14 sm:py-8 text-center"
-                            style={{ background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.96) 45%, transparent 80%)' }}
+                            style={{ background: 'radial-gradient(ellipse at center, var(--background) 45%, transparent 80%)' }}
                         >
-                            <p className="text-white/30 text-xs sm:text-sm font-medium mb-2 uppercase tracking-[0.25em]">
+                            <p className="text-foreground/30 text-xs sm:text-sm font-medium mb-2 uppercase tracking-[0.25em]">
                                 Our community
                             </p>
-                            <h2 className="text-4xl sm:text-6xl md:text-7xl lg:text-[88px] font-extrabold tracking-tighter text-white leading-[1.05] mb-4">
+                            <h2 className="text-4xl sm:text-6xl md:text-7xl lg:text-[88px] font-extrabold tracking-tighter text-foreground leading-[1.05] mb-4">
                                 Loved by{' '}
-                                <span className="text-white/40">
+                                <span className="text-foreground/40">
                                     12,000+
                                 </span>
                                 <br />
                                 creators
                             </h2>
-                            <p className="text-white/30 text-base sm:text-lg md:text-xl font-light">
+                            <p className="text-foreground/30 text-base sm:text-lg md:text-xl font-light">
                                 designers &amp; developers who ship faster
                             </p>
                         </div>
                     </div>
 
-                    {/* Edge fades — pure black */}
-                    <div className="absolute inset-y-0 left-0 w-12 sm:w-32 bg-linear-to-r from-black to-transparent pointer-events-none" />
-                    <div className="absolute inset-y-0 right-0 w-12 sm:w-32 bg-linear-to-l from-black to-transparent pointer-events-none" />
-                    <div className="absolute inset-x-0 top-0 h-16 sm:h-24 bg-linear-to-b from-black to-transparent pointer-events-none" />
-                    <div className="absolute inset-x-0 bottom-0 h-16 sm:h-24 bg-linear-to-t from-black to-transparent pointer-events-none" />
+                    {/* Edge fades — theme background */}
+                    <div className="absolute inset-y-0 left-0 w-12 sm:w-32 bg-linear-to-r from-background to-transparent pointer-events-none" />
+                    <div className="absolute inset-y-0 right-0 w-12 sm:w-32 bg-linear-to-l from-background to-transparent pointer-events-none" />
+                    <div className="absolute inset-x-0 top-0 h-16 sm:h-24 bg-linear-to-b from-background to-transparent pointer-events-none" />
+                    <div className="absolute inset-x-0 bottom-0 h-16 sm:h-24 bg-linear-to-t from-background to-transparent pointer-events-none" />
                 </div>
             </div>
         </section>

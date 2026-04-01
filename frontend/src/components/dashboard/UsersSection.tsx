@@ -53,17 +53,17 @@ const UsersSection: React.FC<UsersSectionProps> = ({
     };
 
     return (
-        <div className="bg-zinc-900/30 border border-white/5 rounded-4xl overflow-hidden animate-fade-in mb-20">
+        <div className="bg-card border border-border rounded-4xl overflow-hidden animate-fade-in mb-20">
             {/* Header with Summary Stats */}
-            <div className="p-5 sm:p-8 border-b border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-6 bg-white/1">
+            <div className="p-5 sm:p-8 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-6 bg-secondary/10">
                 <div>
-                    <h3 className="text-xl font-bold text-white tracking-tight mb-1">Customer Ecosystem</h3>
-                    <p className="text-sm text-gray-500">Relationship management and user engagement metrics</p>
+                    <h3 className="text-xl font-bold text-foreground tracking-tight mb-1">Customer Ecosystem</h3>
+                    <p className="text-sm text-muted-foreground">Relationship management and user engagement metrics</p>
                 </div>
                 <div className="flex gap-4">
                     <div className="text-right">
-                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Total Users</p>
-                        <p className="text-xl font-bold text-white">{users.length}</p>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Total Users</p>
+                        <p className="text-xl font-bold text-foreground">{users.length}</p>
                     </div>
                 </div>
             </div>
@@ -71,16 +71,16 @@ const UsersSection: React.FC<UsersSectionProps> = ({
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="border-b border-white/5 text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-white/1">
+                        <tr className="border-b border-border text-[10px] font-bold text-muted-foreground uppercase tracking-widest bg-secondary/10">
                             <th className="px-8 py-5 whitespace-nowrap">User Identity</th>
                             <th className="px-8 py-5 whitespace-nowrap">Role</th>
                             <th className="px-8 py-5 whitespace-nowrap">Ingress Date</th>
                             <th className="px-8 py-5 whitespace-nowrap text-right">Lifetime Value</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5">
+                    <tbody className="divide-y divide-border">
                         {users.map((user, idx) => (
-                            <tr key={user.user_id ?? user.id ?? idx} className="hover:bg-white/2 transition-all group">
+                            <tr key={user.user_id ?? user.id ?? idx} className="hover:bg-secondary/50 transition-all group">
                                 <td className="px-8 py-6">
                                     <div className="flex items-center gap-3">
                                         <div className="relative flex h-2 w-2 shrink-0">
@@ -95,16 +95,16 @@ const UsersSection: React.FC<UsersSectionProps> = ({
                                                         </>
                                                     );
                                                 }
-                                                return <div className="relative inline-flex rounded-full h-2 w-2 bg-zinc-700"></div>;
+                                                return <div className="relative inline-flex rounded-full h-2 w-2 bg-muted"></div>;
                                             })()}
                                         </div>
                                         <div className="flex flex-col">
-                                            <p className="font-bold text-white text-sm group-hover:text-indigo-400 transition-colors">
+                                            <p className="font-bold text-foreground text-sm group-hover:text-primary transition-colors">
                                                 {user.name && user.name !== 'Unknown' ? user.name : user.email}
                                             </p>
                                             <div className="flex items-center gap-2">
                                                 {user.name && user.name !== 'Unknown' && (
-                                                    <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">{user.email}</p>
+                                                    <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">{user.email}</p>
                                                 )}
                                                 {(() => {
                                                     const lastActive = user.last_active_at ? new Date(user.last_active_at).getTime() : 0;
@@ -121,19 +121,19 @@ const UsersSection: React.FC<UsersSectionProps> = ({
                                         value={user.role}
                                         onChange={(e) => handleRoleChange(user.user_id, e.target.value)}
                                         disabled={updatingId === user.user_id}
-                                        className={`text-[10px] font-bold uppercase tracking-[0.2em] px-3 py-1.5 rounded-lg border bg-transparent outline-none cursor-pointer transition-all hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed ${user.role === 'ADMIN'
+                                        className={`text-[10px] font-bold uppercase tracking-[0.2em] px-3 py-1.5 rounded-lg border bg-transparent outline-none cursor-pointer transition-all hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed ${user.role === 'ADMIN'
                                             ? 'text-purple-400 border-purple-500/20 shadow-[0_0_10px_rgba(168,85,247,0.1)]'
                                             : user.role === 'EDITOR'
                                                 ? 'text-amber-400 border-amber-500/20 shadow-[0_0_10px_rgba(245,158,11,0.05)]'
                                                 : 'text-blue-400 border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.05)]'
                                             }`}
                                     >
-                                        <option value="CUSTOMER" className="bg-[#0a0a0a] text-blue-400">CUSTOMER</option>
-                                        <option value="EDITOR" className="bg-[#0a0a0a] text-amber-400">EDITOR</option>
-                                        <option value="ADMIN" className="bg-[#0a0a0a] text-purple-400">ADMIN</option>
+                                        <option value="CUSTOMER" className="bg-background text-blue-400">CUSTOMER</option>
+                                        <option value="EDITOR" className="bg-background text-amber-400">EDITOR</option>
+                                        <option value="ADMIN" className="bg-background text-purple-400">ADMIN</option>
                                     </select>
                                 </td>
-                                <td className="px-8 py-6 text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] font-mono">
+                                <td className="px-8 py-6 text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] font-mono">
                                     {user.created_at ? new Date(user.created_at).toLocaleDateString('en-US', {
                                         month: 'short',
                                         day: 'numeric',
@@ -142,8 +142,8 @@ const UsersSection: React.FC<UsersSectionProps> = ({
                                 </td>
                                 <td className="px-8 py-6 text-right">
                                     <div className="flex flex-col items-end">
-                                        <span className="text-sm font-bold text-white">{user.purchases} <span className="text-[10px] text-gray-600 font-bold ml-1 uppercase tracking-widest">Orders</span></span>
-                                        <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mt-0.5">LTV: ${user.lifetimeValue || 0}</span>
+                                        <span className="text-sm font-bold text-foreground">{user.purchases} <span className="text-[10px] text-muted-foreground/60 font-bold ml-1 uppercase tracking-widest">Orders</span></span>
+                                        <span className="text-[10px] font-bold text-primary uppercase tracking-widest mt-0.5">LTV: ${user.lifetimeValue || 0}</span>
                                     </div>
                                 </td>
                             </tr>

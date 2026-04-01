@@ -7,7 +7,7 @@ import FAQ from '@/page/home/Faq';
 
 export default function FAQPage() {
     return (
-        <div className="min-h-screen bg-black flex flex-col font-sans">
+        <div className="min-h-screen bg-background flex flex-col font-sans">
             <Header />
             <main className="flex-1 pt-8 pb-16 px-6">
                 <FAQ />

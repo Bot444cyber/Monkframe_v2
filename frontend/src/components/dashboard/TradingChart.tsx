@@ -19,16 +19,16 @@ interface TradingChartProps {
 const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
         return (
-            <div className="bg-[#0c0c0e]/90 border border-white/10 backdrop-blur-xl p-4 rounded-xl shadow-2xl">
-                <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3 border-b border-white/5 pb-2">{label} Report</p>
+            <div className="bg-card/90 border border-border backdrop-blur-xl p-4 rounded-xl shadow-2xl">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 border-b border-border pb-2">{label} Report</p>
                 <div className="space-y-2">
                     {payload.map((entry: any, index: number) => (
                         <div key={index} className="flex items-center justify-between gap-8">
                             <div className="flex items-center gap-2">
                                 <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: entry.color }} />
-                                <span className="text-xs font-medium text-zinc-400">{entry.name}</span>
+                                <span className="text-xs font-medium text-muted-foreground">{entry.name}</span>
                             </div>
-                            <span className="text-xs font-bold text-white tabular-nums">{entry.value}</span>
+                            <span className="text-xs font-bold text-foreground tabular-nums">{entry.value}</span>
                         </div>
                     ))}
                 </div>
@@ -56,20 +56,20 @@ const TradingChart: React.FC<TradingChartProps> = ({ data }) => {
                             <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                         </linearGradient>
                     </defs>
-                    <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#27272a" strokeOpacity={0.1} />
+                    <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="currentColor" strokeOpacity={0.05} />
                     <XAxis
                         dataKey="day"
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: '#52525b', fontSize: 10, fontWeight: 600 }}
+                        tick={{ fill: 'currentColor', fontSize: 10, fontWeight: 600, opacity: 0.5 }}
                         dy={10}
                     />
                     <YAxis
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: '#52525b', fontSize: 10, fontWeight: 600 }}
+                        tick={{ fill: 'currentColor', fontSize: 10, fontWeight: 600, opacity: 0.5 }}
                     />
-                    <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#fff', strokeOpacity: 0.1, strokeWidth: 1 }} />
+                    <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'currentColor', strokeOpacity: 0.1, strokeWidth: 1 }} />
                     <Area
                         name="New Users"
                         type="monotone"
@@ -78,7 +78,7 @@ const TradingChart: React.FC<TradingChartProps> = ({ data }) => {
                         strokeWidth={4}
                         fillOpacity={1}
                         fill="url(#colorUsers)"
-                        activeDot={{ r: 6, stroke: '#6366f1', strokeWidth: 2, fill: '#09090b' }}
+                        activeDot={{ r: 6, stroke: '#6366f1', strokeWidth: 2, fill: 'var(--background)' }}
                         animationDuration={1500}
                     />
                     <Area
@@ -89,7 +89,7 @@ const TradingChart: React.FC<TradingChartProps> = ({ data }) => {
                         strokeWidth={4}
                         fillOpacity={1}
                         fill="url(#colorUIs)"
-                        activeDot={{ r: 6, stroke: '#10b981', strokeWidth: 2, fill: '#09090b' }}
+                        activeDot={{ r: 6, stroke: '#10b981', strokeWidth: 2, fill: 'var(--background)' }}
                         animationDuration={2000}
                     />
                 </AreaChart>

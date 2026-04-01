@@ -88,7 +88,7 @@ export default function ProductCard({ product }: { product: Product }) {
         <>
             <Link
                 href={`/product/${product.id}`}
-                className="group relative flex flex-col overflow-hidden rounded-2xl bg-black border border-white/8 transition-all duration-500 hover:-translate-y-2 hover:border-white/18 hover:shadow-[0_24px_60px_rgba(0,0,0,0.9)]"
+                className="group relative flex flex-col overflow-hidden rounded-2xl bg-card border border-border transition-all duration-500 hover:-translate-y-2 hover:border-primary/20 hover:shadow-[0_24px_60px_rgba(0,0,0,0.05)] dark:hover:shadow-[0_24px_60px_rgba(0,0,0,0.9)]"
             >
                 {/* ── Image ── */}
                 <div className={`relative aspect-[4/3] w-full overflow-hidden ${product.color || 'bg-[#111]'}`}>
@@ -104,11 +104,11 @@ export default function ProductCard({ product }: { product: Product }) {
 
                     {/* Top-left badges */}
                     <div className="absolute top-3 left-3 z-20 flex gap-1.5">
-                        <span className="bg-black/60 backdrop-blur-sm text-white/80 text-[9px] font-bold px-2 py-0.5 rounded-md border border-white/10 uppercase tracking-widest">
+                        <span className="bg-background/60 backdrop-blur-sm text-foreground/80 text-[9px] font-bold px-2 py-0.5 rounded-md border border-border uppercase tracking-widest">
                             Premium
                         </span>
                         {product.fileType && (
-                            <span className="bg-white/10 backdrop-blur-sm text-white/80 text-[9px] font-bold px-2 py-0.5 rounded-md border border-white/10 uppercase tracking-widest">
+                            <span className="bg-foreground/10 backdrop-blur-sm text-foreground/80 text-[9px] font-bold px-2 py-0.5 rounded-md border border-border uppercase tracking-widest">
                                 {product.fileType}
                             </span>
                         )}
@@ -122,7 +122,7 @@ export default function ProductCard({ product }: { product: Product }) {
                             title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                             className={`flex h-8 w-8 items-center justify-center rounded-xl border backdrop-blur-md transition-all duration-200 ${isWishlisted
                                 ? "bg-amber-500 text-white border-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.5)]"
-                                : "bg-black/40 border-white/10 text-zinc-300 hover:text-white hover:bg-white/15"
+                                : "bg-background/40 border-border text-muted-foreground hover:text-foreground hover:bg-secondary/80"
                                 }`}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={isWishlisted ? "currentColor" : "none"} stroke="currentColor" strokeWidth={2} className="w-4 h-4">
@@ -136,7 +136,7 @@ export default function ProductCard({ product }: { product: Product }) {
                             title={isLiked ? "Unlike" : "Like"}
                             className={`flex h-8 w-8 items-center justify-center rounded-xl border backdrop-blur-md transition-all duration-200 ${isLiked
                                 ? "bg-rose-500 text-white border-rose-400 shadow-[0_0_12px_rgba(244,63,94,0.5)]"
-                                : "bg-black/40 border-white/10 text-zinc-300 hover:text-white hover:bg-white/15"
+                                : "bg-background/40 border-border text-muted-foreground hover:text-foreground hover:bg-secondary/80"
                                 }`}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={isLiked ? "currentColor" : "none"} stroke="currentColor" strokeWidth={2} className={`w-4 h-4 ${isLikeAnimating ? 'animate-bounce' : ''}`}>
@@ -152,7 +152,7 @@ export default function ProductCard({ product }: { product: Product }) {
                                 setIsCommentsOpen(true);
                             }}
                             title="Comments"
-                            className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-black/40 backdrop-blur-md text-zinc-300 hover:text-white hover:bg-white/15 transition-all duration-200"
+                            className="flex h-8 w-8 items-center justify-center rounded-xl border border-border bg-background/40 backdrop-blur-md text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-all duration-200"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
@@ -162,7 +162,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
                     {/* Bottom-left: category pill on hover */}
                     <div className="absolute bottom-3 left-3 z-20 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                        <span className="px-2.5 py-1 bg-black/50 backdrop-blur-sm border border-white/10 rounded-full text-[9px] font-bold text-white/70 uppercase tracking-widest">
+                        <span className="px-2.5 py-1 bg-background/50 backdrop-blur-sm border border-border rounded-full text-[9px] font-bold text-foreground/70 uppercase tracking-widest">
                             {product.category}
                         </span>
                     </div>
@@ -182,20 +182,20 @@ export default function ProductCard({ product }: { product: Product }) {
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3 text-yellow-500/70 group-hover:text-yellow-500 transition-colors">
                                     <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
                                 </svg>
-                                <span className="text-[10px] font-semibold text-zinc-500 group-hover:text-zinc-300 transition-colors">{(product.rating || 4.8).toFixed(1)}</span>
+                                <span className="text-[10px] font-semibold text-muted-foreground group-hover:text-foreground transition-colors">{(product.rating || 4.8).toFixed(1)}</span>
                             </div>
                             {/* Likes */}
                             <div className="flex items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`w-3 h-3 transition-colors ${isLiked ? 'text-rose-500' : 'text-zinc-700 group-hover:text-rose-500/60'}`}>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`w-3 h-3 transition-colors ${isLiked ? 'text-rose-500' : 'text-muted-foreground group-hover:text-rose-500/60'}`}>
                                     <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
                                 </svg>
-                                <span className="text-[10px] font-semibold text-zinc-500 group-hover:text-zinc-300 transition-colors">{likesCount}</span>
+                                <span className="text-[10px] font-semibold text-muted-foreground group-hover:text-foreground transition-colors">{likesCount}</span>
                             </div>
                         </div>
                     </div>
 
                     {/* Title */}
-                    <h3 className="text-[15px] font-bold text-zinc-200 group-hover:text-white transition-colors leading-snug line-clamp-2">
+                    <h3 className="text-[15px] font-bold text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-2">
                         {product.title}
                     </h3>
 
@@ -204,20 +204,20 @@ export default function ProductCard({ product }: { product: Product }) {
                         <div className="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-[8px] font-black text-white uppercase shrink-0">
                             {product.author.charAt(0)}
                         </div>
-                        <span className="text-xs text-zinc-600 group-hover:text-zinc-400 transition-colors truncate">
+                        <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors truncate">
                             by {product.author}
                         </span>
                     </div>
 
                     {/* Footer: price + CTA */}
-                    <div className="mt-auto pt-4 flex items-center justify-between border-t border-white/5">
-                        <span className={`text-sm font-black tracking-tight ${isFree ? 'text-emerald-400' : 'text-white'}`}>
+                    <div className="mt-auto pt-4 flex items-center justify-between border-t border-border">
+                        <span className={`text-sm font-black tracking-tight ${isFree ? 'text-emerald-500' : 'text-foreground'}`}>
                             {product.price}
                         </span>
 
-                        <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-500 group-hover:text-white transition-colors">
+                        <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground group-hover:text-foreground transition-colors">
                             <span>View</span>
-                            <div className="flex h-5 w-5 items-center justify-center rounded-md bg-white/5 border border-white/5 group-hover:bg-white group-hover:text-black group-hover:border-transparent transition-all duration-300 group-hover:rotate-[-45deg]">
+                            <div className="flex h-5 w-5 items-center justify-center rounded-md bg-foreground/5 border border-border group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-transparent transition-all duration-300 group-hover:rotate-[-45deg]">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3 h-3">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                                 </svg>

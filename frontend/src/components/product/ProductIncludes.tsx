@@ -53,33 +53,33 @@ export default function ProductIncludes({ product }: ProductIncludesProps) {
     const isFigma = fileType.toLowerCase().includes('figma');
 
     return (
-        <div className="h-full w-full rounded-3xl bg-[#050505] border border-white/5 relative overflow-hidden flex flex-col group/panel">
+        <div className="h-full w-full rounded-3xl bg-card border border-border relative overflow-hidden flex flex-col group/panel">
             {/* Background Effects */}
-            <div className="absolute inset-0 bg-white/[0.02]" />
-            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[100px] rounded-full pointer-events-none opacity-50" />
+            <div className="absolute inset-0 bg-secondary/5 transition-colors duration-500" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] rounded-full pointer-events-none opacity-50" />
 
             <div className="relative z-10 p-6 sm:p-8 flex flex-col h-full">
                 <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                    <h2 className="text-xl font-bold text-foreground flex items-center gap-3">
                         <span className="w-1 h-6 rounded-full bg-emerald-500" />
                         Specification
                     </h2>
-                    <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest">V 1.0</span>
+                    <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">V 1.0</span>
                 </div>
 
                 <div className="flex flex-col flex-1 overflow-y-auto pr-2 -mr-2">
                     {/* Features List */}
                     {specsToRender.map((item: any, i: number) => (
-                        <div key={i} className="group flex items-center gap-4 py-4 border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors -mx-4 px-4 sm:mx-0 sm:px-2 rounded-xl shrink-0">
-                            <div className={`h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform duration-300`}>
+                        <div key={i} className="group flex items-center gap-4 py-4 border-b border-border last:border-0 hover:bg-secondary/20 transition-colors -mx-4 px-4 sm:mx-0 sm:px-2 rounded-xl shrink-0">
+                            <div className={`h-10 w-10 rounded-xl bg-secondary flex items-center justify-center text-foreground shadow-sm group-hover:scale-110 transition-transform duration-300`}>
                                 {item.icon || getIcon(item.label || '')}
                             </div>
                             <div className="flex-1 flex flex-col gap-0.5">
-                                <span className="text-sm font-medium text-zinc-300 group-hover:text-white transition-colors">{item.label}</span>
-                                <span className="text-xs text-zinc-500 font-mono tracking-tight">{item.desc}</span>
+                                <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">{item.label}</span>
+                                <span className="text-xs text-muted-foreground/60 font-mono tracking-tight">{item.desc}</span>
                             </div>
                             <div className="text-right">
-                                <span className="text-sm font-bold tracking-tight text-white group-hover:text-indigo-200 transition-colors">
+                                <span className="text-sm font-bold tracking-tight text-foreground group-hover:text-primary transition-colors">
                                     {item.value}
                                 </span>
                             </div>
@@ -89,10 +89,10 @@ export default function ProductIncludes({ product }: ProductIncludesProps) {
 
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-white/5 flex flex-col gap-3 shrink-0">
-                    <h3 className="text-sm font-bold text-white">{product?.price === 'Free' ? 'Format & Download' : 'File Format'}</h3>
-                    <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-xl bg-[#1e1e1e] flex items-center justify-center border border-white/5 shrink-0 group-hover:scale-105 transition-transform">
+                <div className="mt-4 pt-4 border-t border-border flex flex-col gap-3 shrink-0">
+                    <h3 className="text-sm font-bold text-foreground">{product?.price === 'Free' ? 'Format & Download' : 'File Format'}</h3>
+                    <div className="p-3 rounded-2xl bg-secondary/50 border border-border flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-card flex items-center justify-center border border-border shrink-0 group-hover:scale-105 transition-transform">
                             {(() => {
                                 const type = fileType.toLowerCase();
                                 if (type.includes('figma')) return <svg className="w-6 h-6" viewBox="0 0 38 57" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 28.5C19 25.9804 20.0009 23.5641 21.7825 21.7825C23.5641 20.0009 25.9804 19 28.5 19C31.0196 19 33.4359 20.0009 35.2175 21.7825C36.9991 23.5641 38 25.9804 38 28.5C38 31.0196 36.9991 33.4359 35.2175 35.2175C33.4359 36.9991 31.0196 38 28.5 38L19 38V28.5Z" fill="#1ABCFE" /><path d="M9.5 38C6.98043 38 4.56408 36.9991 2.78249 35.2175C1.00089 33.4359 0 31.0196 0 28.5C0 25.9804 1.00089 23.5641 2.78249 21.7825C4.56408 20.0009 6.98043 19 9.5 19L19 19V38H9.5Z" fill="#A259FF" /><path d="M19 19V9.5C19 6.98043 17.9991 4.56408 16.2175 2.78249C14.4359 1.00089 12.0196 0 9.5 0C6.98043 0 4.56408 1.00089 2.78249 2.78249C1.00089 4.56408 0 6.98043 0 9.5L0 19L19 19Z" fill="#F24E1E" /><path d="M9.5 38C6.34963 37.999 3.32846 39.2498 1.10086 41.4774C-1.12674 43.705 -1.12674 47.317 1.10086 49.5446C3.32846 51.7722 6.34963 53.023 9.5 53.022C12.0196 53.022 14.4359 52.0211 16.2175 50.2395C17.9991 48.4579 19 46.0416 19 43.522L19 38L9.5 38Z" fill="#0ACF83" /><path d="M19 0V19H28.5C31.0196 19 33.4359 17.9991 35.2175 16.2175C36.9991 14.4359 38 12.0196 38 9.5C38 6.98043 36.9991 4.56408 35.2175 2.78249C33.4359 1.00089 31.0196 0 28.5 0L19 0Z" fill="#FF7262" /></svg>;
@@ -106,14 +106,14 @@ export default function ProductIncludes({ product }: ProductIncludesProps) {
                             })()}
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-sm font-bold text-white capitalize">{fileType} File</span>
-                            <span className="text-xs text-zinc-500">{product?.fileSize || "189.6 KB"}</span>
+                            <span className="text-sm font-bold text-foreground capitalize">{fileType} File</span>
+                            <span className="text-xs text-muted-foreground">{product?.fileSize || "189.6 KB"}</span>
                         </div>
                     </div>
                     {product?.price === 'Free' && (
                         <a
                             href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000'}/api/uis/${product?.id}/download`}
-                            className="w-full h-12 rounded-xl bg-white text-black font-bold text-sm hover:bg-gray-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] flex items-center justify-center gap-2"
+                            className="w-full h-12 rounded-xl bg-foreground text-background font-bold text-sm hover:opacity-90 transition-all shadow-lg flex items-center justify-center gap-2"
                         >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />

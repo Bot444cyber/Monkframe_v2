@@ -69,7 +69,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
                     // Custom Revenue Widget (Replacing Total Downloads)
                     if (stat.label === 'Total Revenue') {
                         return (
-                            <div key={idx} className="group relative p-6 rounded-3xl bg-[#0c0c0e] border border-white/5 hover:border-white/10 transition-all duration-500 hover:-translate-y-1 shadow-2xl overflow-hidden">
+                            <div key={idx} className="group relative p-6 rounded-3xl bg-card border border-border hover:border-border/80 transition-all duration-500 hover:-translate-y-1 shadow-2xl overflow-hidden">
                                 <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full blur-[60px] opacity-0 group-hover:opacity-10 transition-opacity duration-700 bg-amber-500" />
                                 <div className="relative z-10 flex flex-col justify-between h-full min-h-[140px]">
                                     <div className="flex justify-between items-start mb-4">
@@ -82,9 +82,9 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
                                     </div>
 
                                     <div>
-                                        <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Total Revenue</p>
-                                        <h3 className="text-4xl font-medium text-white tracking-tight flex items-baseline gap-1">
-                                            <span className="text-2xl text-zinc-500 font-bold">$</span>
+                                        <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Total Revenue</p>
+                                        <h3 className="text-4xl font-medium text-foreground tracking-tight flex items-baseline gap-1">
+                                            <span className="text-2xl text-muted-foreground font-bold">$</span>
                                             {/* Using a distinct styling for revenue, mocking value scaling if needed, or using stat.value if appropriate */}
                                             {stat.value}
                                         </h3>
@@ -102,11 +102,11 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
                     }
 
                     return (
-                        <div key={idx} className="group relative p-6 rounded-3xl bg-[#0c0c0e] border border-white/5 hover:border-white/10 transition-all duration-500 hover:-translate-y-1 shadow-2xl overflow-hidden">
+                        <div key={idx} className="group relative p-6 rounded-3xl bg-card border border-border hover:border-border/80 transition-all duration-500 hover:-translate-y-1 shadow-2xl overflow-hidden">
                             <div className={`absolute -right-8 -top-8 w-32 h-32 rounded-full blur-[60px] opacity-0 group-hover:opacity-10 transition-opacity duration-700 ${stat.styles.glow}`} />
                             <div className="relative z-10 flex flex-col justify-between h-full min-h-[140px]">
                                 <div className="flex justify-between items-start">
-                                    <div className={`p-3 rounded-2xl ${stat.styles.bg} ${stat.styles.text} border border-white/5`}>
+                                    <div className={`p-3 rounded-2xl ${stat.styles.bg} ${stat.styles.text} border border-border`}>
                                         <svg className="w-5 h-5 fill-none stroke-current stroke-[2.5]" viewBox="0 0 24 24">
                                             <stat.icon />
                                         </svg>
@@ -116,8 +116,8 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
                                     </div>
                                 </div>
                                 <div>
-                                    <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-2">{stat.label}</p>
-                                    <h3 className="text-4xl font-medium text-white tracking-tight">{stat.value}</h3>
+                                    <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-[0.2em] mb-2">{stat.label}</p>
+                                    <h3 className="text-4xl font-medium text-foreground tracking-tight">{stat.value}</h3>
                                 </div>
                             </div>
                         </div>
@@ -125,7 +125,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
                 })}
                 {/* Fallback if no stats */}
                 {displayStats.length === 0 && (
-                    <div className="col-span-full p-8 text-center text-zinc-500 bg-[#0c0c0e] rounded-3xl border border-white/5">
+                    <div className="col-span-full p-8 text-center text-muted-foreground bg-card rounded-3xl border border-border">
                         No statistics available via API
                     </div>
                 )}
@@ -134,13 +134,13 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
             {/* ANALYTICS GRID */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* ECOSYSTEM GROWTH / TRADING TERMINAL */}
-                <div className="lg:col-span-8 bg-[#0c0c0e] border border-white/5 p-8 rounded-[2.5rem] flex flex-col min-h-[480px] relative shadow-2xl overflow-hidden">
+                <div className="lg:col-span-8 bg-card border border-border p-8 rounded-[2.5rem] flex flex-col min-h-[480px] relative shadow-2xl overflow-hidden">
                     {/* Background decoration */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600/5 blur-[80px] rounded-full pointer-events-none -mr-16 -mt-16" />
 
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 relative z-10">
                         <div>
-                            <h3 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+                            <h3 className="text-2xl font-bold text-foreground tracking-tight flex items-center gap-2">
                                 Ecosystem Growth
                                 <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1.5">
                                     <span className="relative flex h-1.5 w-1.5">
@@ -150,18 +150,18 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
                                     Live
                                 </span>
                             </h3>
-                            <p className="text-sm text-zinc-500 font-medium mt-1">7-day ecosystem performance</p>
+                            <p className="text-sm text-muted-foreground font-medium mt-1">7-day ecosystem performance</p>
                         </div>
 
                         {overviewData.dailyStats && (
-                            <div className="flex items-center gap-4 bg-zinc-900/50 p-2 rounded-xl border border-white/5 backdrop-blur-sm">
-                                <div className="px-3 border-r border-white/10">
-                                    <div className="text-[10px] text-zinc-500 uppercase font-bold">Today's Vol</div>
-                                    <div className="text-sm font-bold text-white">${overviewData.dailyStats.revenue.toLocaleString()}</div>
+                            <div className="flex items-center gap-4 bg-secondary/50 p-2 rounded-xl border border-border/80 backdrop-blur-sm">
+                                <div className="px-3 border-r border-border/50">
+                                    <div className="text-[10px] text-muted-foreground uppercase font-bold">Today's Vol</div>
+                                    <div className="text-sm font-bold text-foreground">${overviewData.dailyStats.revenue.toLocaleString()}</div>
                                 </div>
                                 <div className="px-1">
-                                    <div className="text-[10px] text-zinc-500 uppercase font-bold">Target</div>
-                                    <div className="text-xs font-bold text-zinc-400">${overviewData.dailyStats.revenueGoal.toLocaleString()}</div>
+                                    <div className="text-[10px] text-muted-foreground uppercase font-bold">Target</div>
+                                    <div className="text-xs font-bold text-muted-foreground/60">${overviewData.dailyStats.revenueGoal.toLocaleString()}</div>
                                 </div>
                             </div>
                         )}
@@ -173,34 +173,34 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
                         ) : overviewData.hourlyStats && overviewData.hourlyStats.length > 0 ? (
                             <TradingChart data={overviewData.hourlyStats} />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center border border-dashed border-white/10 rounded-2xl bg-white/1">
-                                <span className="text-xs font-bold text-zinc-600 uppercase tracking-widest">Awaiting Market Data...</span>
+                            <div className="w-full h-full flex items-center justify-center border border-dashed border-border/50 rounded-2xl bg-secondary/10">
+                                <span className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest">Awaiting Market Data...</span>
                             </div>
                         )}
                     </div>
 
-                    <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between border-t border-white/5 pt-6 gap-4 relative z-10">
+                    <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between border-t border-border pt-6 gap-4 relative z-10">
                         <div className="flex gap-8">
                             <div className="flex items-center gap-3">
                                 <div className="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-[0_0_12px_rgba(99,102,241,0.6)]"></div>
                                 <div className="flex flex-col">
-                                    <span className="text-[10px] text-zinc-500 font-bold uppercase">Users Acquisition</span>
+                                    <span className="text-[10px] text-muted-foreground font-bold uppercase">Users Acquisition</span>
                                     {overviewData.dailyStats && (
-                                        <span className="text-xs font-bold text-white tabular-nums">{overviewData.dailyStats.users} <span className="text-zinc-600 font-medium text-[10px]">Today</span></span>
+                                        <span className="text-xs font-bold text-foreground tabular-nums">{overviewData.dailyStats.users} <span className="text-muted-foreground/60 font-medium text-[10px]">Today</span></span>
                                     )}
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
                                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.6)]"></div>
                                 <div className="flex flex-col">
-                                    <span className="text-[10px] text-zinc-500 font-bold uppercase">UIs Deployment</span>
+                                    <span className="text-[10px] text-muted-foreground font-bold uppercase">UIs Deployment</span>
                                     {overviewData.dailyStats && (
-                                        <span className="text-xs font-bold text-white tabular-nums">{overviewData.dailyStats.uis} <span className="text-zinc-600 font-medium text-[10px]">Today</span></span>
+                                        <span className="text-xs font-bold text-foreground tabular-nums">{overviewData.dailyStats.uis} <span className="text-muted-foreground/60 font-medium text-[10px]">Today</span></span>
                                     )}
                                 </div>
                             </div>
                         </div>
-                        <div className="text-[10px] font-mono text-zinc-600">
+                        <div className="text-[10px] font-mono text-muted-foreground/60">
                             UTC {new Date().toISOString().slice(11, 16)} • MARKET OPEN
                         </div>
                     </div>
@@ -209,9 +209,9 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
                 {/* SIDEBAR WIDGETS */}
                 <div className="lg:col-span-4 space-y-8">
                     {/* ACTIVITY */}
-                    <div className="bg-[#0c0c0e] border border-white/5 p-8 rounded-[2.5rem] flex flex-col h-[400px] shadow-2xl relative overflow-hidden">
+                    <div className="bg-card border border-border p-8 rounded-[2.5rem] flex flex-col h-[400px] shadow-2xl relative overflow-hidden">
                         <div className="flex items-center justify-between mb-6 shrink-0">
-                            <h3 className="text-lg font-bold text-white flex items-center gap-3">
+                            <h3 className="text-lg font-bold text-foreground flex items-center gap-3">
                                 <span className="p-2 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/10"><svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><Icons.Bell /></svg></span>
                                 Terminal
                             </h3>
@@ -223,7 +223,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
 
                         <div className="space-y-3 overflow-y-auto pr-2 custom-scrollbar flex-1">
                             {recentActivities.map((activity, i) => (
-                                <div key={i} className="flex gap-4 p-3.5 rounded-2xl bg-white/2 border border-white/5 hover:border-indigo-500/20 hover:bg-white/4 transition-all cursor-pointer group">
+                                <div key={i} className="flex gap-4 p-3.5 rounded-2xl bg-secondary/20 border border-border hover:border-primary/20 hover:bg-secondary/40 transition-all cursor-pointer group">
                                     <div className={`mt-0.5 min-w-[32px] h-8 rounded-lg flex items-center justify-center border ${activity.type === 'PAYMENT' ? 'bg-emerald-500/10 border-emerald-500/10 text-emerald-400' : 'bg-indigo-500/10 border-indigo-500/10 text-indigo-400'}`}>
                                         <svg className="w-4 h-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
                                             {activity.type === 'PAYMENT' ? <Icons.Zap /> : <Icons.TrendingUp />}
@@ -231,33 +231,33 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex justify-between items-baseline mb-1">
-                                            <p className="text-[11px] font-bold text-white group-hover:text-indigo-400 transition-colors truncate">{activity.uiTitle || 'System Event'}</p>
-                                            <span className="text-[9px] font-bold text-zinc-600 uppercase tabular-nums">
+                                            <p className="text-[11px] font-bold text-foreground group-hover:text-primary transition-colors truncate">{activity.uiTitle || 'System Event'}</p>
+                                            <span className="text-[9px] font-bold text-muted-foreground/60 uppercase tabular-nums">
                                                 {activity.time && !isNaN(new Date(activity.time).getTime())
                                                     ? formatDistanceToNow(new Date(activity.time), { addSuffix: true }).replace('about ', '')
                                                     : '—'}
                                             </span>
                                         </div>
-                                        <p className="text-[11px] text-zinc-500 leading-snug font-mono">
-                                            <span className="text-zinc-300 font-semibold">{activity.user}</span> {activity.message}
+                                        <p className="text-[11px] text-muted-foreground leading-snug font-mono">
+                                            <span className="text-foreground font-semibold">{activity.user}</span> {activity.message}
                                         </p>
                                     </div>
                                 </div>
                             ))}
                             {recentActivities.length === 0 && (
-                                <div className="text-center text-zinc-600 text-[10px] uppercase font-bold py-10">No recent activity</div>
+                                <div className="text-center text-muted-foreground/60 text-[10px] uppercase font-bold py-10">No recent activity</div>
                             )}
                         </div>
                     </div>
 
                     {/* PAYMENT HEALTH */}
-                    <div className="bg-[#0c0c0e] border border-white/5 p-8 rounded-[2.5rem] shadow-2xl h-auto">
+                    <div className="bg-card border border-border p-8 rounded-[2.5rem] shadow-2xl h-auto">
                         <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Revenue Status</h3>
+                            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Revenue Status</h3>
                             <span className="text-[10px] font-bold text-emerald-400 px-2 py-1 bg-emerald-500/10 rounded-md border border-emerald-500/10 uppercase tracking-wider">Healthy</span>
                         </div>
 
-                        <div className="flex h-2.5 w-full bg-zinc-900 rounded-full overflow-hidden mb-8 ring-1 ring-white/5 p-0.5">
+                        <div className="flex h-2.5 w-full bg-muted rounded-full overflow-hidden mb-8 ring-1 ring-border/50 p-0.5">
                             {payTotal > 0 ? (
                                 <>
                                     <div className="h-full rounded-l-full bg-emerald-500 transition-all duration-1000" style={{ width: `${(payCompleted / payTotal) * 100}%` }} />
@@ -265,18 +265,18 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
                                     <div className="h-full rounded-r-full bg-rose-500 transition-all duration-1000 flex-1" style={{ width: `${(payFailed / payTotal) * 100}%` }} />
                                 </>
                             ) : (
-                                <div className="w-full h-full bg-zinc-800 rounded-full" />
+                                <div className="w-full h-full bg-secondary/80 rounded-full" />
                             )}
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-white/2 rounded-2xl p-4 border border-white/5 text-center hover:bg-white/4 transition-colors">
-                                <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-1 block">Completed</span>
-                                <span className="text-xl font-bold text-white tabular-nums">{payCompleted}</span>
+                            <div className="bg-secondary/20 rounded-2xl p-4 border border-border text-center hover:bg-secondary/40 transition-colors">
+                                <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-wider mb-1 block">Completed</span>
+                                <span className="text-xl font-bold text-foreground tabular-nums">{payCompleted}</span>
                             </div>
-                            <div className="bg-white/2 rounded-2xl p-4 border border-white/5 text-center hover:bg-white/4 transition-colors">
-                                <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-1 block">Pending</span>
-                                <span className="text-xl font-bold text-white tabular-nums">{payPending}</span>
+                            <div className="bg-secondary/20 rounded-2xl p-4 border border-border text-center hover:bg-secondary/40 transition-colors">
+                                <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-wider mb-1 block">Pending</span>
+                                <span className="text-xl font-bold text-foreground tabular-nums">{payPending}</span>
                             </div>
                         </div>
                     </div>
@@ -284,37 +284,37 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
             </div>
 
             {/* TOP PERFORMERS */}
-            <div className="bg-[#0c0c0e] border border-white/5 p-8 rounded-[2.5rem] shadow-2xl">
+            <div className="bg-card border border-border p-8 rounded-[2.5rem] shadow-2xl">
                 <div className="flex items-center justify-between mb-8 px-2">
-                    <h3 className="text-xl font-bold text-white tracking-tight">Market Movers</h3>
-                    <button className="text-[10px] font-bold text-zinc-400 hover:text-white transition-all bg-white/5 px-4 py-2 rounded-xl border border-white/5 uppercase tracking-widest hover:bg-white/10">Global Ranking</button>
+                    <h3 className="text-xl font-bold text-foreground tracking-tight">Market Movers</h3>
+                    <button className="text-[10px] font-bold text-muted-foreground/60 hover:text-foreground transition-all bg-secondary/20 px-4 py-2 rounded-xl border border-border uppercase tracking-widest hover:bg-secondary/40">Global Ranking</button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {trendingUIs.slice(0, 3).map((ui: TrendingUI, idx: number) => (
-                        <div key={idx} className="flex items-center gap-5 p-5 rounded-4xl bg-white/2 border border-white/5 hover:bg-white/5 hover:border-white/10 transition-all group cursor-pointer hover:-translate-y-1 duration-300">
-                            <div className="h-20 w-24 bg-zinc-900 rounded-2xl overflow-hidden border border-white/5 relative shrink-0 shadow-lg">
+                        <div key={idx} className="flex items-center gap-5 p-5 rounded-4xl bg-secondary/20 border border-border hover:bg-secondary/40 hover:border-border/80 transition-all group cursor-pointer hover:-translate-y-1 duration-300">
+                            <div className="h-20 w-24 bg-muted rounded-2xl overflow-hidden border border-border relative shrink-0 shadow-lg">
                                 <img src={ui.imageSrc} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={ui.title} referrerPolicy="no-referrer" />
                             </div>
                             <div className="min-w-0 flex-1">
-                                <h4 className="text-[13px] font-bold text-white truncate mb-3 group-hover:text-indigo-400 transition-colors">{ui.title}</h4>
+                                <h4 className="text-[13px] font-bold text-foreground truncate mb-3 group-hover:text-primary transition-colors">{ui.title}</h4>
                                 <div className="flex items-center gap-4">
                                     <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/10">
                                         <svg className="w-3 h-3 text-emerald-500 fill-current" viewBox="0 0 24 24"><Icons.Download /></svg>
                                         <span className="text-[10px] font-bold text-emerald-400 tabular-nums">{ui.downloads}</span>
                                     </div>
                                     <button onClick={(e) => handleLike(e, ui.id)} className="flex items-center gap-1.5 group/btn">
-                                        <svg className="w-4 h-4 text-zinc-600 group-hover/btn:text-rose-500 transition-colors fill-current" viewBox="0 0 24 24">
+                                        <svg className="w-4 h-4 text-muted-foreground/60 group-hover/btn:text-rose-500 transition-colors fill-current" viewBox="0 0 24 24">
                                             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                                         </svg>
-                                        <span className="text-[10px] font-bold text-zinc-500 tabular-nums group-hover/btn:text-zinc-300">{ui.likes}</span>
+                                        <span className="text-[10px] font-bold text-muted-foreground/60 tabular-nums group-hover/btn:text-foreground">{ui.likes}</span>
                                     </button>
                                 </div>
                             </div>
                         </div>
                     ))}
                     {trendingUIs.length === 0 && (
-                        <div className="col-span-full py-8 text-center text-zinc-600 font-bold uppercase text-[10px]">No trending assets</div>
+                        <div className="col-span-full py-8 text-center text-muted-foreground/60 font-bold uppercase text-[10px]">No trending assets</div>
                     )}
                 </div>
             </div>

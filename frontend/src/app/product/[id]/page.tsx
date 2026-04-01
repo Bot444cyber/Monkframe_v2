@@ -109,10 +109,10 @@ export default function ProductDetailsPage() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-black text-white flex items-center justify-center">
+            <div className="min-h-screen bg-background text-foreground flex items-center justify-center transition-colors duration-500">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="h-10 w-10 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-                    <p className="text-zinc-500 animate-pulse">Loading details...</p>
+                    <div className="h-10 w-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    <p className="text-muted-foreground animate-pulse">Loading details...</p>
                 </div>
             </div>
         );
@@ -120,17 +120,17 @@ export default function ProductDetailsPage() {
 
     if (!product) {
         return (
-            <div className="min-h-screen bg-black text-white flex items-center justify-center">
-                <p className="text-xl text-zinc-500">Product not found</p>
+            <div className="min-h-screen bg-background text-foreground flex items-center justify-center transition-colors duration-500">
+                <p className="text-xl text-muted-foreground">Product not found</p>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-black text-white font-sans selection:bg-indigo-500/30">
+        <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/30 transition-colors duration-500">
             {/* Background Ambient Glow REMOVED */}
             <div className="fixed inset-0 pointer-events-none">
-                {/* Clean dark background is already set on the container */}
+                {/* Clean background is already set on the container */}
             </div>
 
             <Header />
@@ -176,10 +176,10 @@ export default function ProductDetailsPage() {
                 </div>
 
                 {/* Discussion / Comments Section */}
-                <div className="mb-24 flex flex-col gap-8 border-t border-white/5 pt-16">
+                <div className="mb-24 flex flex-col gap-8 border-t border-border pt-16">
                     <div className="text-center">
-                        <h2 className="text-2xl font-bold text-white">Discussion & Feedback</h2>
-                        <p className="text-zinc-400 mt-2">Share your thoughts on this resource</p>
+                        <h2 className="text-2xl font-bold text-foreground">Discussion & Feedback</h2>
+                        <p className="text-muted-foreground mt-2">Share your thoughts on this resource</p>
                     </div>
 
                     <div className="w-full max-w-4xl mx-auto">

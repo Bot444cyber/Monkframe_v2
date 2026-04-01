@@ -428,22 +428,22 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-black flex flex-col lg:flex-row">
+        <div className="min-h-screen bg-background flex flex-col lg:flex-row">
             {/* Mobile Header (Dashboard Specific) */}
-            <header className="lg:hidden fixed top-0 left-0 right-0 z-40 h-16 bg-black/80 backdrop-blur-xl border-b border-white/5 flex items-center justify-between px-6">
+            <header className="lg:hidden fixed top-0 left-0 right-0 z-40 h-16 bg-background/80 backdrop-blur-xl border-b border-border flex items-center justify-between px-6">
                 <div className="flex items-center gap-2">
                     <div className="relative flex items-center justify-center gap-2">
                         <div className="w-8 h-8 rounded-lg flex items-center justify-center">
-                            <img src="/svg/logo.svg" alt="Monkframe Logo" className="w-full h-full object-contain" />
+                            <img src="/svg/logo.svg" alt="Monkframe Logo" className="w-full h-full object-contain invert dark:invert-0" />
                         </div>
-                        <span className="text-xl font-bold tracking-tighter text-white relative z-10">Monkframe</span>
+                        <span className="text-xl font-bold tracking-tighter text-foreground relative z-10">Monkframe</span>
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
                     <NotificationBell align="right" />
                     <button
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        className="p-2 -mr-2 text-zinc-400 hover:text-white"
+                        className="p-2 -mr-2 text-muted-foreground hover:text-foreground"
                     >
                         <div className="w-6 h-5 flex flex-col justify-between">
                             <span className={`h-0.5 bg-current rounded-full transition-all duration-300 ${isSidebarOpen ? 'w-6 rotate-45 translate-y-2' : 'w-6'}`} />
@@ -457,21 +457,21 @@ export default function Dashboard() {
             {/* Mobile Sidebar Overlay */}
             {isSidebarOpen && (
                 <div
-                    className="fixed inset-0 bg-black/80 z-40 lg:hidden backdrop-blur-sm"
+                    className="fixed inset-0 bg-background/80 z-40 lg:hidden backdrop-blur-sm"
                     onClick={() => setIsSidebarOpen(false)}
                 />
             )}
 
             {/* Unified Sidebar (Desktop & Mobile) */}
-            <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-zinc-950 border-r border-white/5 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} flex flex-col shadow-2xl`}>
+            <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-card border-r border-border transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} flex flex-col shadow-2xl`}>
                 {/* Brand Logo Area */}
-                <div className="h-20 flex items-center justify-between px-8 border-b border-white/5 relative">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-[50px] rounded-full pointer-events-none -mr-16 -mt-16"></div>
+                <div className="h-20 flex items-center justify-between px-8 border-b border-border relative">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[50px] rounded-full pointer-events-none -mr-16 -mt-16"></div>
                     <div className="flex items-center gap-3 relative z-10">
                         <div className="w-8 h-8 rounded-lg flex items-center justify-center">
-                            <img src="/svg/logo.svg" alt="Monkframe Logo" className="w-full h-full object-contain" />
+                            <img src="/svg/logo.svg" alt="Monkframe Logo" className="w-full h-full object-contain invert dark:invert-0" />
                         </div>
-                        <span className="text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-r from-white via-white to-zinc-400">
+                        <span className="text-2xl font-black tracking-tighter text-foreground">
                             Monkframe
                         </span>
                     </div>
@@ -481,7 +481,7 @@ export default function Dashboard() {
                 {/* Main Navigation */}
                 <div className="p-6 flex-1 overflow-y-auto custom-scrollbar">
                     <div className="mb-8">
-                        <h2 className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-4 pl-4">Main Menu</h2>
+                        <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4 pl-4">Main Menu</h2>
                         <nav className="space-y-1">
                             {navItems.filter(item => {
                                 if (user?.role === 'EDITOR') return item.id === 'uis';
@@ -491,16 +491,16 @@ export default function Dashboard() {
                                     key={item.id}
                                     onClick={() => { setActiveTab(item.id as Tab); setIsSidebarOpen(false); }}
                                     className={`w-full group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${activeTab === item.id
-                                        ? "bg-linear-to-r from-white/10 to-transparent text-white shadow-[inset_1px_0_0_0_#6366f1]"
-                                        : "bg-transparent text-zinc-500 hover:text-zinc-200 hover:bg-white/5"
+                                        ? "bg-linear-to-r from-foreground/10 to-transparent text-foreground shadow-[inset_1px_0_0_0_var(--primary)]"
+                                        : "bg-transparent text-muted-foreground hover:text-foreground hover:bg-secondary"
                                         }`}
                                 >
                                     {/* Active Indicator Glow */}
                                     {activeTab === item.id && (
-                                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-indigo-500 rounded-r-full shadow-[0_0_12px_#6366f1]"></div>
+                                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full shadow-[0_0_12px_var(--primary)]"></div>
                                     )}
 
-                                    <span className={`relative transition-colors duration-300 ${activeTab === item.id ? 'text-indigo-400' : 'text-zinc-600 group-hover:text-zinc-300'}`}>
+                                    <span className={`relative transition-colors duration-300 ${activeTab === item.id ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'}`}>
                                         {item.icon}
                                     </span>
                                     <span className={`text-sm font-medium tracking-wide transition-all ${activeTab === item.id ? 'translate-x-1' : 'group-hover:translate-x-1'}`}>
@@ -513,14 +513,14 @@ export default function Dashboard() {
                 </div>
 
                 {/* System / Footer Section */}
-                <div className="p-6 border-t border-white/5 bg-black/20 backdrop-blur-sm">
-                    <h2 className="text-[10px] font-bold text-zinc-600 uppercase tracking-[0.2em] mb-4 pl-4">System</h2>
+                <div className="p-6 border-t border-border bg-secondary/20 backdrop-blur-sm">
+                    <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4 pl-4">System</h2>
                     <nav className="space-y-2">
                         <Link
                             href="/"
-                            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium group"
+                            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-all text-sm font-medium group"
                         >
-                            <span className="p-1 rounded-lg bg-zinc-900 group-hover:bg-indigo-500/20 text-zinc-500 group-hover:text-indigo-400 transition-colors">
+                            <span className="p-1 rounded-lg bg-secondary group-hover:bg-primary/20 text-muted-foreground group-hover:text-primary transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                                 </svg>
@@ -531,9 +531,9 @@ export default function Dashboard() {
                         {user?.role === 'ADMIN' && (
                             <button
                                 onClick={() => setIsResetOpen(true)}
-                                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-rose-500/70 hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all text-sm font-medium group"
+                                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-destructive hover:text-destructive hover:bg-destructive/10 border border-transparent hover:border-destructive/20 transition-all text-sm font-medium group"
                             >
-                                <span className="p-1 rounded-lg bg-zinc-900 group-hover:bg-rose-500/20 text-rose-500/70 group-hover:text-rose-400 transition-colors">
+                                <span className="p-1 rounded-lg bg-secondary group-hover:bg-destructive/20 text-destructive group-hover:text-destructive transition-colors">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 group-hover:rotate-12 transition-transform">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                                     </svg>
@@ -544,9 +544,9 @@ export default function Dashboard() {
 
                         <button
                             onClick={logout}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800/50 border border-transparent hover:border-zinc-700/50 transition-all text-sm font-medium group"
+                            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary border border-transparent hover:border-border transition-all text-sm font-medium group"
                         >
-                            <span className="p-1 rounded-lg bg-zinc-900 group-hover:bg-zinc-700 text-zinc-500 group-hover:text-zinc-300 transition-colors">
+                            <span className="p-1 rounded-lg bg-secondary group-hover:bg-muted text-muted-foreground group-hover:text-foreground transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 group-hover:translate-x-0.5 transition-transform">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
                                 </svg>
@@ -561,22 +561,22 @@ export default function Dashboard() {
             <main className="flex-1 lg:ml-72 pt-20 lg:pt-8 px-6 lg:px-12 pb-12 overflow-x-hidden w-full">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-10 animate-fade-in relative z-10">
                     <div>
-                        <h1 className="text-3xl font-black text-white tracking-tight mb-2">Dashboard</h1>
-                        <p className="text-gray-400">Welcome back, {user?.full_name?.split(' ')[0] || user?.role || 'User'}</p>
+                        <h1 className="text-3xl font-black text-foreground tracking-tight mb-2">Dashboard</h1>
+                        <p className="text-muted-foreground">Welcome back, {user?.full_name?.split(' ')[0] || user?.role || 'User'}</p>
                     </div>
                     {/* Action Toolbar */}
                     <div className="hidden lg:flex items-center gap-4 animate-fade-in-up [animation-delay:100ms]">
                         {/* Date Widget */}
-                        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-zinc-400 hover:text-white transition-colors cursor-default">
-                            <svg className="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary border border-border text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-default">
+                            <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                             <span>{new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
                         </div>
 
                         {/* Notification Area */}
-                        <div className="flex items-center gap-3 pl-4 border-l border-white/10">
-                            <div className="bg-white/5 border border-white/10 rounded-full p-0.5 hover:bg-white/10 transition-all">
+                        <div className="flex items-center gap-3 pl-4 border-l border-border">
+                            <div className="bg-secondary border border-border rounded-full p-0.5 hover:bg-secondary/80 transition-all">
                                 <NotificationBell align="right" />
                             </div>
                         </div>
@@ -597,7 +597,7 @@ export default function Dashboard() {
                     )}
                     {activeTab === 'activity' && (
                         <div className="space-y-6">
-                            <h2 className="text-2xl font-bold text-white">Notifications</h2>
+                            <h2 className="text-2xl font-bold text-foreground">Notifications</h2>
                             <NotificationTable />
                         </div>
                     )}

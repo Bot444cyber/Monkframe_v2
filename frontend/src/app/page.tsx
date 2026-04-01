@@ -137,7 +137,7 @@ function HomeContent() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-black">
+    <div className="min-h-screen flex flex-col font-sans bg-background">
       <Header />
       <main className="flex-1">
         <Hero
@@ -150,31 +150,31 @@ function HomeContent() {
         />
 
         <section id="explore" className="py-16 md:py-24 px-4 md:px-8 lg:px-12 max-w-[1800px] mx-auto min-h-screen">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 pb-8 border-b border-white/5">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 pb-8 border-b border-border">
             <div className="relative">
               <div className="absolute -left-10 -top-10 w-40 h-40 bg-transparent rounded-full blur-[100px] pointer-events-none" />
-              <h2 className="relative text-4xl md:text-5xl font-bold tracking-tighter text-white mb-3">
+              <h2 className="relative text-4xl md:text-5xl font-bold tracking-tighter text-foreground mb-3">
                 {selectedCategory === 'All' ? 'All Designs' : `${selectedCategory} Templates`}
               </h2>
-              <p className="text-zinc-400 font-medium text-lg max-w-xl">
+              <p className="text-muted-foreground font-medium text-lg max-w-xl">
                 Discover {totalItems || filteredProducts.length} premium resources crafted for modern interfaces.
               </p>
             </div>
             <div className="relative z-20">
               <button
                 onClick={() => setIsSortOpen(!isSortOpen)}
-                className="flex items-center gap-3 bg-black hover:bg-white/4 border border-white/8 hover:border-white/15 rounded-xl px-5 py-2.5 transition-all duration-200 group"
+                className="flex items-center gap-3 bg-card hover:bg-foreground/5 border border-border hover:border-border/50 rounded-xl px-5 py-2.5 transition-all duration-200 group"
               >
-                <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest hidden sm:block">Sort by:</span>
-                <span className="text-sm font-bold text-white group-hover:text-indigo-200 transition-colors">{sortBy}</span>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={`w-4 h-4 text-zinc-500 group-hover:text-white transition-all duration-300 ${isSortOpen ? 'rotate-180' : ''}`}>
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest hidden sm:block">Sort by:</span>
+                <span className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">{sortBy}</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={`w-4 h-4 text-muted-foreground group-hover:text-foreground transition-all duration-300 ${isSortOpen ? 'rotate-180' : ''}`}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                 </svg>
               </button>
               {isSortOpen && (
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => setIsSortOpen(false)} />
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-black border border-white/10 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.9)] overflow-hidden z-20 p-1">
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.9)] overflow-hidden z-20 p-1">
                     {sortOptions.map((option) => (
                       <button
                         key={option}
@@ -183,8 +183,8 @@ function HomeContent() {
                           setIsSortOpen(false);
                         }}
                         className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${sortBy === option
-                          ? "bg-white text-black"
-                          : "text-zinc-500 hover:text-white hover:bg-white/5"
+                          ? "bg-primary text-primary-foreground"
+                          : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                           }`}
                       >
                         {option}
@@ -198,7 +198,7 @@ function HomeContent() {
 
           {loading ? (
             <div className="flex justify-center items-center py-40">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
             </div>
           ) : filteredProducts.length > 0 ? (
             <div className="space-y-12">
@@ -217,16 +217,16 @@ function HomeContent() {
             </div>
           ) : (
             <div className="py-40 text-center flex flex-col items-center gap-4">
-              <div className="h-16 w-16 rounded-2xl bg-white/4 border border-white/8 flex items-center justify-center text-zinc-600">
+              <div className="h-16 w-16 rounded-2xl bg-foreground/5 border border-border flex items-center justify-center text-muted-foreground">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-white">No items found</h3>
-              <p className="text-gray-500">Try selecting a different category or search term.</p>
+              <h3 className="text-2xl font-bold text-foreground">No items found</h3>
+              <p className="text-muted-foreground/60">Try selecting a different category or search term.</p>
               <button
                 onClick={() => setSelectedCategory(Category.ALL)}
-                className="mt-4 px-6 py-2.5 bg-white text-black text-sm font-bold rounded-xl hover:bg-zinc-100 transition-all"
+                className="mt-4 px-6 py-2.5 bg-primary text-primary-foreground text-sm font-bold rounded-xl hover:opacity-90 transition-all"
               >
                 Reset Filter
               </button>
@@ -234,9 +234,9 @@ function HomeContent() {
           )}
 
           {/* ── Logo Loop ── */}
-          <div className="mt-24 pt-10 pb-6 bg-black overflow-hidden">
+          <div className="mt-24 pt-10 pb-6 bg-background overflow-hidden">
             <div className="max-w-7xl mx-auto px-6 mb-5">
-              <p className="text-center text-xs font-bold text-zinc-600 uppercase tracking-[0.3em]">
+              <p className="text-center text-xs font-bold text-muted-foreground uppercase tracking-[0.3em]">
                 Trusted by teams at
               </p>
             </div>
@@ -246,13 +246,13 @@ function HomeContent() {
                 style={{ animation: 'logoScroll 30s linear infinite' }}
               >
                 {[...LOGO_NAMES, ...LOGO_NAMES].map((logo, i) => (
-                  <span key={i} className="text-2xl md:text-3xl font-black text-zinc-800 hover:text-zinc-400 transition-colors cursor-default select-none">
+                  <span key={i} className="text-2xl md:text-3xl font-black text-muted-foreground/40 hover:text-foreground transition-colors cursor-default select-none">
                     {logo}
                   </span>
                 ))}
               </div>
-              <div className="absolute inset-y-0 left-0 w-40 bg-linear-to-r from-black to-transparent z-10 pointer-events-none" />
-              <div className="absolute inset-y-0 right-0 w-40 bg-linear-to-l from-black to-transparent z-10 pointer-events-none" />
+              <div className="absolute inset-y-0 left-0 w-40 bg-linear-to-r from-background to-transparent z-10 pointer-events-none" />
+              <div className="absolute inset-y-0 right-0 w-40 bg-linear-to-l from-background to-transparent z-10 pointer-events-none" />
             </div>
             <style>{`@keyframes logoScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }`}</style>
           </div>
@@ -271,7 +271,7 @@ function HomeContent() {
 
 export default function App() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-black" />}>
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
       <HomeContent />
     </Suspense>
   );

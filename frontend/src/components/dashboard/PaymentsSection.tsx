@@ -46,15 +46,15 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
     };
 
     return (
-        <div className="bg-zinc-900/30 border border-white/5 rounded-[2rem] overflow-hidden animate-fade-in mb-20">
-            <div className="p-5 sm:p-8 border-b border-white/5 bg-white/[0.01]">
-                <h3 className="text-xl font-bold text-white tracking-tight mb-1">Ledger Operations</h3>
-                <p className="text-sm text-gray-500">Real-time transaction monitoring and dispute management</p>
+        <div className="bg-card border border-border rounded-[2rem] overflow-hidden animate-fade-in mb-20">
+            <div className="p-5 sm:p-8 border-b border-border bg-secondary/10">
+                <h3 className="text-xl font-bold text-foreground tracking-tight mb-1">Ledger Operations</h3>
+                <p className="text-sm text-muted-foreground">Real-time transaction monitoring and dispute management</p>
             </div>
             <div className="overflow-x-auto">
                 <table className="w-full text-left">
                     <thead>
-                        <tr className="border-b border-white/5 text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-white/[0.01]">
+                        <tr className="border-b border-border text-[10px] font-bold text-muted-foreground uppercase tracking-widest bg-secondary/10">
                             <th className="px-8 py-5 whitespace-nowrap">Order ID</th>
                             <th className="px-8 py-5 whitespace-nowrap">Customer Identity</th>
                             <th className="px-8 py-5 whitespace-nowrap">Timestamp</th>
@@ -63,7 +63,7 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
                             <th className="px-8 py-5 whitespace-nowrap">Actions</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5">
+                    <tbody className="divide-y divide-border">
                         {payments.map((tx) => {
                             const status = tx.status?.toUpperCase();
                             const userName = tx.user?.full_name || tx.customerName || 'Anonymous';
@@ -72,39 +72,39 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
                             const orderId = tx.stripePaymentIntentId ? tx.stripePaymentIntentId.slice(-8).toUpperCase() : tx.id.slice(0, 8).toUpperCase();
 
                             return (
-                                <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors group">
-                                    <td className="px-8 py-6 font-mono text-[10px] text-zinc-500 group-hover:text-zinc-300 transition-colors">
+                                <tr key={tx.id} className="hover:bg-secondary/50 transition-colors group">
+                                    <td className="px-8 py-6 font-mono text-[10px] text-muted-foreground group-hover:text-foreground transition-colors">
                                         <div className="flex flex-col">
-                                            <span className="text-white font-bold">{orderId}</span>
+                                            <span className="text-foreground font-bold">{orderId}</span>
                                             <span className="text-[9px] opacity-30" title={tx.id}>UUID: {tx.id.slice(0, 8)}...</span>
                                         </div>
                                     </td>
                                     <td className="px-8 py-6">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-zinc-800 border border-white/5 flex items-center justify-center text-[10px] font-bold text-indigo-400">
+                                            <div className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center text-[10px] font-bold text-primary">
                                                 {initial}
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className="text-sm font-semibold text-white">{userName}</span>
-                                                <span className="text-[10px] text-zinc-500">{userEmail}</span>
+                                                <span className="text-sm font-semibold text-foreground">{userName}</span>
+                                                <span className="text-[10px] text-muted-foreground">{userEmail}</span>
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-8 py-6 text-zinc-500 text-xs font-medium">
+                                    <td className="px-8 py-6 text-muted-foreground text-xs font-medium">
                                         {tx.created_at ? new Date(tx.created_at).toLocaleDateString('en-US', {
                                             month: 'short',
                                             day: 'numeric',
                                             year: 'numeric'
                                         }) : tx.date || 'N/A'}
                                     </td>
-                                    <td className="px-8 py-6 font-black text-white text-base tracking-tight">
+                                    <td className="px-8 py-6 font-black text-foreground text-base tracking-tight">
                                         ${Number(tx.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                                     </td>
                                     <td className="px-8 py-6">
                                         <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border ${status === 'COMPLETED' ? 'border-emerald-500/20 text-emerald-400 bg-emerald-500/10' :
                                             status === 'PENDING' ? 'border-amber-500/20 text-amber-400 bg-amber-500/10' :
                                                 status === 'FAILED' ? 'border-rose-500/20 text-rose-400 bg-rose-500/10' :
-                                                    'border-zinc-500/20 text-zinc-400 bg-zinc-500/10'
+                                                    'border-border text-muted-foreground bg-secondary'
                                             }`}>
                                             {status}
                                         </span>
@@ -115,7 +115,7 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
                                             disabled={status === 'COMPLETED'}
                                             className={`p-2 rounded-lg border transition-all 
                                                 ${status === 'COMPLETED'
-                                                    ? 'bg-zinc-800/50 border-white/5 text-zinc-600 cursor-not-allowed opacity-20'
+                                                    ? 'bg-muted/50 border-border text-muted-foreground/50 cursor-not-allowed opacity-20'
                                                     : 'bg-rose-500/10 border-rose-500/20 text-rose-500/80 hover:text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/30'
                                                 }`}
                                             title={status === 'COMPLETED' ? "Completed payments cannot be deleted" : "Delete Record"}

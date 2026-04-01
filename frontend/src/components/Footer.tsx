@@ -4,9 +4,9 @@ import { ICONS } from '../page/home/ts/constants';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="relative bg-black overflow-hidden pt-24 pb-10 px-6 border-t border-white/5">
+    <footer className="relative bg-background overflow-hidden pt-24 pb-10 px-6 border-t border-border">
       {/* Top gradient line */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-px bg-white/15" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-px bg-foreground/10" />
 
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-14 mb-20">
@@ -15,11 +15,11 @@ const Footer: React.FC = () => {
           <div className="md:col-span-5">
             <div className="flex items-center gap-3 mb-6 group cursor-pointer">
               <div className="w-9 h-9 rounded-xl flex items-center justify-center">
-                <img src="/svg/logo.svg" alt="Monkframe Logo" className="w-full h-full object-contain" />
+                <img src="/svg/logo.svg" alt="Monkframe Logo" className="w-full h-full object-contain dark:invert-0 light:invert transition-all" />
               </div>
-              <span className="text-white font-bold text-xl tracking-tight">Monkframe</span>
+              <span className="text-foreground font-bold text-xl tracking-tight">Monkframe</span>
             </div>
-            <p className="text-zinc-600 text-sm max-w-xs mb-8 leading-relaxed">
+            <p className="text-muted-foreground text-sm max-w-xs mb-8 leading-relaxed">
               The world's most advanced marketplace for high-performance design assets. Built by designers, for creators.
             </p>
 
@@ -36,7 +36,7 @@ const Footer: React.FC = () => {
                 <button
                   key={i}
                   aria-label={social.label}
-                  className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/8 flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/10 hover:border-white/15 transition-all duration-200"
+                  className="w-10 h-10 rounded-xl bg-foreground/4 border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-foreground/8 hover:border-border transition-all duration-200"
                 >
                   <social.Icon />
                 </button>
@@ -47,7 +47,7 @@ const Footer: React.FC = () => {
           {/* Links Grid */}
           <div className="md:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-10">
             <div>
-              <h4 className="text-white font-semibold text-xs uppercase tracking-[0.2em] mb-6">Platform</h4>
+              <h4 className="text-foreground font-semibold text-xs uppercase tracking-[0.2em] mb-6">Platform</h4>
               <ul className="space-y-3.5">
                 {[
                   { label: 'Explore', href: '/' },
@@ -55,7 +55,7 @@ const Footer: React.FC = () => {
                   { label: 'Profile', href: '/profile' }
                 ].map(item => (
                   <li key={item.label}>
-                    <a href={item.href} className="text-zinc-600 hover:text-white transition-colors duration-200 text-sm">
+                    <a href={item.href} className="text-muted-foreground hover:text-foreground transition-colors duration-200 text-sm">
                       {item.label}
                     </a>
                   </li>
@@ -64,7 +64,7 @@ const Footer: React.FC = () => {
             </div>
 
             <div>
-              <h4 className="text-white font-semibold text-xs uppercase tracking-[0.2em] mb-6">Support</h4>
+              <h4 className="text-foreground font-semibold text-xs uppercase tracking-[0.2em] mb-6">Support</h4>
               <ul className="space-y-3.5">
                 {[
                   { label: 'FAQ', href: '/faq' },
@@ -72,7 +72,7 @@ const Footer: React.FC = () => {
                   { label: 'Pricing', href: '/licenses' },
                 ].map(item => (
                   <li key={item.label}>
-                    <a href={item.href} className="text-zinc-600 hover:text-white transition-colors duration-200 text-sm">
+                    <a href={item.href} className="text-muted-foreground hover:text-foreground transition-colors duration-200 text-sm">
                       {item.label}
                     </a>
                   </li>
@@ -81,41 +81,41 @@ const Footer: React.FC = () => {
             </div>
 
             <div className="col-span-2 sm:col-span-1">
-              <h4 className="text-white font-semibold text-xs uppercase tracking-[0.2em] mb-6">Newsletter</h4>
-              <p className="text-zinc-700 text-xs leading-relaxed mb-5">
+              <h4 className="text-foreground font-semibold text-xs uppercase tracking-[0.2em] mb-6">Newsletter</h4>
+              <p className="text-muted-foreground text-xs leading-relaxed mb-5 opacity-70">
                 Latest drops and design resources, delivered monthly.
               </p>
               <form className="relative" onSubmit={(e) => e.preventDefault()}>
-                <div className="flex items-center bg-[#0d0d0d] border border-white/8 rounded-xl p-1 focus-within:border-white/20 transition-colors">
+                <div className="flex items-center bg-card border border-border rounded-xl p-1 focus-within:border-primary/20 transition-colors">
                   <input
                     type="email"
                     placeholder="your@email.com"
-                    className="w-full bg-transparent border-none px-3 py-1.5 text-xs text-white placeholder-zinc-700 focus:outline-none"
+                    className="w-full bg-transparent border-none px-3 py-1.5 text-xs text-foreground placeholder-muted-foreground focus:outline-none"
                   />
-                  <button className="px-3 py-1.5 bg-white text-black text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-zinc-200 transition-all">
+                  <button className="px-3 py-1.5 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest rounded-lg hover:opacity-90 transition-all">
                     Join
                   </button>
                 </div>
-                <p className="mt-2 text-[10px] text-zinc-700">No spam, unsubscribe anytime.</p>
+                <p className="mt-2 text-[10px] text-muted-foreground opacity-60">No spam, unsubscribe anytime.</p>
               </form>
             </div>
           </div>
         </div>
 
         {/* Bottom */}
-        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-6">
-            <p className="text-zinc-700 text-[11px] uppercase tracking-[0.25em]">© 2025 Monkframe</p>
-            <div className="h-3 w-px bg-white/5 hidden md:block" />
-            <a href="/licenses" className="text-zinc-700 hover:text-white text-[11px] uppercase tracking-widest transition-colors">Licensing</a>
+            <p className="text-muted-foreground text-[11px] uppercase tracking-[0.25em]">© 2025 Monkframe</p>
+            <div className="h-3 w-px bg-border hidden md:block" />
+            <a href="/licenses" className="text-muted-foreground hover:text-foreground text-[11px] uppercase tracking-widest transition-colors">Licensing</a>
           </div>
 
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.03] border border-white/8 rounded-full">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-foreground/3 border border-border rounded-full">
             <span className="relative flex h-1.5 w-1.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
               <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
             </span>
-            <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-[0.15em]">All systems operational</span>
+            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.15em]">All systems operational</span>
           </div>
         </div>
       </div>

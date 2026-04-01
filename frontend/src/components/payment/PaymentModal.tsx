@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import PaymentForm from './PaymentForm';
+import { useParams } from 'next/navigation';
+import { useTheme } from 'next-themes';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { useParams } from 'next/navigation';
+import PaymentForm from './PaymentForm';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -23,6 +24,7 @@ interface PaymentModalProps {
 
 export default function PaymentModal({ isOpen, onClose, product, onSuccess }: PaymentModalProps) {
     const params = useParams();
+    const { theme } = useTheme();
     const [mounted, setMounted] = useState(false);
     const [clientSecret, setClientSecret] = useState<string | null>(null);
 
@@ -109,43 +111,43 @@ export default function PaymentModal({ isOpen, onClose, product, onSuccess }: Pa
     };
 
     const modalContent = (
-        <div className="fixed inset-0 z-[9999] overflow-y-auto">
+        <div className="fixed inset-0 z-9999 overflow-y-auto">
             <div className="flex min-h-full items-center justify-center p-4 sm:p-6 text-center sm:text-left">
                 {/* Backdrop */}
                 <div
-                    className="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity"
+                    className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity"
                     onClick={onClose}
                 />
 
                 {/* Modal Window */}
-                <div className="relative w-full max-w-4xl bg-[#0a0a0a] border border-white/10 rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row transform transition-all animate-in fade-in zoom-in-95 duration-200 text-left my-8">
+                <div className="relative w-full max-w-4xl bg-card border border-border rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row transform transition-all animate-in fade-in zoom-in-95 duration-200 text-left my-8">
 
                     {/* Left Side: Order Summary */}
-                    <div className="w-full md:w-1/3 bg-zinc-900/50 p-5 md:p-8 border-b md:border-b-0 md:border-r border-white/5 flex flex-col">
-                        <h3 className="text-xl font-bold text-white mb-6">Order Summary</h3>
+                    <div className="w-full md:w-1/3 bg-secondary/50 p-5 md:p-8 border-b md:border-b-0 md:border-r border-border flex flex-col">
+                        <h3 className="text-xl font-bold text-foreground mb-6">Order Summary</h3>
 
                         <div className="flex gap-4 mb-6">
                             {product.imageSrc ? (
-                                <img src={product.imageSrc} alt={product.title} className="w-16 h-16 rounded-xl object-cover bg-zinc-800" />
+                                <img src={product.imageSrc} alt={product.title} className="w-16 h-16 rounded-xl object-cover bg-secondary" />
                             ) : (
-                                <div className="w-16 h-16 rounded-xl bg-linear-to-br from-indigo-500 to-purple-500 shrink-0" />
+                                <div className="w-16 h-16 rounded-xl bg-primary/20 shrink-0" />
                             )}
                             <div className="flex flex-col">
-                                <span className="text-sm font-medium text-white line-clamp-2">{product.title}</span>
-                                <span className="text-xs text-zinc-400 mt-1">Digital License</span>
+                                <span className="text-sm font-medium text-foreground line-clamp-2">{product.title}</span>
+                                <span className="text-xs text-muted-foreground mt-1">Digital License</span>
                             </div>
                         </div>
 
-                        <div className="mt-auto space-y-3 pt-6 border-t border-white/5">
-                            <div className="flex justify-between text-sm text-zinc-400">
+                        <div className="mt-auto space-y-3 pt-6 border-t border-border">
+                            <div className="flex justify-between text-sm text-muted-foreground">
                                 <span>Subtotal</span>
                                 <span>{product.price}</span>
                             </div>
-                            <div className="flex justify-between text-sm text-zinc-400">
+                            <div className="flex justify-between text-sm text-muted-foreground">
                                 <span>Tax</span>
                                 <span>$0.00</span>
                             </div>
-                            <div className="flex justify-between text-lg font-bold text-white pt-2">
+                            <div className="flex justify-between text-lg font-bold text-foreground pt-2">
                                 <span>Total</span>
                                 <span>{product.price}</span>
                             </div>
@@ -153,9 +155,9 @@ export default function PaymentModal({ isOpen, onClose, product, onSuccess }: Pa
                     </div>
 
                     {/* Right Side: Payment Form */}
-                    <div className="flex-1 p-5 md:p-8 bg-black">
+                    <div className="flex-1 p-5 md:p-8 bg-background">
                         {clientSecret ? (
-                            <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night' } }}>
+                            <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: theme === 'dark' ? 'night' : 'flat' } }}>
                                 <PaymentForm
                                     productTitle={product.title}
                                     productPrice={product.price}
@@ -166,7 +168,7 @@ export default function PaymentModal({ isOpen, onClose, product, onSuccess }: Pa
                             </Elements>
                         ) : (
                             <div className="flex h-full items-center justify-center">
-                                <span className="loading loading-spinner text-white">Loading payment...</span>
+                                <span className="loading loading-spinner text-primary">Loading payment...</span>
                             </div>
                         )}
                     </div>

@@ -7,7 +7,9 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import PresenceHandler from "@/components/PresenceHandler";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+import { ThemeProvider } from "@/components/ThemeProvider";
+
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
 const interTight = Inter_Tight({
   subsets: ["latin"],
@@ -29,23 +31,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("dark", "font-sans", geist.variable)}>
+    <html lang="en" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
       <body
-        className={`${interTight.variable} font-sans antialiased bg-black text-white selection:bg-white/20 selection:text-white`}
+        className={`${interTight.variable} font-sans antialiased bg-background text-foreground selection:bg-foreground/10`}
       >
-        <AuthProvider>
-          <Toaster position="bottom-right" toastOptions={{
-            style: {
-              background: '#18181b',
-              color: '#fff',
-              border: '1px solid rgba(255,255,255,0.1)'
-            }
-          }} />
-          <PresenceHandler />
-          <ErrorBoundary>
-            {children}
-          </ErrorBoundary>
-        </AuthProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthProvider>
+            <Toaster position="bottom-right" toastOptions={{
+              style: {
+                background: 'var(--card)',
+                color: 'var(--foreground)',
+                border: '1px solid var(--border)'
+              }
+            }} />
+            <PresenceHandler />
+            <ErrorBoundary>
+              {children}
+            </ErrorBoundary>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
