@@ -99,7 +99,7 @@ export default function SignupPage() {
             <main className="flex-1 flex flex-col items-center justify-center py-24 px-6 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,white_100%)] pointer-events-none opacity-80" />
                 <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-50/50 rounded-full blur-3xl -z-10 mix-blend-multiply" />
-                <div className="absolute bottom-1/4 right-1/4 w-[28rem] h-[28rem] bg-indigo-50/50 rounded-full blur-3xl -z-10 mix-blend-multiply" />
+                <div className="absolute bottom-1/4 right-1/4 w-md h-112 bg-indigo-50/50 rounded-full blur-3xl -z-10 mix-blend-multiply" />
 
                 <div className="w-full max-w-md mx-auto z-10 animate-fade-in-up">
                     <div className="text-center mb-10">

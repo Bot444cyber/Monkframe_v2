@@ -162,9 +162,15 @@ export const getUI = async (req: Request, res: Response) => {
 
             const numericUserId = typeof userId === 'string' ? parseInt(userId, 10) : userId;
             const [paymentRecord] = await db.select().from(payments).where(and(eq(payments.userId, numericUserId), eq(payments.uiId, ui.id), eq(payments.status, 'COMPLETED'))).limit(1);
-            if (paymentRecord || ui.creatorId === userId) {
+
+            const isFree = !ui.price || ui.price === '0' || ui.price.toLowerCase() === 'free';
+            if (paymentRecord || ui.creatorId === userId || isFree) {
                 purchased = true;
             }
+        } else {
+            // Even if not logged in, we check if it's free for the UI flag
+            const isFree = !ui.price || ui.price === '0' || ui.price.toLowerCase() === 'free';
+            if (isFree) purchased = true;
         }
 
         // Fetch File Size from Drive if exists
@@ -237,9 +243,14 @@ export const downloadUI = async (req: Request, res: Response) => {
         const userId = req.user?.user_id;
         const numericUserId = typeof userId === 'string' ? parseInt(userId, 10) : userId;
         let canDownload = false;
+
+        const isFree = !ui.price || ui.price === '0' || ui.price.toLowerCase() === 'free';
+
         if (userId) {
             const [payment] = await db.select().from(payments).where(and(eq(payments.userId, numericUserId as any), eq(payments.uiId, ui.id), eq(payments.status, 'COMPLETED'))).limit(1);
-            if (payment || ui.creatorId === userId) canDownload = true;
+            if (payment || ui.creatorId === userId || isFree) canDownload = true;
+        } else if (isFree) {
+            canDownload = true;
         }
 
         if (!canDownload) {
