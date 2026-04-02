@@ -12,6 +12,7 @@ import CommentSection from "@/components/CommentSection";
 import ProductIncludes from "@/components/product/ProductIncludes";
 import { useAuth } from "@/context/AuthContext";
 import Link from 'next/link';
+import { CheckCircle } from 'lucide-react';
 
 export default function ProductDetailsPage() {
     const params = useParams();
@@ -21,6 +22,7 @@ export default function ProductDetailsPage() {
     const [isLiked, setIsLiked] = useState(false);
     const [isWished, setIsWished] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const downloadTriggered = React.useRef(false);
 
     const { user } = useAuth();
 
@@ -140,7 +142,8 @@ export default function ProductDetailsPage() {
     useEffect(() => {
         if (product && product.purchased) {
             const hasAutoDownload = new URLSearchParams(window.location.search).get('autoDownload') === 'true';
-            if (hasAutoDownload) {
+            if (hasAutoDownload && !downloadTriggered.current) {
+                downloadTriggered.current = true;
                 handleDownload();
 
                 // Clear out the query parameters safely without refreshing
@@ -199,17 +202,26 @@ export default function ProductDetailsPage() {
                                         Try Pro Membership for UI Free. Only pro user download this UI and use this in any client or personal project.
                                     </p>
                                     <div className="flex flex-col gap-3 w-full">
-                                        {product.purchased || product.price === 'Free' ? (
-                                            <button onClick={handleDownload} className="w-full py-4 px-6 bg-blue-600 border border-transparent text-white text-sm font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-colors flex justify-center items-center gap-2 rounded-xl">
-                                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                                                Download Asset
-                                            </button>
-                                        ) : (
+                                        {!product.purchased ? (
                                             <Link href={`/payment?title=${encodeURIComponent(product.title)}&price=${encodeURIComponent(product.price)}&id=${encodeURIComponent(product.id)}`} className="w-full">
-                                                <button className="w-full py-3.5 px-6 bg-white border border-gray-200 text-gray-900 text-sm font-bold hover:border-gray-300 transition-colors shadow-sm rounded-xl">
+                                                <button className="w-full py-4 px-6 bg-white border border-gray-200 text-gray-900 text-sm font-bold hover:border-gray-300 transition-colors shadow-sm rounded-xl">
                                                     Purchase {product.price}
                                                 </button>
                                             </Link>
+                                        ) : (
+                                            <>
+                                                {product.price === 'Free' ? (
+                                                    <button onClick={handleDownload} className="w-full py-4 px-6 bg-blue-600 border border-transparent text-white text-sm font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-colors flex justify-center items-center gap-2 rounded-xl">
+                                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                                        Download Asset
+                                                    </button>
+                                                ) : (
+                                                    <div className="w-full py-4 px-6 bg-emerald-50 border border-emerald-100 text-emerald-700 text-sm font-bold flex justify-center items-center gap-2 rounded-xl">
+                                                        <CheckCircle className="w-5 h-5 text-emerald-600" />
+                                                        Purchased Successfully
+                                                    </div>
+                                                )}
+                                            </>
                                         )}
                                         <button className="w-full py-3.5 px-6 bg-gray-50 border border-gray-200 text-gray-900 text-sm font-bold hover:bg-gray-100 transition-colors shadow-sm rounded-xl">
                                             Join Pro
