@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { db } from '../db';
-import { uis, comments as commentsTable, users, likes, wishlists } from '../db/schema';
+import { uis, comments as commentsTable, users, likes, wishlists, payments } from '../db/schema';
 import { eq, and, or, like, desc, count, sql } from 'drizzle-orm';
 import { google } from 'googleapis';
 import fs from 'fs';
@@ -151,6 +151,7 @@ export const getUI = async (req: Request, res: Response) => {
 
         let liked = false;
         let wished = false;
+        let purchased = false;
 
         if (userId) {
             const [likeResult] = await db.select().from(likes).where(and(eq(likes.user_id, userId), eq(likes.ui_id, ui.id))).limit(1);
@@ -158,6 +159,12 @@ export const getUI = async (req: Request, res: Response) => {
 
             const [wishResult] = await db.select().from(wishlists).where(and(eq(wishlists.user_id, userId), eq(wishlists.ui_id, ui.id))).limit(1);
             wished = !!wishResult;
+
+            const numericUserId = typeof userId === 'string' ? parseInt(userId, 10) : userId;
+            const [paymentRecord] = await db.select().from(payments).where(and(eq(payments.userId, numericUserId), eq(payments.uiId, ui.id), eq(payments.status, 'COMPLETED'))).limit(1);
+            if (paymentRecord || ui.creatorId === userId) {
+                purchased = true;
+            }
         }
 
         // Fetch File Size from Drive if exists
@@ -206,6 +213,7 @@ export const getUI = async (req: Request, res: Response) => {
             fileSize, // Add file size to response
             liked,
             wished,
+            purchased,
             commentsCount,
         };
 
@@ -224,6 +232,18 @@ export const downloadUI = async (req: Request, res: Response) => {
 
         if (!ui || !ui.google_file_id) {
             return res.status(404).json({ status: false, message: "File not found" });
+        }
+
+        const userId = req.user?.user_id;
+        const numericUserId = typeof userId === 'string' ? parseInt(userId, 10) : userId;
+        let canDownload = false;
+        if (userId) {
+            const [payment] = await db.select().from(payments).where(and(eq(payments.userId, numericUserId as any), eq(payments.uiId, ui.id), eq(payments.status, 'COMPLETED'))).limit(1);
+            if (payment || ui.creatorId === userId) canDownload = true;
+        }
+
+        if (!canDownload) {
+            return res.status(403).json({ status: false, message: "You must purchase this asset to download it." });
         }
 
         // OAuth2 Strategy
@@ -265,9 +285,9 @@ export const downloadUI = async (req: Request, res: Response) => {
             }
         });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("Download Error:", error);
-        res.status(500).json({ status: false, message: "Download failed or credentials missing" });
+        res.status(500).json({ status: false, message: error?.message || "Google Drive integration failed or credentials missing. Check backend logs." });
     }
 };
 

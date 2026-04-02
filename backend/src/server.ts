@@ -38,6 +38,7 @@ import interactionRoutes from "./routes/interaction.routes";
 import paymentRoutes from "./routes/payment.routes";
 import notificationRoutes from "./routes/notification.routes";
 import dashboardRoutes from "./routes/dashboard.routes";
+import newsletterRoutes from "./routes/newsletter.routes";
 
 const app: Express = express();
 const PORT = process.env.PORT || 8000;
@@ -221,6 +222,7 @@ app.use('/api/interactions', interactionRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/newsletter', newsletterRoutes);
 
 // 404 handler
 app.use((req: Request, res: Response) => {

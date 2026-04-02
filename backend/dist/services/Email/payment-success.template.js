@@ -30,7 +30,7 @@ function paymentSuccessTemplate(details) {
     </div>
 
     <div class="button-container">
-      <a href="https://monkframer.online/billing" class="button">View Invoice in Dashboard</a>
+      <a href="https://www.monkframer.online/profile" class="button">View Invoice in Dashboard</a>
     </div>
 
     <p>Your subscription is now active. You have full access to all features included in the <strong>${details.planName}</strong> plan.</p>

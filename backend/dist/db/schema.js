@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.notificationsRelations = exports.notifications = exports.commentsRelations = exports.comments = exports.wishlistsRelations = exports.wishlists = exports.likesRelations = exports.likes = exports.paymentsRelations = exports.payments = exports.uisRelations = exports.uis = exports.authOtp = exports.usersRelations = exports.users = void 0;
+exports.newsletterSubscribers = exports.notificationsRelations = exports.notifications = exports.commentsRelations = exports.comments = exports.wishlistsRelations = exports.wishlists = exports.likesRelations = exports.likes = exports.paymentsRelations = exports.payments = exports.uisRelations = exports.uis = exports.authOtp = exports.usersRelations = exports.users = void 0;
 const mysql_core_1 = require("drizzle-orm/mysql-core");
 const drizzle_orm_1 = require("drizzle-orm");
 const crypto_1 = require("crypto");
@@ -157,3 +157,8 @@ exports.notificationsRelations = (0, drizzle_orm_1.relations)(exports.notificati
         references: [exports.uis.id],
     }),
 }));
+exports.newsletterSubscribers = (0, mysql_core_1.mysqlTable)('newsletter_subscribers', {
+    id: (0, mysql_core_1.int)('id').primaryKey().autoincrement(),
+    email: (0, mysql_core_1.varchar)('email', { length: 191 }).notNull().unique(),
+    created_at: (0, mysql_core_1.timestamp)('created_at').defaultNow().notNull(),
+});

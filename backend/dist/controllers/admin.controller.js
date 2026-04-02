@@ -42,7 +42,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetData = exports.getRecentActivity = exports.getAllPayments = exports.updateUserStatus = exports.updateUserRole = exports.getAllUsers = exports.getOverviewStats = void 0;
+exports.resetData = exports.getRecentActivity = exports.deletePayment = exports.getAllPayments = exports.updateUserStatus = exports.updateUserRole = exports.getAllUsers = exports.getOverviewStats = void 0;
 const db_1 = require("../db");
 const schema_1 = require("../db/schema");
 const drizzle_orm_1 = require("drizzle-orm");
@@ -244,6 +244,24 @@ const getAllPayments = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.getAllPayments = getAllPayments;
+const deletePayment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        // Check if payment exists
+        const [payment] = yield db_1.db.select().from(schema_1.payments).where((0, drizzle_orm_1.eq)(schema_1.payments.id, id)).limit(1);
+        if (!payment) {
+            return res.status(404).json({ status: false, message: "Payment record not found" });
+        }
+        // Delete from database
+        yield db_1.db.delete(schema_1.payments).where((0, drizzle_orm_1.eq)(schema_1.payments.id, id));
+        res.json({ status: true, message: "Payment record deleted successfully from dashboard" });
+    }
+    catch (error) {
+        console.error("Delete Payment Error:", error);
+        res.status(500).json({ status: false, message: "Failed to delete payment record" });
+    }
+});
+exports.deletePayment = deletePayment;
 const getRecentActivity = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const rows = yield db_1.db

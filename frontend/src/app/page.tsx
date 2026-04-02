@@ -1,51 +1,61 @@
 "use client"
 import React, { useState, useMemo, Suspense } from 'react';
 import Header from '@/components/Header';
-import Hero from '@/page/home/Hero';
 import ProductCard from '@/components/ProductCard';
 import Footer from '@/components/Footer';
-import SocialProof from '@/components/SocialProof';
 import { Product } from '@/components/ts/types';
-import { Category } from '@/page/home/ts/types';
+import Pagination from '@/components/Pagination';
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { ChevronDown, Search, Box, Shirt, Smartphone, Coffee, Plus, Monitor, Book, ShoppingBag } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
-// ... imports
-import Pagination from '@/components/Pagination';
-
-const LOGO_NAMES = ["Stripe", "Airbnb", "Spotify", "Netflix", "Slack", "Discord", "Figma", "Notion", "Linear", "Vercel"];
+const DropdownMenu = ({ items, position = "top" }: { items: string[], position?: "top" | "bottom" }) => (
+  <motion.div
+    initial={{ opacity: 0, y: position === "top" ? 10 : -10 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: position === "top" ? 10 : -10 }}
+    className={`absolute ${position === "top" ? "top-full mt-2" : "bottom-full mb-2"} left-0 w-48 bg-white border border-gray-100 shadow-xl rounded-lg py-2 z-50 normal-case tracking-normal`}
+  >
+    {items.map((item, i) => (
+      <a
+        key={i}
+        href="#"
+        className="block px-4 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+      >
+        {item}
+      </a>
+    ))}
+  </motion.div>
+);
 
 function HomeContent() {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [isSortOpen, setIsSortOpen] = useState(false);
-  const [sortBy, setSortBy] = useState("Popularity");
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const searchInputRef = React.useRef<HTMLInputElement>(null) as React.RefObject<HTMLInputElement>;
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
+
+  // Active hover menus logic from new UI
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   // Pagination State
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
 
-  const sortOptions = ["Popularity", "Newest"];
-
   const searchParams = useSearchParams();
   const router = useRouter();
   const { checkSession } = useAuth();
-
   const hasProcessedToken = React.useRef(false);
 
-  // Handle Token from Redirect
   React.useEffect(() => {
     const token = searchParams?.get('token');
     if (token && !hasProcessedToken.current) {
       hasProcessedToken.current = true;
       localStorage.setItem('auth_token', token);
       checkSession();
-      // Clean URL
       router.replace('/');
     }
   }, [searchParams, checkSession, router]);
@@ -56,29 +66,17 @@ function HomeContent() {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
       const token = localStorage.getItem('auth_token');
       const headers: any = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
+      if (token) headers['Authorization'] = `Bearer ${token}`;
 
       let url = `${apiUrl}/api/uis?page=${page}&limit=12`;
-
-      const isSortCategory = ['Trending', 'Newest'].includes(selectedCategory);
-
-      if (isSortCategory) {
-        url += `&sort=${selectedCategory.toLowerCase()}`;
-      } else if (selectedCategory && selectedCategory !== 'All') {
+      if (selectedCategory && selectedCategory !== 'All') {
         url += `&category=${encodeURIComponent(selectedCategory)}`;
       }
-
       if (searchQuery) {
         url += `&search=${encodeURIComponent(searchQuery)}`;
       }
 
-      const res = await fetch(url, {
-        credentials: 'include',
-        cache: 'no-store',
-        headers: headers
-      });
+      const res = await fetch(url, { credentials: 'include', cache: 'no-store', headers });
       const data = await res.json();
 
       if (data.status) {
@@ -110,169 +108,178 @@ function HomeContent() {
   };
 
   React.useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      fetchProducts();
-    }, 300); // 300ms debounce for search
-
-    // Polling every 5 minutes
-    const interval = setInterval(() => {
-      fetchProducts();
-    }, 300000);
-
-    return () => {
-      clearTimeout(timeoutId);
-      clearInterval(interval);
-    };
+    const timeoutId = setTimeout(() => { fetchProducts(); }, 300);
+    const interval = setInterval(() => { fetchProducts(); }, 300000);
+    return () => { clearTimeout(timeoutId); clearInterval(interval); };
   }, [page, selectedCategory, searchQuery]);
 
-  const filteredProducts = useMemo(() => {
-    return products;
-  }, [products]);
+  const filteredProducts = useMemo(() => products, [products]);
 
-  const handleSearchSubmit = () => {
-    const element = document.getElementById('explore');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+  // Static content from new App.tsx UI
+  const categories = [
+    { icon: <Box className="w-8 h-8" />, label: "Free Mockups" },
+    { icon: <Shirt className="w-8 h-8" />, label: "Tshirts" },
+    { icon: <Smartphone className="w-8 h-8" />, label: "Devices" },
+    { icon: <Coffee className="w-8 h-8" />, label: "Mugs" },
+    { icon: <Monitor className="w-8 h-8" />, label: "Hats" },
+    { icon: <Book className="w-8 h-8" />, label: "Books" },
+    { icon: <ShoppingBag className="w-8 h-8" />, label: "Bags" },
+    { icon: <Plus className="w-8 h-8" />, label: "And More" },
+  ];
+
+  const searchPills = ["Studio", "Kit", "Packaging", "Urban"];
+
+  const dropdownData: Record<string, string[]> = {
+    Flyer: ["A4 Flyer", "US Letter", "Square Flyer", "DL Flyer"],
+    Brochure: ["Bi-Fold", "Tri-Fold", "Z-Fold", "Multi-Page"],
+    "Business Card": ["Standard", "Rounded", "Square", "Vertical"],
+    Outdoor: ["Billboard", "Bus Stop", "Street Sign", "Poster"],
+    More: ["Social Media", "Websites", "UI Kits", "Icons"],
+    Bottles: ["Wine Bottles", "Beer Bottles", "Water Bottles", "Cosmetic Bottles"],
+    Jars: ["Glass Jars", "Plastic Jars", "Jam Jars", "Honey Jars"]
   };
 
+  const packagingMockups = [
+    { image: "https://picsum.photos/seed/jar1/600/800" },
+    { image: "https://picsum.photos/seed/jar2/600/800" },
+    { image: "https://picsum.photos/seed/jar3/600/800" },
+    { image: "https://picsum.photos/seed/bag1/600/800" },
+    { image: "https://picsum.photos/seed/bag2/600/800" },
+  ];
+
+  const urbanMockups = [
+    { category: "Poster, Urban", title: "Cylindrical street poster mockup", meta: "1 PSD file", image: "https://picsum.photos/seed/urban1/800/600" },
+    { category: "Signboard, Urban", title: "Hanging street signboard mockup", meta: "1 PSD file", image: "https://picsum.photos/seed/urban2/800/600" },
+    { category: "Urban, Flag", title: "Outdoor flags mockup", meta: "1 PSD file", image: "https://picsum.photos/seed/urban3/800/600" },
+    { category: "Signboard, Urban", title: "Wall mounted signboard mockup", meta: "1 PSD file", image: "https://picsum.photos/seed/urban4/800/600" },
+    { category: "Poster, Urban", title: "Street poster pillar mockup", meta: "1 PSD file", image: "https://picsum.photos/seed/urban5/800/600" },
+    { category: "Billboard, Urban", title: "Large billboard mockup", meta: "1 PSD file", image: "https://picsum.photos/seed/urban6/800/600" }
+  ];
+
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-background">
+    <div className="min-h-screen bg-white font-sans text-gray-900 flex flex-col">
       <Header />
       <main className="flex-1">
-        <Hero
-          activeCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          searchInputRef={searchInputRef}
-          onSearchSubmit={handleSearchSubmit}
-        />
+        {/* Categories Section - Moved to Header */}
 
-        <section id="explore" className="py-16 md:py-24 px-4 md:px-8 lg:px-12 max-w-[1800px] mx-auto min-h-screen">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 pb-8 border-b border-border">
-            <div className="relative">
-              <div className="absolute -left-10 -top-10 w-40 h-40 bg-transparent rounded-full blur-[100px] pointer-events-none" />
-              <h2 className="relative text-4xl md:text-5xl font-bold tracking-tighter text-foreground mb-3">
-                {selectedCategory === 'All' ? 'All Designs' : `${selectedCategory} Templates`}
-              </h2>
-              <p className="text-muted-foreground font-medium text-lg max-w-xl">
-                Discover {totalItems || filteredProducts.length} premium resources crafted for modern interfaces.
-              </p>
-            </div>
-            <div className="relative z-20">
-              <button
-                onClick={() => setIsSortOpen(!isSortOpen)}
-                className="flex items-center gap-3 bg-card hover:bg-foreground/5 border border-border hover:border-border/50 rounded-xl px-5 py-2.5 transition-all duration-200 group"
-              >
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest hidden sm:block">Sort by:</span>
-                <span className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">{sortBy}</span>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={`w-4 h-4 text-muted-foreground group-hover:text-foreground transition-all duration-300 ${isSortOpen ? 'rotate-180' : ''}`}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                </svg>
-              </button>
-              {isSortOpen && (
-                <>
-                  <div className="fixed inset-0 z-10" onClick={() => setIsSortOpen(false)} />
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.9)] overflow-hidden z-20 p-1">
-                    {sortOptions.map((option) => (
-                      <button
-                        key={option}
-                        onClick={() => {
-                          setSortBy(option);
-                          setIsSortOpen(false);
-                        }}
-                        className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${sortBy === option
-                          ? "bg-primary text-primary-foreground"
-                          : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
-                          }`}
-                      >
-                        {option}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
+        {/* Hero Section */}
+        <section className="max-w-7xl mx-auto px-4 py-20 text-center">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl md:text-5xl font-bold text-gray-800 mb-12 tracking-tight"
+          >
+            Your daily source of <span className="text-blue-600">free</span> & <span className="text-blue-600">high-quality</span> assets!
+          </motion.h1>
 
-          {loading ? (
-            <div className="flex justify-center items-center py-40">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          {/* Search Bar Container */}
+          <div className="max-w-3xl mx-auto bg-gray-50 rounded-full p-2 flex items-center shadow-sm border border-gray-100 overflow-hidden">
+            <div className="flex gap-1 pl-2 overflow-x-auto no-scrollbar shrink-0 max-w-[120px] sm:max-w-none">
+              {searchPills.map((pill, i) => (
+                <button
+                  key={i}
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-sm font-semibold transition-colors bg-white text-gray-600 hover:bg-gray-100 whitespace-nowrap shrink-0`}
+                >
+                  {pill}
+                </button>
+              ))}
             </div>
-          ) : filteredProducts.length > 0 ? (
-            <div className="space-y-12">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {filteredProducts.map((product, idx) => (
-                  <div key={product.id} className="animate-fade-in-up" style={{ animationDelay: `${idx * 100}ms` }}>
-                    <ProductCard product={product} />
-                  </div>
-                ))}
-              </div>
-              <Pagination
-                currentPage={page}
-                totalPages={totalPages}
-                onPageChange={setPage}
+
+            <div className="flex-1 px-4 border-l border-gray-200 ml-2 sm:ml-4 min-w-0">
+              <input
+                ref={searchInputRef}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                type="text"
+                placeholder="Search Assets"
+                className="w-full bg-transparent outline-none text-gray-700 placeholder-gray-400 text-sm sm:text-base truncate"
               />
             </div>
-          ) : (
-            <div className="py-40 text-center flex flex-col items-center gap-4">
-              <div className="h-16 w-16 rounded-2xl bg-foreground/5 border border-border flex items-center justify-center text-muted-foreground">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-bold text-foreground">No items found</h3>
-              <p className="text-muted-foreground/60">Try selecting a different category or search term.</p>
-              <button
-                onClick={() => setSelectedCategory(Category.ALL)}
-                className="mt-4 px-6 py-2.5 bg-primary text-primary-foreground text-sm font-bold rounded-xl hover:opacity-90 transition-all"
-              >
-                Reset Filter
-              </button>
-            </div>
-          )}
 
-          {/* ── Logo Loop ── */}
-          <div className="mt-24 pt-10 pb-6 bg-background overflow-hidden">
-            <div className="max-w-7xl mx-auto px-6 mb-5">
-              <p className="text-center text-xs font-bold text-muted-foreground uppercase tracking-[0.3em]">
-                Trusted by teams at
+            <button className="bg-white p-2.5 sm:p-3 rounded-full shadow-sm hover:bg-gray-100 transition-colors shrink-0">
+              <Search className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+            </button>
+          </div>
+          <p className="mt-8 text-gray-400 font-medium">No redirections, highly professional elements.</p>
+
+          {/* Sub-navigation Bar */}
+          <div className="mt-16 border-t border-gray-100 pt-10">
+            <div className="text-center mb-6">
+              <p className="text-[15px] font-bold text-gray-800 uppercase tracking-widest">
+                PREMIUM DIGITAL ASSETS <span className="mx-2 text-gray-300">—</span> HIGH-QUALITY FREE ASSETS FOR DESIGNERS
               </p>
             </div>
-            <div className="relative flex overflow-hidden">
-              <div
-                className="flex whitespace-nowrap gap-16 items-center"
-                style={{ animation: 'logoScroll 30s linear infinite' }}
-              >
-                {[...LOGO_NAMES, ...LOGO_NAMES].map((logo, i) => (
-                  <span key={i} className="text-2xl md:text-3xl font-black text-muted-foreground/40 hover:text-foreground transition-colors cursor-default select-none">
-                    {logo}
-                  </span>
-                ))}
-              </div>
-              <div className="absolute inset-y-0 left-0 w-40 bg-linear-to-r from-background to-transparent z-10 pointer-events-none" />
-              <div className="absolute inset-y-0 right-0 w-40 bg-linear-to-l from-background to-transparent z-10 pointer-events-none" />
-            </div>
-            <style>{`@keyframes logoScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }`}</style>
+
+            <div className="border-t border-gray-100 mb-6"></div>
+
+            <nav className="flex flex-wrap justify-center items-center gap-x-4 sm:gap-x-8 gap-y-4 text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase tracking-widest px-4">
+              {["Flyer", "Brochure", "Business Card", "Outdoor", "Book", "Stationery", "Packaging", "Poster", "More", "All"].map((item) => (
+                <div
+                  key={item}
+                  className="relative group cursor-pointer"
+                  onMouseEnter={() => setActiveDropdown(`subnav-${item}`)}
+                  onMouseLeave={() => setActiveDropdown(null)}
+                  onClick={() => setSelectedCategory(item)}
+                >
+                  <div className={`flex items-center gap-1 hover:text-blue-600 transition-colors py-2 ${item === 'All' ? 'text-gray-900 font-black' : ''} ${selectedCategory === item ? 'text-blue-600' : ''}`}>
+                    {item} {dropdownData[item] && <ChevronDown className="w-3.5 h-3.5" />}
+                  </div>
+                  <AnimatePresence>
+                    {activeDropdown === `subnav-${item}` && dropdownData[item] && (
+                      <DropdownMenu items={dropdownData[item]} position="bottom" />
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
+            </nav>
           </div>
 
+          {/* Real Backend Data Mockup Grid */}
+          <div className="mt-24">
+            {loading ? (
+              <div className="flex justify-center items-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+              </div>
+            ) : filteredProducts.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 text-left mb-12">
+                  {filteredProducts.map((product, idx) => (
+                    <motion.div
+                      key={product.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: idx * 0.05 }}
+                    >
+                      <ProductCard product={product} />
+                    </motion.div>
+                  ))}
+                </div>
+                <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+              </>
+            ) : (
+              <div className="py-20 text-center flex flex-col items-center gap-4">
+                <h3 className="text-2xl font-bold text-gray-800">No items found</h3>
+                <p className="text-gray-500">Try selecting a different category or search term.</p>
+                <button onClick={() => { setSelectedCategory("All"); setSearchQuery(""); }} className="mt-4 px-6 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-all">
+                  Reset Filter
+                </button>
+              </div>
+            )}
+          </div>
         </section>
 
-        <SocialProof />
-
-        <div id="contact">
-          <Footer />
-        </div>
       </main>
-    </div >
+      <Footer />
+    </div>
   );
 }
 
 export default function App() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
       <HomeContent />
     </Suspense>
   );
 }
+

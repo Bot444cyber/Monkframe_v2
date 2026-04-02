@@ -1,11 +1,15 @@
 "use client";
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PaymentForm from '@/components/payment/PaymentForm';
 import { useSearchParams, useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 function PaymentContent() {
     const searchParams = useSearchParams();
@@ -15,39 +19,133 @@ function PaymentContent() {
     const price = searchParams?.get('price') || '$29.00';
     const id = searchParams?.get('id');
 
-    const handleSuccess = () => {
+    const [clientSecret, setClientSecret] = useState<string | null>(null);
+
+    const redirectStatus = searchParams?.get('redirect_status');
+    const paymentIntentIdParam = searchParams?.get('payment_intent');
+
+    useEffect(() => {
+        const handleSuccessRedirect = async () => {
+            if (paymentIntentIdParam) {
+                try {
+                    const token = localStorage.getItem('auth_token');
+                    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
+                    await fetch(`${API_BASE_URL}/api/payment/confirm-payment`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ paymentIntentId: paymentIntentIdParam })
+                    });
+                } catch (err) {
+                    console.error("Failed to confirm payment in backend via redirect", err);
+                }
+            }
+            toast.success("Payment successful!");
+            if (id) {
+                router.push(`/product/${id}?autoDownload=true`);
+            } else {
+                router.push('/');
+            }
+        };
+
+        if (redirectStatus === 'succeeded') {
+            handleSuccessRedirect();
+            return;
+        }
+
+        const fetchPaymentIntent = async () => {
+            try {
+                const priceString = price.replace(/[^0-9.-]+/g, "");
+                const amount = Math.round(parseFloat(priceString) * 100) || 2900;
+
+                const token = localStorage.getItem('auth_token');
+                const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
+
+                const res = await fetch(`${API_BASE_URL}/api/payment/create-payment-intent`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ amount, currency: 'usd', uiId: id }),
+                });
+
+                if (res.status === 401) {
+                    toast.error("Please log in to complete your checkout.");
+                    router.push('/login');
+                    return;
+                }
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.clientSecret) {
+                        setClientSecret(data.clientSecret);
+                    }
+                } else {
+                    const errText = await res.text();
+                    toast.error(`Checkout initialization failed: ${res.statusText}`);
+                    console.error("Payment intent fetch failed:", res.status, errText);
+                }
+            } catch (err) {
+                console.error("Failed to fetch payment intent", err);
+            }
+        };
+
+        fetchPaymentIntent();
+    }, [price, id, redirectStatus, paymentIntentIdParam, router]);
+
+    const handleSuccess = async (paymentIntentId?: string) => {
+        if (paymentIntentId) {
+            try {
+                const token = localStorage.getItem('auth_token');
+                const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
+                await fetch(`${API_BASE_URL}/api/payment/confirm-payment`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ paymentIntentId })
+                });
+            } catch (err) {
+                console.error("Failed to confirm payment in backend", err);
+            }
+        }
+
         toast.success("Payment successful!");
         if (id) {
-            router.push(`/product/${id}`);
+            router.push(`/product/${id}?autoDownload=true`);
         } else {
             router.push('/');
         }
     };
 
     return (
-        <div className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-8 bg-card border border-border rounded-3xl overflow-hidden shadow-2xl transition-colors duration-500">
-            <div className="p-5 md:p-8 bg-card border-b md:border-b-0 md:border-r border-border flex flex-col justify-between min-h-[400px]">
+        <div className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-8 bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500">
+            <div className="p-5 md:p-8 bg-white border-b md:border-b-0 md:border-r border-gray-100 flex flex-col justify-between min-h-[400px]">
                 <div>
-                    <h2 className="text-2xl font-bold text-foreground mb-6">Order Summary</h2>
-                    <div className="flex items-start gap-4 p-4 bg-secondary/3 rounded-2xl border border-border">
-                        <div className="w-16 h-16 rounded-xl bg-linear-to-br from-primary/50 to-primary shrink-0" />
+                    <h2 className="text-2xl font-bold text-gray-900 mb-6">Order Summary</h2>
+                    <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <div className="w-16 h-16 rounded-xl bg-linear-to-br from-blue-50 to-blue-100 border border-blue-500/10 shrink-0" />
                         <div>
-                            <h3 className="font-bold text-foreground leading-tight mb-1">{title}</h3>
-                            <span className="text-xs text-muted-foreground font-mono uppercase tracking-wide">Digital License</span>
+                            <h3 className="font-bold text-gray-900 leading-tight mb-1">{title}</h3>
+                            <span className="text-xs text-gray-500 font-mono uppercase tracking-wide">Digital License</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="space-y-3 pt-6 border-t border-border">
-                    <div className="flex justify-between text-muted-foreground">
+                <div className="space-y-3 pt-6 border-t border-gray-100">
+                    <div className="flex justify-between text-gray-500">
                         <span>Subtotal</span>
                         <span>{price}</span>
                     </div>
-                    <div className="flex justify-between text-muted-foreground">
+                    <div className="flex justify-between text-gray-500">
                         <span>Tax</span>
                         <span>$0.00</span>
                     </div>
-                    <div className="flex justify-between text-xl font-bold text-foreground pt-2 border-t border-border mt-2">
+                    <div className="flex justify-between text-xl font-bold text-gray-900 pt-2 border-t border-gray-100 mt-2">
                         <span>Total</span>
                         <span>{price}</span>
                     </div>
@@ -55,12 +153,20 @@ function PaymentContent() {
             </div>
 
             {/* Right Side Form */}
-            <div className="p-5 md:p-8 bg-background transition-colors duration-500">
-                <PaymentForm
-                    productTitle={title}
-                    productPrice={price}
-                    onSuccess={handleSuccess}
-                />
+            <div className="p-5 md:p-8 bg-gray-50/50 transition-colors duration-500">
+                {clientSecret ? (
+                    <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'flat' } }}>
+                        <PaymentForm
+                            productTitle={title}
+                            productPrice={price}
+                            onSuccess={handleSuccess}
+                        />
+                    </Elements>
+                ) : (
+                    <div className="flex h-full items-center justify-center min-h-[300px]">
+                        <span className="loading loading-spinner text-blue-600">Loading payment...</span>
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -68,16 +174,14 @@ function PaymentContent() {
 
 export default function PaymentPage() {
     return (
-        <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-primary/30 transition-colors duration-500">
-            {/* No colored orbs — pure black */}
-
+        <div className="min-h-screen bg-white text-gray-900 flex flex-col font-sans selection:bg-blue-600/10 selection:text-blue-600 transition-colors duration-500">
             <Header />
 
-            <main className="flex-1 flex items-center justify-center p-6 py-24 relative z-10 opacity-0 animate-in fade-in duration-500 forwards animation-delay-300" style={{ animationFillMode: 'forwards' }}>
+            <main className="flex-1 flex items-center justify-center p-6 py-24 relative z-10 animate-fade-in-up">
                 <Suspense fallback={
                     <div className="flex flex-col items-center gap-4">
-                        <div className="h-10 w-10 border-2 border-border border-t-foreground rounded-full animate-spin" />
-                        <p className="text-muted-foreground font-medium animate-pulse">Loading checkout...</p>
+                        <div className="h-10 w-10 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
+                        <p className="text-gray-500 font-medium animate-pulse">Loading checkout...</p>
                     </div>
                 }>
                     <PaymentContent />

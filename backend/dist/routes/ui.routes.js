@@ -62,7 +62,7 @@ router.get('/', auth_middleware_1.optionalAuthenticate, uiController.getUIs);
 // Get Single UI
 router.get('/:id', auth_middleware_1.optionalAuthenticate, uiController.getUI);
 // Download UI by ID
-router.get('/:id/download', uiController.downloadUI);
+router.get('/:id/download', auth_middleware_1.authenticateUser, uiController.downloadUI);
 // Stream Image Proxy
 router.get('/image/:fileId', uiController.streamImage);
 // CRUD

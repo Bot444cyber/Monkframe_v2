@@ -138,11 +138,17 @@ const getUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const commentsCount = ((_b = commentsResult[0]) === null || _b === void 0 ? void 0 : _b.count) || 0;
         let liked = false;
         let wished = false;
+        let purchased = false;
         if (userId) {
             const [likeResult] = yield db_1.db.select().from(schema_1.likes).where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.likes.user_id, userId), (0, drizzle_orm_1.eq)(schema_1.likes.ui_id, ui.id))).limit(1);
             liked = !!likeResult;
             const [wishResult] = yield db_1.db.select().from(schema_1.wishlists).where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.wishlists.user_id, userId), (0, drizzle_orm_1.eq)(schema_1.wishlists.ui_id, ui.id))).limit(1);
             wished = !!wishResult;
+            const numericUserId = typeof userId === 'string' ? parseInt(userId, 10) : userId;
+            const [paymentRecord] = yield db_1.db.select().from(schema_1.payments).where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.payments.userId, numericUserId), (0, drizzle_orm_1.eq)(schema_1.payments.uiId, ui.id), (0, drizzle_orm_1.eq)(schema_1.payments.status, 'COMPLETED'))).limit(1);
+            if (paymentRecord || ui.creatorId === userId) {
+                purchased = true;
+            }
         }
         // Fetch File Size from Drive if exists
         let fileSize = "Unknown";
@@ -177,6 +183,7 @@ const getUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const data = Object.assign(Object.assign({}, ui), { creator, imageSrc: (0, helpers_1.transformToProxy)(ui.imageSrc, req), showcase: parseArray(ui.showcase).map((url) => (0, helpers_1.transformToProxy)(url, req)), specifications: parseArray(ui.specifications), highlights: parseArray(ui.highlights), fileSize, // Add file size to response
             liked,
             wished,
+            purchased,
             commentsCount });
         res.json({ status: true, data });
     }
@@ -188,11 +195,23 @@ const getUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getUI = getUI;
 // Download UI
 const downloadUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         const { id } = req.params;
         const [ui] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id)).limit(1);
         if (!ui || !ui.google_file_id) {
             return res.status(404).json({ status: false, message: "File not found" });
+        }
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.user_id;
+        const numericUserId = typeof userId === 'string' ? parseInt(userId, 10) : userId;
+        let canDownload = false;
+        if (userId) {
+            const [payment] = yield db_1.db.select().from(schema_1.payments).where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.payments.userId, numericUserId), (0, drizzle_orm_1.eq)(schema_1.payments.uiId, ui.id), (0, drizzle_orm_1.eq)(schema_1.payments.status, 'COMPLETED'))).limit(1);
+            if (payment || ui.creatorId === userId)
+                canDownload = true;
+        }
+        if (!canDownload) {
+            return res.status(403).json({ status: false, message: "You must purchase this asset to download it." });
         }
         // OAuth2 Strategy
         const clientId = process.env.GOOGLE_DRIVE_CLIENT_ID;
@@ -220,7 +239,7 @@ const downloadUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
     catch (error) {
         console.error("Download Error:", error);
-        res.status(500).json({ status: false, message: "Download failed or credentials missing" });
+        res.status(500).json({ status: false, message: (error === null || error === void 0 ? void 0 : error.message) || "Google Drive integration failed or credentials missing. Check backend logs." });
     }
 });
 exports.downloadUI = downloadUI;

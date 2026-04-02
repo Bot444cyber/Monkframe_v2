@@ -54,9 +54,9 @@ export default function PaymentForm({ productTitle, productPrice, onSuccess, onC
     return (
         <div className="flex flex-col h-full">
             <div className="flex justify-between items-center mb-8">
-                <h3 className="text-xl font-bold text-foreground">Payment Details</h3>
+                <h3 className="text-xl font-bold text-gray-900">Payment Details</h3>
                 {onCancel && (
-                    <button onClick={onCancel} className="text-muted-foreground hover:text-foreground transition-colors">
+                    <button onClick={onCancel} className="text-gray-400 hover:text-gray-900 transition-colors">
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -73,8 +73,8 @@ export default function PaymentForm({ productTitle, productPrice, onSuccess, onC
                     type="submit"
                     disabled={isProcessing || !stripe || !elements}
                     className={`mt-4 w-full h-14 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-lg ${isProcessing || !stripe || !elements
-                        ? 'bg-secondary text-muted-foreground cursor-not-allowed opacity-50'
-                        : 'bg-primary text-primary-foreground hover:opacity-90 hover:scale-[1.02] active:scale-[0.98]'
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-50'
+                        : 'bg-blue-600 text-white hover:opacity-90 hover:scale-[1.02] active:scale-[0.98]'
                         }`}
                 >
                     {isProcessing ? (
@@ -95,7 +95,7 @@ export default function PaymentForm({ productTitle, productPrice, onSuccess, onC
                     )}
                 </button>
 
-                <div className="flex items-center justify-center gap-2 text-muted-foreground/60 text-xs">
+                <div className="flex items-center justify-center gap-2 text-gray-400 text-xs">
                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
                     </svg>

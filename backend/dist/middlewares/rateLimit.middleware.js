@@ -6,16 +6,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.uploadLimiter = exports.authLimiter = exports.generalLimiter = void 0;
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 /**
- * General API rate limiter — 100 requests per 15 minutes per IP.
+ * General API rate limiter — 350 requests per 5 minutes per IP.
  */
 exports.generalLimiter = (0, express_rate_limit_1.default)({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100,
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 350,
     standardHeaders: true, // Return `RateLimit-*` headers
     legacyHeaders: false,
     message: {
         status: false,
-        message: 'Too many requests from this IP, please try again after 15 minutes.',
+        message: 'Too many requests from this IP, please try again after 5 minutes.',
     },
     skip: (req) => {
         // Skip rate limiting for health checks
@@ -23,17 +23,17 @@ exports.generalLimiter = (0, express_rate_limit_1.default)({
     },
 });
 /**
- * Strict auth rate limiter — 10 requests per 15 minutes per IP.
+ * Strict auth rate limiter — 35 requests per 10 minutes per IP.
  * Applied to login, register, OTP endpoints.
  */
 exports.authLimiter = (0, express_rate_limit_1.default)({
-    windowMs: 15 * 60 * 1000,
-    max: 10,
+    windowMs: 10 * 60 * 1000,
+    max: 35,
     standardHeaders: true,
     legacyHeaders: false,
     message: {
         status: false,
-        message: 'Too many authentication attempts, please try again after 15 minutes.',
+        message: 'Too many authentication attempts, please try again after 10 minutes.',
     },
 });
 /**

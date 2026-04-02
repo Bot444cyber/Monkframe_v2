@@ -1,73 +1,70 @@
+import React from 'react';
+
 interface ProductInfoProps {
     product: any;
 }
 
 export default function ProductInfo({ product }: ProductInfoProps) {
+    let tagsToRender: string[] = [];
+    if (product?.tags) {
+        if (Array.isArray(product.tags)) {
+            tagsToRender = product.tags;
+        } else if (typeof product.tags === 'string') {
+            try { tagsToRender = JSON.parse(product.tags); } catch { tagsToRender = []; }
+        }
+    } else {
+        tagsToRender = ["UI Kit", "Design", "Figma", "App Design"];
+    }
+
+    let highlights: string[] = [];
+    if (product?.highlights) {
+        if (Array.isArray(product.highlights)) {
+            highlights = product.highlights;
+        } else if (typeof product.highlights === 'string') {
+            try { highlights = JSON.parse(product.highlights); } catch { highlights = []; }
+        }
+    }
+
     return (
-        <div className="max-w-[1000px] mx-auto mb-32 relative">
-            {/* Decorative side line */}
-            {/* Decorative side line REMOVED */}
-            {/* <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent -translate-x-12 hidden xl:block" /> */}
-            {/* <div className="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent translate-x-12 hidden xl:block" /> */}
+        <div className="w-full flex flex-col gap-8 relative">
+            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">{product?.title || "Premium Mockup Kit"}</h1>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
-                {/* Overview */}
-                <div className="lg:col-span-7">
-                    <h2 className="mb-8 text-2xl font-bold text-foreground flex items-center gap-3">
-                        Overview
-                        <div className="h-px flex-1 bg-border" />
-                    </h2>
-                    <div className="flex flex-col gap-6 text-muted-foreground leading-relaxed text-lg font-light">
-                        <p>
-                            <span className="text-foreground font-normal">{product.title}</span> is a premium design resource.
-                        </p>
-                        <p>
-                            {product.overview || product.description || "This UI kit focuses on clarity, usability, and visual consistency, making it suitable for real-world applications. The design features clean layouts, soft colors, and playful visual elements to create a warm and trustworthy experience."}
-                        </p>
-                        <p className="p-4 rounded-xl bg-primary/5 border border-primary/10 text-primary text-base">
-                            This package includes UI design only, without UX flow, prototype, animation, branding, or logo design.
-                        </p>
-                    </div>
-                </div>
-
-                {/* Highlights & Format */}
-                <div className="lg:col-span-5 flex flex-col gap-12">
-                    <div className="p-8 rounded-3xl bg-card border border-border relative overflow-hidden group">
-                        {/* Gradients removed for simple solid look */}
-                        <div className="absolute inset-0 bg-transparent" />
-                        <h2 className="mb-6 text-xl font-bold text-foreground">Highlights</h2>
-                        <ul className="flex flex-col gap-4 mb-8">
-                            {(() => {
-                                const raw = product.highlights;
-                                let highlights: string[] = [];
-                                if (Array.isArray(raw)) {
-                                    highlights = raw;
-                                } else if (typeof raw === 'string') {
-                                    try { highlights = JSON.parse(raw); } catch { highlights = []; }
-                                }
-                                const list = highlights.length > 0 ? highlights : [
-                                    "Mobile-first ecommerce UI kit",
-                                    "Clean, modern & friendly visual style",
-                                    "Well organized Figma layers & Auto layout",
-                                    "Component Library",
-                                    "Easy to customize and developer ready",
-                                    "Suitable for personal & commercial projects",
-                                ];
-                                return list.map((item: string, i: number) => (
-                                    <li key={i} className="flex items-start gap-4 text-sm text-muted-foreground group">
-                                        <div className="shrink-0 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500 group-hover:bg-emerald-500/20 group-hover:scale-110 transition-all mt-0.5">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3 h-3">
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                                            </svg>
-                                        </div>
-                                        <span className="group-hover:text-foreground transition-colors leading-tight">{item}</span>
-                                    </li>
-                                ));
-                            })()}
-                        </ul>
-                    </div>
-                </div>
+            <div className="text-gray-600 leading-relaxed text-[15px] font-normal max-w-4xl">
+                <p className="mb-4 whitespace-pre-wrap">
+                    {product?.overview || product?.description || "This premium quality UI kit is carefully crafted and organized. Highly useful for any professional design work, featuring a modern aesthetic and scalable components for easy customization and adaptation."}
+                </p>
             </div>
+
+            {highlights.length > 0 && (
+                <div className="mt-2 flex flex-col gap-5 bg-gray-50/50 p-6 sm:p-8 rounded-2xl border border-gray-100">
+                    <h3 className="text-[17px] font-bold text-gray-900 tracking-tight">Highlights</h3>
+                    <ul className="flex flex-col gap-4">
+                        {highlights.map((item, idx) => (
+                            <li key={idx} className="flex items-start gap-3.5 text-[15px] font-medium text-gray-600">
+                                <div className="shrink-0 flex h-6 w-6 items-center justify-center rounded-full bg-blue-50 text-blue-600 mt-0.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                    </svg>
+                                </div>
+                                <span className="leading-snug">{item}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+
+            {tagsToRender.length > 0 && (
+                <div className="flex flex-col gap-3 mt-4">
+                    <span className="text-xs font-bold text-gray-900 tracking-widest uppercase">Tags</span>
+                    <div className="flex flex-wrap gap-2">
+                        {tagsToRender.map((tag: string, idx: number) => (
+                            <span key={idx} className="px-3 py-1.5 rounded-full border border-gray-200 bg-white text-gray-600 text-xs font-bold uppercase tracking-wider cursor-pointer hover:border-gray-300 hover:text-gray-900 hover:shadow-sm transition-all">
+                                {tag}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

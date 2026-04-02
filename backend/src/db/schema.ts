@@ -180,3 +180,9 @@ export const notificationsRelations = relations(notifications, ({ one }) => ({
     references: [uis.id],
   }),
 }));
+
+export const newsletterSubscribers = mysqlTable('newsletter_subscribers', {
+  id: int('id').primaryKey().autoincrement(),
+  email: varchar('email', { length: 191 }).notNull().unique(),
+  created_at: timestamp('created_at').defaultNow().notNull(),
+});

@@ -5,9 +5,8 @@ import { AuthProvider } from "@/context/AuthContext";
 import { Toaster } from "react-hot-toast";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import PresenceHandler from "@/components/PresenceHandler";
+import { ThemeProvider } from "next-themes";
 import { cn } from "@/lib/utils";
-
-import { ThemeProvider } from "@/components/ThemeProvider";
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -32,29 +31,36 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
-      <body
-        className={`${interTight.variable} font-sans antialiased bg-background text-foreground selection:bg-foreground/10`}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <AuthProvider>
-            <Toaster position="bottom-right" toastOptions={{
+      <body className={`${interTight.variable} font-sans antialiased bg-white text-gray-900 selection:bg-blue-600/10 selection:text-blue-600`}>
+        <AuthProvider>
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
               style: {
-                background: 'var(--card)',
-                color: 'var(--foreground)',
-                border: '1px solid var(--border)'
-              }
-            }} />
-            <PresenceHandler />
+                background: '#ffffff',
+                color: '#111827',
+                border: '1px solid #f3f4f6',
+                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                borderRadius: '0.75rem',
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                padding: '16px',
+              },
+              success: {
+                iconTheme: { primary: '#2563eb', secondary: '#ffffff' },
+              },
+              error: {
+                iconTheme: { primary: '#ef4444', secondary: '#ffffff' },
+              },
+            }}
+          />
+          <PresenceHandler />
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
             <ErrorBoundary>
               {children}
             </ErrorBoundary>
-          </AuthProvider>
-        </ThemeProvider>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

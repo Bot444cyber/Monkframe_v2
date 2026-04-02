@@ -125,6 +125,10 @@ const confirmPayment = (req, res) => __awaiter(void 0, void 0, void 0, function*
             res.json({ success: true, status: 'COMPLETED' });
         }
         else {
+            // Update local database to FAILED if it was not successful
+            yield db_1.db.update(schema_1.payments)
+                .set({ status: 'FAILED', updated_at: new Date() })
+                .where((0, drizzle_orm_1.eq)(schema_1.payments.stripePaymentIntentId, paymentIntentId));
             res.status(400).json({ success: false, status: paymentIntent.status });
         }
     }

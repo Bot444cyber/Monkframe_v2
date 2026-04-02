@@ -16,6 +16,7 @@ import DashboardModals from '@/components/dashboard/DashboardModals';
 import ResetDataModal from '@/components/dashboard/ResetDataModal';
 import { OverviewData } from '@/components/dashboard/types';
 import NotificationBell from '@/components/NotificationBell';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 type Tab = 'overview' | 'uis' | 'payments' | 'users' | 'activity';
 
@@ -428,7 +429,7 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-background flex flex-col lg:flex-row">
+        <div className="min-h-screen bg-background text-foreground flex flex-col lg:flex-row transition-colors duration-500">
             {/* Mobile Header (Dashboard Specific) */}
             <header className="lg:hidden fixed top-0 left-0 right-0 z-40 h-16 bg-background/80 backdrop-blur-xl border-b border-border flex items-center justify-between px-6">
                 <div className="flex items-center gap-2">
@@ -491,8 +492,8 @@ export default function Dashboard() {
                                     key={item.id}
                                     onClick={() => { setActiveTab(item.id as Tab); setIsSidebarOpen(false); }}
                                     className={`w-full group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${activeTab === item.id
-                                        ? "bg-linear-to-r from-foreground/10 to-transparent text-foreground shadow-[inset_1px_0_0_0_var(--primary)]"
-                                        : "bg-transparent text-muted-foreground hover:text-foreground hover:bg-secondary"
+                                        ? "bg-linear-to-r from-primary/5 to-transparent text-foreground shadow-[inset_1px_0_0_0_var(--primary)]"
+                                        : "bg-transparent text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                                         }`}
                                 >
                                     {/* Active Indicator Glow */}
@@ -513,14 +514,14 @@ export default function Dashboard() {
                 </div>
 
                 {/* System / Footer Section */}
-                <div className="p-6 border-t border-border bg-secondary/20 backdrop-blur-sm">
+                <div className="p-6 border-t border-border bg-secondary/10 backdrop-blur-sm">
                     <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4 pl-4">System</h2>
                     <nav className="space-y-2">
                         <Link
                             href="/"
-                            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-all text-sm font-medium group"
+                            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all text-sm font-medium group"
                         >
-                            <span className="p-1 rounded-lg bg-secondary group-hover:bg-primary/20 text-muted-foreground group-hover:text-primary transition-colors">
+                            <span className="p-1 rounded-lg bg-secondary/80 group-hover:bg-primary/20 text-muted-foreground group-hover:text-primary transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                                 </svg>
@@ -531,9 +532,9 @@ export default function Dashboard() {
                         {user?.role === 'ADMIN' && (
                             <button
                                 onClick={() => setIsResetOpen(true)}
-                                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-destructive hover:text-destructive hover:bg-destructive/10 border border-transparent hover:border-destructive/20 transition-all text-sm font-medium group"
+                                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-destructive/80 hover:text-destructive hover:bg-destructive/10 border border-transparent hover:border-destructive/20 transition-all text-sm font-medium group"
                             >
-                                <span className="p-1 rounded-lg bg-secondary group-hover:bg-destructive/20 text-destructive group-hover:text-destructive transition-colors">
+                                <span className="p-1 rounded-lg bg-destructive/10 group-hover:bg-destructive/20 text-destructive/80 group-hover:text-destructive transition-colors">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 group-hover:rotate-12 transition-transform">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                                     </svg>
@@ -544,9 +545,9 @@ export default function Dashboard() {
 
                         <button
                             onClick={logout}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary border border-transparent hover:border-border transition-all text-sm font-medium group"
+                            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/50 border border-transparent hover:border-border transition-all text-sm font-medium group"
                         >
-                            <span className="p-1 rounded-lg bg-secondary group-hover:bg-muted text-muted-foreground group-hover:text-foreground transition-colors">
+                            <span className="p-1 rounded-lg bg-secondary/80 group-hover:bg-secondary text-muted-foreground group-hover:text-foreground transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 group-hover:translate-x-0.5 transition-transform">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
                                 </svg>
@@ -566,8 +567,11 @@ export default function Dashboard() {
                     </div>
                     {/* Action Toolbar */}
                     <div className="hidden lg:flex items-center gap-4 animate-fade-in-up [animation-delay:100ms]">
+                        {/* Theme Toggle */}
+                        <ThemeToggle />
+
                         {/* Date Widget */}
-                        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary border border-border text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-default">
+                        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-default">
                             <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
@@ -576,7 +580,7 @@ export default function Dashboard() {
 
                         {/* Notification Area */}
                         <div className="flex items-center gap-3 pl-4 border-l border-border">
-                            <div className="bg-secondary border border-border rounded-full p-0.5 hover:bg-secondary/80 transition-all">
+                            <div className="bg-muted/50 border border-border rounded-full p-0.5 hover:bg-muted transition-all">
                                 <NotificationBell align="right" />
                             </div>
                         </div>
@@ -597,7 +601,7 @@ export default function Dashboard() {
                     )}
                     {activeTab === 'activity' && (
                         <div className="space-y-6">
-                            <h2 className="text-2xl font-bold text-foreground">Notifications</h2>
+                            <h2 className="text-2xl font-bold text-gray-900">Notifications</h2>
                             <NotificationTable />
                         </div>
                     )}
