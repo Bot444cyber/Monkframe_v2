@@ -34,7 +34,7 @@ router.get('/', optionalAuthenticate, uiController.getUIs);
 router.get('/:id', optionalAuthenticate, uiController.getUI);
 
 // Download UI by ID
-router.get('/:id/download', authenticateUser, uiController.downloadUI);
+router.get('/:id/download', optionalAuthenticate, uiController.downloadUI);
 
 // Stream Image Proxy
 router.get('/image/:fileId', uiController.streamImage);

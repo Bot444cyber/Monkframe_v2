@@ -97,20 +97,18 @@ export default function ProductDetailsPage() {
     };
 
     const handleDownload = async () => {
-        if (!user) {
-            toast.error("Please log in to download.");
-            return;
-        }
-
         const token = localStorage.getItem('auth_token');
         const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
         const toastId = toast.loading("Preparing secure download...");
 
         try {
+            const headers: HeadersInit = {};
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
             const response = await fetch(`${API_BASE_URL}/api/uis/${product.id}/download`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: headers
             });
 
             if (!response.ok) {
