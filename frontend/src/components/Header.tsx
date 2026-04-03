@@ -74,10 +74,10 @@ export default function Header() {
             <header className="border-b border-gray-100 sticky top-0 bg-white/80 backdrop-blur-md z-50 overflow-visible">
                 <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
                     <Link href="/" className="flex items-center gap-2 group">
-                        <div className="w-8 h-8 bg-blue-600 rounded-sm flex items-center justify-center overflow-hidden">
-                            <span className="text-white font-bold text-xl">M</span>
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+                            <img src="/svg/logo.svg" alt="Monkframe Logo" className="w-full h-full object-contain" />
                         </div>
-                        <span className="font-bold tracking-wider text-sm text-gray-900">MONKFRAME</span>
+                        <span className="font-bold tracking-wider text-[15px] text-gray-900">Monkframe</span>
                     </Link>
 
                     <div className="flex items-center gap-6">
