@@ -430,6 +430,23 @@ export default function Dashboard() {
 
     return (
         <div className="min-h-screen bg-background text-foreground flex flex-col lg:flex-row transition-colors duration-500">
+            {/* Dynamic Dashboard Theme Override */}
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                html.dark ::-webkit-scrollbar-track {
+                    background: black !important;
+                }
+                html.dark ::-webkit-scrollbar-thumb {
+                    background-color: #3f3f46 !important;
+                }
+                html.dark ::-webkit-scrollbar-thumb:hover {
+                    background-color: #52525b !important;
+                }
+                html.dark * {
+                    scrollbar-color: #3f3f46 black !important;
+                }
+            `}} />
+
             {/* Mobile Header (Dashboard Specific) */}
             <header className="lg:hidden fixed top-0 left-0 right-0 z-40 h-16 bg-background/80 backdrop-blur-xl border-b border-border flex items-center justify-between px-6">
                 <div className="flex items-center gap-2">

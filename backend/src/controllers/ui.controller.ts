@@ -242,17 +242,9 @@ export const downloadUI = async (req: Request, res: Response) => {
 
         const userId = req.user?.user_id;
         const numericUserId = typeof userId === 'string' ? parseInt(userId, 10) : userId;
-        let canDownload = false;
+        let canDownload = true; // All users can download
 
-        const isFree = !ui.price || ui.price === '0' || ui.price.toLowerCase() === 'free';
-
-        if (userId) {
-            const [payment] = await db.select().from(payments).where(and(eq(payments.userId, numericUserId as any), eq(payments.uiId, ui.id), eq(payments.status, 'COMPLETED'))).limit(1);
-            if (payment || ui.creatorId === userId || isFree) canDownload = true;
-        } else if (isFree) {
-            canDownload = true;
-        }
-
+        // The UI requires all users (admin/non-admin) to download without any purchasing
         if (!canDownload) {
             return res.status(403).json({ status: false, message: "You must purchase this asset to download it." });
         }
