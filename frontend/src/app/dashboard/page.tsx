@@ -433,17 +433,19 @@ export default function Dashboard() {
             {/* Dynamic Dashboard Theme Override */}
             <style dangerouslySetInnerHTML={{
                 __html: `
-                html.dark ::-webkit-scrollbar-track {
-                    background: black !important;
+                ::-webkit-scrollbar-track {
+                    background: var(--background) !important;
                 }
-                html.dark ::-webkit-scrollbar-thumb {
-                    background-color: #3f3f46 !important;
+                ::-webkit-scrollbar-thumb {
+                    background-color: var(--secondary) !important;
+                    border: 2px solid var(--background) !important;
+                    border-radius: 10px;
                 }
-                html.dark ::-webkit-scrollbar-thumb:hover {
-                    background-color: #52525b !important;
+                ::-webkit-scrollbar-thumb:hover {
+                    background-color: var(--muted-foreground) !important;
                 }
-                html.dark * {
-                    scrollbar-color: #3f3f46 black !important;
+                * {
+                    scrollbar-color: var(--secondary) var(--background) !important;
                 }
             `}} />
 
