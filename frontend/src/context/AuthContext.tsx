@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
         localStorage.removeItem('auth_token');
         setUser(null);
-        window.location.href = '/login';
+        window.location.href = '/';
     }, []);
 
     useEffect(() => {
