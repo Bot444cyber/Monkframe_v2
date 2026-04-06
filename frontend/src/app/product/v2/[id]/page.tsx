@@ -163,12 +163,6 @@ export default function ProductArtifactPage() {
                         <ProductIncludes product={product} />
                     </div>
                 </section>
-
-                {/* Templates Links */}
-                <section className="flex flex-wrap justify-center gap-6 border-t border-[#E8E1D9] pt-32">
-                    <Link href={`/product/v1/${product.id}`} className="px-10 py-5 bg-white border border-[#E8E1D9] text-[#2D241E] text-[11px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-amber-500 hover:text-white transition-all shadow-xl shadow-[#2D241E]/5">Standard Hub (v1)</Link>
-                    <Link href={`/product/v3/${product.id}`} className="px-10 py-5 bg-white border border-[#E8E1D9] text-[#2D241E] text-[11px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-amber-500 hover:text-white transition-all shadow-xl shadow-[#2D241E]/5">Cinematic View (v3)</Link>
-                </section>
             </main>
 
             <Footer />

@@ -171,26 +171,6 @@ export default function ProductDetailsPage() {
                                 onToggleWishlist={handleToggleWishlist}
                             />
 
-                            {/* Template Library / Version Switcher */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="p-6 rounded-[2rem] bg-gray-50 border border-amber-500/20 flex flex-col gap-3 relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 p-3"><span className="text-[8px] font-black bg-amber-500 text-white px-2 py-0.5 rounded-full uppercase">Current</span></div>
-                                    <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest">Version 1.0</span>
-                                    <h4 className="text-sm font-black text-gray-900 uppercase">Standard Hub</h4>
-                                    <p className="text-[11px] text-gray-400 font-medium leading-relaxed">The authoritative dual-sticky overview.</p>
-                                </div>
-                                <Link href={`/product/v2/${product.id}`} className="p-6 rounded-[2rem] bg-gray-50 border border-gray-100 hover:border-amber-400/30 transition-all group flex flex-col gap-3">
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Version 2.0</span>
-                                    <h4 className="text-sm font-black text-gray-900 uppercase">The Curator</h4>
-                                    <p className="text-[11px] text-gray-400 font-medium leading-relaxed group-hover:text-gray-600 transition-colors">Museum-grade artifact showcase.</p>
-                                </Link>
-                                <Link href={`/product/v3/${product.id}`} className="p-6 rounded-[2rem] bg-gray-50 border border-gray-100 hover:border-amber-400/30 transition-all group flex flex-col gap-3">
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Version 3.0</span>
-                                    <h4 className="text-sm font-black text-gray-900 uppercase">Panoramic</h4>
-                                    <p className="text-[11px] text-gray-400 font-medium leading-relaxed group-hover:text-gray-600 transition-colors">High-impact cinematic experience.</p>
-                                </Link>
-                            </div>
-
                             {/* Restricted Box acting as purchase boundary */}
                             <div className="w-full bg-[#f8f9fa] border border-gray-100 p-6 flex flex-col items-center justify-center text-center gap-6">
                                 <div className="max-w-md">
