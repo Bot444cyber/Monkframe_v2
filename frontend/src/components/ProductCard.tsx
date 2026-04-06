@@ -38,7 +38,7 @@ export default function ProductCard({ product }: { product: Product }) {
     return (
         <>
             <Link
-                href={`/product/${product.id}`}
+                href={`/product/v1/${product.id}`}
                 className="group flex flex-col gap-3 cursor-pointer"
             >
                 {/* ── Image Block ── */}

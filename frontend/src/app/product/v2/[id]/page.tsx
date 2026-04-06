@@ -1,0 +1,178 @@
+"use client";
+
+import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { useParams } from "next/navigation";
+import { InteractionService } from "@/services/interaction.service";
+import ProductIncludes from "@/components/product/ProductIncludes";
+import { useAuth } from "@/context/AuthContext";
+import Link from 'next/link';
+
+export default function ProductArtifactPage() {
+    const params = useParams();
+    const [product, setProduct] = useState<any>(null);
+    const [isWished, setIsWished] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const { user } = useAuth();
+
+    useEffect(() => {
+        const fetchProduct = async () => {
+            if (!params?.id) return;
+            try {
+                const response = await InteractionService.getUI(params.id as string);
+                if (response.status) {
+                    const raw = response.data;
+                    setProduct({
+                        ...raw,
+                        creatorName: raw.creator?.full_name || raw.author || "Unknown",
+                    });
+                    setIsWished(raw.wished || false);
+                }
+            } catch (error) { console.error(error); }
+            finally { setIsLoading(false); }
+        };
+        fetchProduct();
+    }, [params?.id]);
+
+    const handleDownload = async () => {
+        const token = localStorage.getItem('auth_token');
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
+        const toastId = toast.loading("Preparing artifact acquisition...");
+        try {
+            const headers: HeadersInit = {};
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+            const response = await fetch(`${API_BASE_URL}/api/uis/${product.id}/download`, { headers });
+            if (!response.ok) throw new Error("Download failed");
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${product.title}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            toast.success("Artifact acquired!", { id: toastId });
+        } catch (err) { toast.error("Acquisition failed", { id: toastId }); }
+    };
+
+    if (isLoading) return <div className="min-h-screen bg-[#FDF9F3] flex items-center justify-center"><div className="h-10 w-10 border-2 border-amber-600 border-t-transparent rounded-full animate-spin" /></div>;
+    if (!product) return <div className="min-h-screen bg-[#FDF9F3] flex items-center justify-center">Artifact not found.</div>;
+
+    const screenshots = product.screenshots || (product.imageSrc ? [product.imageSrc] : []);
+
+    return (
+        <div className="min-h-screen bg-[#FDF9F3] text-[#2D241E] font-sans selection:bg-amber-200">
+            <Header />
+
+            <main className="mx-auto max-w-[1400px] px-8 py-20 lg:py-32 flex flex-col gap-32">
+
+                {/* Hero Section */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
+                    <div className="w-full aspect-[4/5] bg-black rounded-3xl overflow-hidden shadow-[0_50px_100px_-20px_rgba(45,36,30,0.3)] border border-[#E8E1D9] group">
+                        <img src={product.imageSrc} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2000ms]" alt={product.title} />
+                    </div>
+
+                    <div className="flex flex-col gap-10 lg:pt-8">
+                        <div className="flex flex-col gap-4">
+                            <span className="inline-flex px-4 py-1 bg-amber-500 text-white text-[9px] font-black uppercase tracking-[0.3em] rounded-full w-fit">Limited Edition Artifact</span>
+                            <h1 className="text-5xl lg:text-7xl font-black tracking-tighter text-[#2D241E] leading-none uppercase serif-font-standard">
+                                {product.title} <br /> <span className="text-[#8E8379]">No. {product.id?.slice(-2) || "01"}</span>
+                            </h1>
+                        </div>
+
+                        <p className="text-base font-medium text-[#8E8379] leading-relaxed max-w-xl italic">
+                            {product.overview || "A masterful exploration of light and digital texture, hand-curated for the Monkframe permanent collection."}
+                        </p>
+
+                        <div className="p-10 bg-white rounded-[2rem] shadow-xl shadow-[#2D241E]/5 border border-[#F2EDE8] flex flex-col gap-8">
+                            <div className="flex justify-between items-end">
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#8E8379]">Acquisition Value</span>
+                                <span className="text-4xl font-black text-[#2D241E]">${product.price || "Free"}</span>
+                            </div>
+                            <div className="flex flex-col gap-4">
+                                <button onClick={handleDownload} className="w-full py-5 bg-amber-500 text-white text-[11px] font-black uppercase tracking-[0.3em] rounded-xl hover:bg-amber-600 transition-all flex items-center justify-center gap-2 group">
+                                    Secure Acquisition <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                                </button>
+                                <button className="w-full py-5 bg-[#FDF9F3] text-[#2D241E] text-[11px] font-black uppercase tracking-[0.3em] rounded-xl hover:bg-[#F2EDE8] transition-all">
+                                    Inquire with Curator
+                                </button>
+                            </div>
+                            <div className="flex justify-center gap-8 pt-4 border-t border-[#F2EDE8]">
+                                <div className="flex items-center gap-2">
+                                    <div className="h-4 w-4 rounded-full bg-amber-200 flex items-center justify-center text-[10px]">✔</div>
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-[#8E8379]">Certified Artifact</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="h-4 w-4 rounded-full bg-amber-200 flex items-center justify-center text-[10px]">✔</div>
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-[#8E8379]">Secured Asset</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="p-8 bg-[#F2EDE8] rounded-2xl flex flex-col gap-2">
+                                <span className="text-[9px] font-black uppercase tracking-widest text-[#8E8379]">Dimensions</span>
+                                <span className="text-sm font-black text-[#2D241E] uppercase">1280 x 1280 px</span>
+                            </div>
+                            <div className="p-8 bg-[#F2EDE8] rounded-2xl flex flex-col gap-2">
+                                <span className="text-[9px] font-black uppercase tracking-widest text-[#8E8379]">Medium</span>
+                                <span className="text-sm font-black text-[#2D241E] uppercase">Digital Masterpiece</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Observation Gallery */}
+                <section className="flex flex-col gap-12">
+                    <div className="flex flex-col lg:flex-row justify-between items-end gap-8">
+                        <div className="flex flex-col gap-4">
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-amber-600">The Detail View</span>
+                            <h2 className="text-4xl font-black uppercase tracking-tight text-[#2D241E]">Observation Gallery</h2>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {screenshots.slice(1, 4).map((img: string, idx: number) => (
+                            <div key={idx} className="aspect-square bg-gray-100 rounded-2xl overflow-hidden border border-[#E8E1D9] group shadow-lg hover:shadow-2xl transition-all">
+                                <img src={img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* Provenance Card */}
+                <section className="p-16 lg:p-24 bg-[#F2EDE8]/50 rounded-[4rem] border border-[#E8E1D9] backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-1 bg-amber-600 rounded-full -mt-0.5" />
+                    <h2 className="text-4xl font-black text-center uppercase tracking-tight text-[#2D241E] mb-20">Artifact Provenance</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-24 gap-y-16">
+                        {[
+                            { label: "Creation", value: "Monkframe Studio // Autumn 2025 Permanent Collection." },
+                            { label: "Authentication", value: "Verified digital signature. Inclusion in the immutable Monkframe archive." },
+                            { label: "Exhibition", value: "Featured Showcase: Premium Design Infrastructure." },
+                            { label: "Requirements", value: "Optimized for High-DPI professional workflows." },
+                        ].map((item, idx) => (
+                            <div key={idx} className="flex flex-col gap-3">
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-amber-600 leading-none">{item.label}</span>
+                                <p className="text-xs font-bold leading-relaxed text-[#5D544C]">{item.value}</p>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="mt-16 pt-16 border-t border-[#E8E1D9]">
+                        <ProductIncludes product={product} />
+                    </div>
+                </section>
+
+                {/* Templates Links */}
+                <section className="flex flex-wrap justify-center gap-6 border-t border-[#E8E1D9] pt-32">
+                    <Link href={`/product/v1/${product.id}`} className="px-10 py-5 bg-white border border-[#E8E1D9] text-[#2D241E] text-[11px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-amber-500 hover:text-white transition-all shadow-xl shadow-[#2D241E]/5">Standard Hub (v1)</Link>
+                    <Link href={`/product/v3/${product.id}`} className="px-10 py-5 bg-white border border-[#E8E1D9] text-[#2D241E] text-[11px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-amber-500 hover:text-white transition-all shadow-xl shadow-[#2D241E]/5">Cinematic View (v3)</Link>
+                </section>
+            </main>
+
+            <Footer />
+            <style jsx>{` .serif-font-standard { font-family: 'Times New Roman', Times, serif; } `}</style>
+        </div>
+    );
+}
