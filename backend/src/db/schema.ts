@@ -46,10 +46,10 @@ export const authOtp = mysqlTable('AuthOtp', {
 export const uis = mysqlTable('uis', {
   id: varchar('id', { length: 36 }).primaryKey().$defaultFn(() => randomUUID()),
   title: varchar('title', { length: 255 }).notNull(),
-  price: varchar('price', { length: 50 }).notNull(),
-  author: varchar('author', { length: 255 }).notNull(),
+  price: varchar('price', { length: 50 }).notNull().default('Free'),
+  author: varchar('author', { length: 255 }).notNull().default(''),
   category: varchar('category', { length: 100 }).notNull(),
-  imageSrc: text('imageSrc').notNull(),
+  imageSrc: text('imageSrc').notNull().default(''),
   google_file_id: varchar('google_file_id', { length: 255 }),
   color: varchar('color', { length: 50 }),
   tags: json('tags'),

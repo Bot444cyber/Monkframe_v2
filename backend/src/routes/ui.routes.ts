@@ -43,14 +43,15 @@ router.get('/image/:fileId', uiController.streamImage);
 router.post('/', authenticateUser, authorizeRoles('ADMIN', 'EDITOR'), upload.fields([
     { name: 'banner', maxCount: 1 },
     { name: 'uiFile', maxCount: 1 },
-    { name: 'showcase', maxCount: 3 }
+    { name: 'showcase', maxCount: 4 }
 ]), validateResource(createUiSchema), uiController.createUI);
 
 router.put('/:id', authenticateUser, authorizeRoles('ADMIN', 'EDITOR'), upload.fields([
     { name: 'banner', maxCount: 1 },
     { name: 'uiFile', maxCount: 1 },
-    { name: 'showcase', maxCount: 3 }
+    { name: 'showcase', maxCount: 4 }
 ]), validateResource(updateUiSchema), uiController.updateUI);
+
 
 router.delete('/:id', authenticateUser, authorizeRoles('ADMIN', 'EDITOR'), uiController.deleteUI);
 

@@ -23,106 +23,75 @@ export default function ProductCard({ product }: { product: Product }) {
     const isFree = product.price.toLowerCase() === 'free';
 
     const toggleWishlist = async (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (!user) {
-            toast.error("Please login to manage your wishlist");
-            return;
-        }
-
+        e.preventDefault(); e.stopPropagation();
+        if (!user) { toast.error("Please login to manage your wishlist"); return; }
         const newState = !isWishlisted;
         setIsWishlisted(newState);
-
         try {
             await InteractionService.toggleWishlist(product.id);
-            if (newState) toast.success("Added to wishlist");
-            else toast.success("Removed from wishlist");
-        } catch (error) {
+            toast.success(newState ? "Added to wishlist" : "Removed from wishlist");
+        } catch {
             setIsWishlisted(!newState);
-            console.error(error);
             toast.error("Failed to update wishlist");
         }
     };
 
     const toggleLike = async (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (!user) {
-            toast.error("Please login to like this asset");
-            return;
-        }
-
+        e.preventDefault(); e.stopPropagation();
+        if (!user) { toast.error("Please login to like this asset"); return; }
         const newLikedState = !isLiked;
         setIsLiked(newLikedState);
         setLikesCount(prev => newLikedState ? prev + 1 : prev - 1);
-
-        if (newLikedState) {
-            setIsLikeAnimating(true);
-            setTimeout(() => setIsLikeAnimating(false), 1000);
-        }
-
+        if (newLikedState) { setIsLikeAnimating(true); setTimeout(() => setIsLikeAnimating(false), 1000); }
         try {
             const response = await InteractionService.toggleLike(product.id);
-            if (typeof response.likesCount === 'number') {
-                setLikesCount(response.likesCount);
-            }
+            if (typeof response.likesCount === 'number') setLikesCount(response.likesCount);
             if (response.liked !== undefined) {
                 setIsLiked(response.liked);
-                if (response.liked) {
-                    toast.success(response.message || "Liked!");
-                } else {
-                    toast.success(response.message || "Unliked");
-                }
+                toast.success(response.message || (response.liked ? "Liked!" : "Unliked"));
             }
-        } catch (error) {
+        } catch {
             setIsLiked(!newLikedState);
             setLikesCount(prev => !newLikedState ? prev + 1 : prev - 1);
-            console.error(error);
             toast.error("Failed to like");
         }
     };
+
+    const fileLabel = product.fileType
+        ? `${likesCount > 0 ? likesCount + ' ' : ''}${product.fileType} file${likesCount !== 1 ? 's' : ''}`
+        : isFree ? 'Free download' : product.price;
 
     return (
         <>
             <Link
                 href={`/product/${product.id}`}
-                className="group relative flex flex-col overflow-hidden rounded-2xl bg-white border border-gray-100 transition-all duration-500 hover:-translate-y-2 hover:border-blue-200 hover:shadow-2xl hover:shadow-gray-200/50"
+                className="group flex flex-col gap-3 cursor-pointer"
             >
-                {/* ── Image ── */}
-                <div className={`relative aspect-4/3 w-full overflow-hidden ${product.color || 'bg-[#111]'}`}>
-                    <img
-                        src={product.imageSrc}
-                        alt={product.title}
-                        referrerPolicy="no-referrer"
-                        className="h-full w-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110 opacity-80 group-hover:opacity-100"
-                    />
+                {/* ── Image Block ── */}
+                <div className="relative w-full aspect-4/3 bg-[#EEF0F5] rounded-2xl overflow-hidden">
+                    {product.imageSrc ? (
+                        <img
+                            src={product.imageSrc}
+                            alt={product.title}
+                            referrerPolicy="no-referrer"
+                            className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
+                        />
+                    ) : (
+                        <div className="h-full w-full bg-[#EEF0F5]" />
+                    )}
 
-                    {/* Hover overlay gradient */}
-                    <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    {/* Subtle hover dim */}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/8 transition-colors duration-300 rounded-2xl" />
 
-                    {/* Top-left badges */}
-                    <div className="absolute top-3 left-3 z-20 flex gap-1.5">
-                        <span className="bg-white/90 backdrop-blur-sm text-gray-800 text-[9px] font-bold px-2 py-0.5 rounded-md border border-gray-200 uppercase tracking-widest shadow-sm">
-                            Premium
-                        </span>
-                        {product.fileType && (
-                            <span className="bg-gray-100/90 backdrop-blur-sm text-gray-800 text-[9px] font-bold px-2 py-0.5 rounded-md border border-gray-200 uppercase tracking-widest shadow-sm">
-                                {product.fileType}
-                            </span>
-                        )}
-                    </div>
-
-                    {/* Floating action buttons — slide in on hover */}
-                    <div className="absolute top-3 right-3 z-30 flex flex-col gap-1.5 translate-x-10 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
+                    {/* Action buttons — slide in on hover */}
+                    <div className="absolute top-3 right-3 z-20 flex flex-col gap-1.5 translate-x-10 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 ease-out">
                         {/* Wishlist */}
                         <button
                             onClick={toggleWishlist}
                             title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-                            className={`flex h-8 w-8 items-center justify-center rounded-xl border backdrop-blur-md transition-all duration-200 ${isWishlisted
-                                ? "bg-amber-500 text-white border-amber-400 shadow-sm"
-                                : "bg-white/80 border-gray-100 text-gray-500 hover:text-gray-900 hover:bg-gray-50 shadow-sm"
+                            className={`flex h-8 w-8 items-center justify-center rounded-xl border backdrop-blur-sm shadow-sm transition-all duration-200 ${isWishlisted
+                                ? 'bg-amber-400 text-white border-amber-300'
+                                : 'bg-white/95 border-gray-200/80 text-gray-400 hover:text-amber-500'
                                 }`}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={isWishlisted ? "currentColor" : "none"} stroke="currentColor" strokeWidth={2} className="w-4 h-4">
@@ -134,9 +103,9 @@ export default function ProductCard({ product }: { product: Product }) {
                         <button
                             onClick={toggleLike}
                             title={isLiked ? "Unlike" : "Like"}
-                            className={`flex h-8 w-8 items-center justify-center rounded-xl border backdrop-blur-md transition-all duration-200 ${isLiked
-                                ? "bg-rose-500 text-white border-rose-400 shadow-sm"
-                                : "bg-white/80 border-gray-100 text-gray-500 hover:text-gray-900 hover:bg-gray-50 shadow-sm"
+                            className={`flex h-8 w-8 items-center justify-center rounded-xl border backdrop-blur-sm shadow-sm transition-all duration-200 ${isLiked
+                                ? 'bg-rose-500 text-white border-rose-400'
+                                : 'bg-white/95 border-gray-200/80 text-gray-400 hover:text-rose-500'
                                 }`}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={isLiked ? "currentColor" : "none"} stroke="currentColor" strokeWidth={2} className={`w-4 h-4 ${isLikeAnimating ? 'animate-bounce' : ''}`}>
@@ -146,86 +115,36 @@ export default function ProductCard({ product }: { product: Product }) {
 
                         {/* Comment */}
                         <button
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                setIsCommentsOpen(true);
-                            }}
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsCommentsOpen(true); }}
                             title="Comments"
-                            className="flex h-8 w-8 items-center justify-center rounded-xl border border-gray-100 bg-white/80 backdrop-blur-md text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-all duration-200 shadow-sm"
+                            className="flex h-8 w-8 items-center justify-center rounded-xl border border-gray-200/80 bg-white/95 backdrop-blur-sm text-gray-400 hover:text-gray-700 shadow-sm transition-all duration-200"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
                             </svg>
                         </button>
                     </div>
-
-                    {/* Bottom-left: category pill on hover */}
-                    <div className="absolute bottom-3 left-3 z-20 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                        <span className="px-2.5 py-1 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-full text-[9px] font-bold text-gray-700 uppercase tracking-widest shadow-sm">
-                            {product.category}
-                        </span>
-                    </div>
                 </div>
 
-                {/* ── Content ── */}
-                <div className="flex flex-col gap-3 p-5 flex-1">
-
-                    {/* Meta row: rating + likes */}
-                    <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest group-hover:text-zinc-400 transition-colors">
-                            {product.category}
-                        </span>
-                        <div className="flex items-center gap-3">
-                            {/* Rating */}
-                            <div className="flex items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3 text-yellow-500/70 group-hover:text-yellow-500 transition-colors">
-                                    <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-                                </svg>
-                                <span className="text-[10px] font-semibold text-gray-500 group-hover:text-gray-900 transition-colors">{(product.rating || 4.8).toFixed(1)}</span>
-                            </div>
-                            {/* Likes */}
-                            <div className="flex items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`w-3 h-3 transition-colors ${isLiked ? 'text-rose-500' : 'text-gray-400 group-hover:text-rose-500/60'}`}>
-                                    <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
-                                </svg>
-                                <span className="text-[10px] font-semibold text-gray-500 group-hover:text-gray-900 transition-colors">{likesCount}</span>
-                            </div>
-                        </div>
-                    </div>
+                {/* ── Text Info ── */}
+                <div className="flex flex-col gap-1 px-0.5">
+                    {/* Category */}
+                    <span className="text-[11px] font-bold text-amber-400 uppercase tracking-widest leading-none">
+                        {product.category}
+                    </span>
 
                     {/* Title */}
-                    <h3 className="text-[15px] font-bold text-gray-900 group-hover:text-blue-600 transition-colors leading-snug line-clamp-2">
+                    <h3 className="text-[15px] sm:text-[16px] font-semibold text-gray-900 leading-snug line-clamp-2 group-hover:text-gray-600 transition-colors duration-200">
                         {product.title}
                     </h3>
 
-                    {/* Author */}
-                    <div className="flex items-center gap-2">
-                        <div className="w-5 h-5 rounded-full bg-linear-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-[8px] font-black text-white uppercase shrink-0">
-                            {product.author.charAt(0)}
-                        </div>
-                        <span className="text-xs text-gray-500 group-hover:text-gray-900 transition-colors truncate">
-                            by {product.author}
-                        </span>
-                    </div>
-
-                    {/* Footer: price + CTA */}
-                    <div className="mt-auto pt-4 flex items-center justify-between border-t border-gray-100">
-                        <span className={`text-sm font-black tracking-tight ${isFree ? 'text-emerald-500' : 'text-gray-900'}`}>
-                            {product.price}
-                        </span>
-
-                        <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 group-hover:text-gray-900 transition-colors">
-                            <span>View</span>
-                            <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gray-50 border border-gray-200 group-hover:bg-blue-600 group-hover:text-white group-hover:border-transparent transition-all duration-300 group-hover:-rotate-45">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3 h-3">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
+                    {/* File meta */}
+                    <p className="text-[13px] text-gray-400 leading-none mt-0.5">
+                        {fileLabel}
+                    </p>
                 </div>
             </Link>
+
             <CommentSection uiId={product.id} isOpen={isCommentsOpen} onClose={() => setIsCommentsOpen(false)} />
         </>
     );

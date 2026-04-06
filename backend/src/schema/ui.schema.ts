@@ -3,15 +3,20 @@ import { object, string, number, TypeOf, any } from "zod";
 const payload = {
     body: object({
         title: string().min(1, "Title is required"),
-        price: string().min(1, "Price is required").or(number().transform(val => val.toString())),
         category: string().min(1, "Category is required"),
-        author: string().min(1, "Author is required"),
-        color: string().nullable().optional(),
+        // author is now "Additional Information" — optional
+        author: string().optional().default(''),
+        // overview maps to Description
         overview: string().nullable().optional(),
-        highlights: string().nullable().optional().or(any().array()).optional(), // Can be JSON string or array
+        // price, color, rating, highlights, specifications are no longer submitted by the form
+        // but kept here as optional for backward-compat / edit flows
+        price: string().nullable().optional(),
+        color: string().nullable().optional(),
+        highlights: string().nullable().optional().or(any().array()).optional(),
         rating: string().nullable().optional().or(number().transform(val => val.toString())).optional(),
         imageSrc: string().nullable().optional(),
         google_file_id: string().nullable().optional(),
+        specifications: any().optional(),
     }),
 };
 

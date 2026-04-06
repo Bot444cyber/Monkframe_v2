@@ -3,9 +3,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import NotificationBell from './NotificationBell';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronDown, Instagram, Facebook, Twitter, Box, Shirt, Smartphone, Coffee, Plus, Monitor, Book, ShoppingBag } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 const DropdownMenu = ({ items }: { items: { label: string; href: string }[] }) => (
@@ -30,23 +30,11 @@ const DropdownMenu = ({ items }: { items: { label: string; href: string }[] }) =
 export default function Header() {
     const { user, logout } = useAuth();
     const pathname = usePathname();
-    const router = useRouter();
     const canAccessDashboard = ['ADMIN', 'EDITOR'].includes(String(user?.role).toUpperCase());
 
     const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-    const categories = [
-        { icon: <Box className="w-8 h-8" />, label: "Free Mockups" },
-        { icon: <Shirt className="w-8 h-8" />, label: "Tshirts" },
-        { icon: <Smartphone className="w-8 h-8" />, label: "Devices" },
-        { icon: <Coffee className="w-8 h-8" />, label: "Mugs" },
-        { icon: <Monitor className="w-8 h-8" />, label: "Hats" },
-        { icon: <Book className="w-8 h-8" />, label: "Books" },
-        { icon: <ShoppingBag className="w-8 h-8" />, label: "Bags" },
-        { icon: <Plus className="w-8 h-8" />, label: "And More" },
-    ];
 
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -162,55 +150,7 @@ export default function Header() {
                 </div>
             </header>
 
-            {/* Categories Section */}
-            <section className="border-b border-gray-100 py-8 bg-white overflow-hidden">
-                <div className="max-w-7xl mx-auto px-4 flex flex-col lg:flex-row items-center justify-between gap-8 z-10 relative">
-                    <div className="text-center lg:text-left">
-                        <h2 className="text-2xl font-bold leading-tight text-gray-900">
-                            23,000+<br />
-                            <span className="text-gray-500 font-medium text-lg">Instant<br />Mockups</span>
-                        </h2>
-                    </div>
-                    <div className="flex flex-wrap justify-center gap-6 md:gap-10">
-                        {categories.map((cat, i) => (
-                            <motion.div
-                                key={i}
-                                whileHover={{ scale: 1.15, y: -8, transition: { type: "spring", stiffness: 400, damping: 10 } }}
-                                whileTap={{ scale: 0.95 }}
-                                onClick={() => {
-                                    const path = cat.label === 'And More' ? '/' : `/?category=${encodeURIComponent(cat.label)}`;
-                                    router.push(path);
-                                }}
-                                className="flex flex-col items-center gap-3 cursor-pointer group"
-                            >
-                                <motion.div
-                                    className="text-purple-400 group-hover:text-purple-600 transition-colors"
-                                    animate={{ rotate: [0, -5, 5, 0] }}
-                                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                                >
-                                    {cat.icon}
-                                </motion.div>
-                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider group-hover:text-purple-600">
-                                    {cat.label}
-                                </span>
-                            </motion.div>
-                        ))}
-                    </div>
-                    <div className="flex flex-col items-center gap-3">
-                        <div className="flex items-center gap-1.5">
-                            <span className="font-black text-2xl italic tracking-tighter text-gray-800">Placeit</span>
-                            <span className="text-[9px] font-bold text-green-500 uppercase mt-1">by envato</span>
-                        </div>
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white px-8 py-2.5 rounded-md font-bold text-sm transition-all shadow-sm"
-                        >
-                            Create Now
-                        </motion.button>
-                    </div>
-                </div>
-            </section>
+
 
             {/* Mobile Menu */}
             <AnimatePresence>

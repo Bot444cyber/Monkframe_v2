@@ -297,7 +297,8 @@ export const downloadUI = async (req: Request, res: Response) => {
 // Create new UI
 export const createUI = async (req: Request, res: Response) => {
     try {
-        const { title, price, category, author, color, overview, highlights, rating } = req.body;
+        // Only title, category, overview (description), author (additional info) come from form now
+        const { title, category, author, overview } = req.body;
         const userId = (req.user as any)?.user_id;
 
         // Handle Files
@@ -314,15 +315,15 @@ export const createUI = async (req: Request, res: Response) => {
             bannerUpload = uploadFileToDrive(file.path, file.originalname, file.mimetype, true);
         }
 
-        // 2. UI File
+        // 2. UI File (Assets)
         if (files && files['uiFile'] && files['uiFile'][0]) {
             const file = files['uiFile'][0];
             uiFileUpload = uploadFileToDrive(file.path, file.originalname, file.mimetype, false);
         }
 
-        // 3. Showcase Images
+        // 3. Showcase Images (up to 4)
         if (files && files['showcase']) {
-            for (const file of files['showcase']) {
+            for (const file of files['showcase'].slice(0, 4)) {
                 showcaseUploads.push(uploadFileToDrive(file.path, file.originalname, file.mimetype, true));
             }
         }
@@ -341,53 +342,32 @@ export const createUI = async (req: Request, res: Response) => {
             });
         }
 
-        // Parse highlights
-        let parsedHighlights: string[] = [];
-        if (highlights) {
-            try {
-                parsedHighlights = typeof highlights === 'string' ? JSON.parse(highlights) : highlights;
-            } catch (e) {
-                parsedHighlights = [highlights];
-            }
-        }
-
-        // Parse specifications
-        let parsedSpecifications: any[] = [];
-        const { specifications } = req.body;
-        if (specifications) {
-            try {
-                parsedSpecifications = typeof specifications === 'string' ? JSON.parse(specifications) : specifications;
-            } catch (e) {
-                console.error("Failed to parse specifications", e);
-                parsedSpecifications = []; // Fallback
-            }
-        }
-
         const generatedId = randomUUID();
 
-        // Create UI Record with actual URLs
+        // Create UI Record — removed fields use sensible defaults
         await db.insert(uis).values({
             id: generatedId,
             title,
-            price: price.toString(),
             category,
-            imageSrc: bannerResult ? bannerResult.publicUrl : '', // Use actual URL
-            author,
-            google_file_id: uiFileResult ? uiFileResult.id : null, // Use actual ID
-            color: color || null,
-            overview: overview || null,
-            highlights: parsedHighlights,
-            specifications: parsedSpecifications,
-            rating: rating ? parseFloat(rating) : 4.8,
-            showcase: showcaseResults.map(res => res.publicUrl), // Use actual URLs
-            fileType: (files && files['uiFile'] && files['uiFile'][0]) ? files['uiFile'][0].originalname.split('.').pop()?.toUpperCase() : null,
+            price: 'Free',                                   // Default: free asset
+            author: author || '',                            // "Additional Information"
+            overview: overview || null,                      // "Description"
+            imageSrc: bannerResult ? bannerResult.publicUrl : '',
+            google_file_id: uiFileResult ? uiFileResult.id : null,
+            color: null,
+            highlights: [],
+            specifications: [],
+            rating: 4.8,
+            showcase: showcaseResults.map((res: any) => res.publicUrl),
+            fileType: (files && files['uiFile'] && files['uiFile'][0])
+                ? files['uiFile'][0].originalname.split('.').pop()?.toUpperCase() ?? null
+                : null,
             creatorId: userId
         });
 
         const [newUI] = await db.select().from(uis).where(eq(uis.id, generatedId)).limit(1);
 
         if (newUI) {
-            // Emit initial socket event
             const ioData = {
                 ...newUI,
                 imageSrc: transformToProxy(newUI.imageSrc, req),
@@ -398,16 +378,16 @@ export const createUI = async (req: Request, res: Response) => {
 
             res.status(201).json({
                 status: true,
-                message: "UI Created and files uploaded.",
+                message: "Asset created and files uploaded.",
                 data: ioData
             });
         } else {
-            res.status(500).json({ status: false, message: "Failed to create UI" });
+            res.status(500).json({ status: false, message: "Failed to create asset" });
         }
 
     } catch (error) {
         console.error("Create UI Error:", error);
-        res.status(500).json({ status: false, message: "Failed to create UI" });
+        res.status(500).json({ status: false, message: "Failed to create asset" });
     }
 };
 
@@ -416,7 +396,8 @@ export const createUI = async (req: Request, res: Response) => {
 export const updateUI = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const { title, price, category, author, overview, highlights, rating } = req.body;
+        // New form fields: title, category, overview (description), author (additional info)
+        const { title, category, author, overview } = req.body;
 
         // Fetch existing UI
         const [existingUI] = await db.select().from(uis).where(eq(uis.id, id)).limit(1);
@@ -428,82 +409,27 @@ export const updateUI = async (req: Request, res: Response) => {
         const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
         const userId = (req.user as any)?.user_id;
 
-        // Queue Updatable Files
-
-        // 1. Banner
+        // Queue background file uploads (banner, uiFile, showcase)
         if (files && files['banner'] && files['banner'][0]) {
             const file = files['banner'][0];
-            processUpload({
-                filePath: file.path,
-                fileName: file.originalname,
-                mimeType: file.mimetype,
-                uiId: id,
-                type: 'BANNER',
-                isPublic: true,
-                userId
-            });
+            processUpload({ filePath: file.path, fileName: file.originalname, mimeType: file.mimetype, uiId: id, type: 'BANNER', isPublic: true, userId });
         }
-
-        // 2. UI File
         if (files && files['uiFile'] && files['uiFile'][0]) {
             const file = files['uiFile'][0];
-            processUpload({
-                filePath: file.path,
-                fileName: file.originalname,
-                mimeType: file.mimetype,
-                uiId: id,
-                type: 'UI_FILE',
-                isPublic: false,
-                userId
-            });
+            processUpload({ filePath: file.path, fileName: file.originalname, mimeType: file.mimetype, uiId: id, type: 'UI_FILE', isPublic: false, userId });
         }
-
-        // 3. Showcase
         if (files && files['showcase']) {
-            for (const file of files['showcase']) {
-                processUpload({
-                    filePath: file.path,
-                    fileName: file.originalname,
-                    mimeType: file.mimetype,
-                    uiId: id,
-                    type: 'SHOWCASE',
-                    isPublic: true,
-                    userId
-                });
+            for (const file of files['showcase'].slice(0, 4)) {
+                processUpload({ filePath: file.path, fileName: file.originalname, mimeType: file.mimetype, uiId: id, type: 'SHOWCASE', isPublic: true, userId });
             }
         }
 
-        // Parse highlights
-        let parsedHighlights: string[] | undefined = undefined;
-        if (highlights) {
-            try {
-                parsedHighlights = typeof highlights === 'string' ? JSON.parse(highlights) : highlights;
-            } catch (e) {
-                parsedHighlights = [highlights];
-            }
-        }
-
-        // Parse specifications
-        let parsedSpecifications: any[] | undefined = undefined;
-        const { specifications } = req.body;
-        if (specifications) {
-            try {
-                parsedSpecifications = typeof specifications === 'string' ? JSON.parse(specifications) : specifications;
-            } catch (e) {
-                console.error("Failed to parse specifications update", e);
-            }
-        }
-
-        // Update Text Fields Immediately
+        // Update only the new form text fields immediately
         await db.update(uis).set({
-            title: title || undefined,
-            price: price !== undefined ? price.toString() : undefined,
-            category: category || undefined,
-            author: author || undefined,
-            overview: overview || undefined,
-            rating: rating ? parseFloat(rating) : undefined,
-            highlights: parsedHighlights !== undefined ? parsedHighlights : existingUI.highlights as any,
-            specifications: parsedSpecifications !== undefined ? parsedSpecifications : existingUI.specifications as any,
+            ...(title ? { title } : {}),
+            ...(category ? { category } : {}),
+            ...(author !== undefined ? { author } : {}),
+            ...(overview !== undefined ? { overview } : {}),
             ...(files && files['uiFile'] && files['uiFile'][0] ? {
                 fileType: files['uiFile'][0].originalname.split('.').pop()?.toUpperCase()
             } : {})
@@ -512,7 +438,6 @@ export const updateUI = async (req: Request, res: Response) => {
         const [updatedUI] = await db.select().from(uis).where(eq(uis.id, id)).limit(1);
 
         if (updatedUI) {
-            // Emit real-time update
             const ioData = {
                 ...updatedUI,
                 imageSrc: transformToProxy(updatedUI.imageSrc, req),
@@ -520,17 +445,12 @@ export const updateUI = async (req: Request, res: Response) => {
                 specifications: parseArray(updatedUI.specifications),
                 highlights: parseArray(updatedUI.highlights)
             };
-
-            res.json({
-                status: true,
-                message: "UI Updated. Files are processing in background.",
-                data: ioData
-            });
+            res.json({ status: true, message: "Asset updated. Files processing in background.", data: ioData });
         }
 
     } catch (error) {
         console.error("Update UI Error:", error);
-        res.status(500).json({ status: false, message: "Failed to update UI" });
+        res.status(500).json({ status: false, message: "Failed to update asset" });
     }
 };
 

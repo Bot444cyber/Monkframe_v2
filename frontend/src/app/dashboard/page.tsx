@@ -220,46 +220,37 @@ export default function Dashboard() {
         try {
             const token = localStorage.getItem('auth_token');
             const headers: any = {};
-            if (token) {
-                headers['Authorization'] = `Bearer ${token}`;
-            }
+            if (token) headers['Authorization'] = `Bearer ${token}`;
 
             let body: any;
 
             if (isAddOpen) {
+                // --- CREATE: multipart/form-data ---
                 const formData = new FormData();
                 formData.append('title', currentUI.title || '');
-                formData.append('price', currentUI.price || '');
                 formData.append('category', currentUI.category || '');
-                formData.append('author', currentUI.author || '');
-                formData.append('imageSrc', currentUI.imageSrc || '');
-                formData.append('google_file_id', currentUI.google_file_id || '');
-                formData.append('color', currentUI.color || '');
-                formData.append('overview', currentUI.overview || '');
-                formData.append('rating', currentUI.rating ? currentUI.rating.toString() : '4.8');
-                formData.append('specifications', JSON.stringify(currentUI.specifications || []));
-                formData.append('highlights', JSON.stringify(
-                    (currentUI.highlights || [])
-                        .filter(h => h && h.trim() !== '')
-                ));
+                formData.append('overview', currentUI.overview || '');   // Description field
+                formData.append('author', currentUI.author || '');       // Additional Information field
 
+                // File uploads
                 if (files.banner) formData.append('banner', files.banner);
                 if (files.uiFile) formData.append('uiFile', files.uiFile);
                 if (files.showcase && files.showcase.length > 0) {
-                    files.showcase.forEach(file => {
+                    // Max 4 showcase images
+                    files.showcase.slice(0, 4).forEach(file => {
                         formData.append('showcase', file);
                     });
                 }
                 body = formData;
             } else {
+                // --- UPDATE: JSON ---
                 headers['Content-Type'] = 'application/json';
-                // Ensure highlights is an array
-                const payload = {
-                    ...currentUI,
-                    highlights: (currentUI.highlights || [])
-                        .filter(h => h && h.trim() !== '')
-                };
-                body = JSON.stringify(payload);
+                body = JSON.stringify({
+                    title: currentUI.title,
+                    category: currentUI.category,
+                    overview: currentUI.overview,   // Description
+                    author: currentUI.author,       // Additional Information
+                });
             }
 
             const res = await fetch(url, { method, headers, body });
@@ -269,6 +260,7 @@ export default function Dashboard() {
                 toast.success(isAddOpen ? "Asset Deployed Successfully!" : "Asset Updated!", { id: loadingToast });
                 setIsAddOpen(false);
                 setIsEditOpen(false);
+                setCurrentUI({});
                 setFiles({ banner: null, uiFile: null, showcase: [] });
                 setPreviews({ banner: null, showcase: [] });
                 fetchUIs();
@@ -280,6 +272,8 @@ export default function Dashboard() {
             toast.error("An error occurred", { id: loadingToast });
         }
     };
+
+
 
     const handleDelete = async (id: string) => {
         if (!confirm("Are you sure you want to delete this UI?")) return;
