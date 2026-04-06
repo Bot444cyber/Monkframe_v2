@@ -130,7 +130,7 @@ export default function PaymentModal({ isOpen, onClose, product, onSuccess }: Pa
                             {product.imageSrc ? (
                                 <img src={product.imageSrc} alt={product.title} className="w-16 h-16 rounded-xl object-cover bg-gray-100" />
                             ) : (
-                                <div className="w-16 h-16 rounded-xl bg-linear-to-br from-blue-50 to-blue-100 border border-blue-500/10 shrink-0" />
+                                <div className="w-16 h-16 rounded-xl bg-linear-to-br from-amber-50 to-amber-100 border border-amber-500/10 shrink-0" />
                             )}
                             <div className="flex flex-col">
                                 <span className="text-sm font-medium text-gray-900 line-clamp-2">{product.title}</span>
@@ -168,7 +168,7 @@ export default function PaymentModal({ isOpen, onClose, product, onSuccess }: Pa
                             </Elements>
                         ) : (
                             <div className="flex h-full items-center justify-center">
-                                <span className="loading loading-spinner text-blue-600">Loading payment...</span>
+                                <span className="loading loading-spinner text-amber-500">Loading payment...</span>
                             </div>
                         )}
                     </div>

@@ -48,13 +48,18 @@ export default function ProductIncludes({ product }: ProductIncludesProps) {
         }
     } catch { }
 
+    const fileFormat = product?.fileType;
+    const fileSize = product?.fileSize;
+
     if (!specs || specs.length === 0) {
-        const fileType = product?.fileType || "PSD";
-        specs = [
-            `File ${fileType}`,
-            "Layered, well organized",
-            "High Quality Resolution"
-        ];
+        if (fileFormat && fileFormat !== "---" && fileFormat !== "Unknown") {
+            specs.push(`Format: ${fileFormat}`);
+        }
+        if (fileSize && fileSize !== "---" && fileSize !== "Unknown") {
+            specs.push(`Size: ${fileSize}`);
+        }
+        specs.push("Layered, well organized");
+        specs.push("High Quality Resolution");
     }
 
     return (
@@ -84,7 +89,7 @@ export default function ProductIncludes({ product }: ProductIncludesProps) {
                 </p>
 
                 {subscribed ? (
-                    <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-600 text-sm font-medium text-center">
+                    <div className="p-4 rounded-xl bg-amber-50 border border-amber-100 text-amber-600 text-sm font-medium text-center">
                         Thanks for subscribing!
                     </div>
                 ) : (
@@ -99,12 +104,12 @@ export default function ProductIncludes({ product }: ProductIncludesProps) {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             disabled={isSubmitting}
-                            className="w-full px-4 py-3.5 rounded-none border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-all shadow-sm placeholder:text-gray-400 disabled:opacity-50"
+                            className="w-full px-4 py-3.5 rounded-none border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-all shadow-sm placeholder:text-gray-400 disabled:opacity-50"
                         />
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full py-3.5 rounded-none bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition-colors disabled:opacity-50 flex justify-center items-center gap-2"
+                            className="w-full py-3.5 rounded-none bg-amber-500 text-white text-sm font-bold hover:bg-amber-600 transition-colors disabled:opacity-50 flex justify-center items-center gap-2"
                         >
                             {isSubmitting ? (
                                 <>

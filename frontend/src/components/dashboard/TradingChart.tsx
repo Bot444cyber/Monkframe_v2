@@ -48,12 +48,12 @@ const TradingChart: React.FC<TradingChartProps> = ({ data }) => {
                 <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <defs>
                         <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="100%">
-                            <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                            <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                            <stop offset="5%" stopColor="#fbbf24" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="#fbbf24" stopOpacity={0} />
                         </linearGradient>
                         <linearGradient id="colorUIs" x1="0" y1="0" x2="0" y2="100%">
-                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                            <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                            <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
                         </linearGradient>
                     </defs>
                     <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="currentColor" strokeOpacity={0.05} />
@@ -74,22 +74,22 @@ const TradingChart: React.FC<TradingChartProps> = ({ data }) => {
                         name="New Users"
                         type="monotone"
                         dataKey="users"
-                        stroke="#6366f1"
+                        stroke="#fbbf24"
                         strokeWidth={4}
                         fillOpacity={1}
                         fill="url(#colorUsers)"
-                        activeDot={{ r: 6, stroke: '#6366f1', strokeWidth: 2, fill: 'var(--background)' }}
+                        activeDot={{ r: 6, stroke: '#fbbf24', strokeWidth: 2, fill: 'var(--background)' }}
                         animationDuration={1500}
                     />
                     <Area
                         name="Live UIs"
                         type="monotone"
                         dataKey="uis"
-                        stroke="#10b981"
+                        stroke="#f59e0b"
                         strokeWidth={4}
                         fillOpacity={1}
                         fill="url(#colorUIs)"
-                        activeDot={{ r: 6, stroke: '#10b981', strokeWidth: 2, fill: 'var(--background)' }}
+                        activeDot={{ r: 6, stroke: '#f59e0b', strokeWidth: 2, fill: 'var(--background)' }}
                         animationDuration={2000}
                     />
                 </AreaChart>

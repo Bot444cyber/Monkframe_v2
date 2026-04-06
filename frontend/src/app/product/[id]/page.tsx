@@ -17,9 +17,6 @@ import { CheckCircle } from 'lucide-react';
 export default function ProductDetailsPage() {
     const params = useParams();
     const [product, setProduct] = useState<any>(null);
-    const [likesCount, setLikesCount] = useState(0);
-    const [commentsCount, setCommentsCount] = useState(0);
-    const [isLiked, setIsLiked] = useState(false);
     const [isWished, setIsWished] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const downloadTriggered = React.useRef(false);
@@ -36,13 +33,11 @@ export default function ProductDetailsPage() {
                     const normalized = {
                         ...raw,
                         price: !raw.price || raw.price == 0 ? 'Free' : `$${raw.price}`,
-                        author: raw.creator?.full_name || raw.author || "Unknown",
+                        creatorName: raw.creator?.full_name || raw.author || "Unknown",
+                        additionalInfo: raw.author || "",
                     };
                     setProduct(normalized);
-                    setLikesCount(raw.likes || 0);
-                    setIsLiked(raw.liked || false);
                     setIsWished(raw.wished || false);
-                    if (raw.commentsCount !== undefined) setCommentsCount(raw.commentsCount);
                 }
             } catch (error) {
                 console.error("Failed to fetch product", error);
@@ -53,28 +48,6 @@ export default function ProductDetailsPage() {
         fetchProduct();
     }, [params?.id]);
 
-    const handleToggleLike = async (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const newState = !isLiked;
-        setIsLiked(newState);
-        setLikesCount(prev => newState ? prev + 1 : prev - 1);
-
-        try {
-            const response = await InteractionService.toggleLike(product.id);
-            if (response.likesCount !== undefined) setLikesCount(response.likesCount);
-            if (response.liked !== undefined) {
-                setIsLiked(response.liked);
-                if (response.liked) toast.success(response.message || "Liked!");
-                else toast.success(response.message || "Unliked");
-            }
-        } catch (error) {
-            setIsLiked(!newState);
-            setLikesCount(prev => !newState ? prev + 1 : prev - 1);
-            toast.error("Failed to like");
-        }
-    };
 
     const handleToggleWishlist = async (e: React.MouseEvent) => {
         e.preventDefault();
@@ -157,7 +130,7 @@ export default function ProductDetailsPage() {
         return (
             <div className="min-h-screen bg-white text-gray-900 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="h-10 w-10 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                    <div className="h-10 w-10 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
                     <p className="text-gray-400 animate-pulse">Loading details...</p>
                 </div>
             </div>
@@ -173,25 +146,54 @@ export default function ProductDetailsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-blue-600/30">
+        <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-amber-400/30">
             <Header />
 
-            <main className="relative mx-auto max-w-[1400px] px-6 lg:px-16 py-12 lg:py-16">
+            <main className="relative mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-16 py-8 sm:py-12 lg:py-16">
 
                 {/* 2-Column Layout */}
-                <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 relative items-start">
+                <div className="flex flex-col lg:flex-row gap-10 sm:gap-16 lg:gap-24 relative items-start">
 
-                    {/* Left Column - Images and Discussion */}
-                    <div className="w-full lg:w-[65%] flex flex-col gap-12 order-1 lg:order-1">
+                    {/* Left Column - Images (Sticky capability) */}
+                    <div className="w-full lg:w-[62%] flex flex-col gap-12 lg:sticky lg:top-32 h-fit">
                         {/* Huge Vertical Stack */}
                         <ProductGallery product={product} />
 
                     </div>
 
-                    {/* Right Column - Sticky Meta Data */}
-                    <div className="w-full lg:w-[35%] flex flex-col pt-4 order-2 lg:order-2">
-                        <div className="lg:sticky lg:top-32 flex flex-col gap-10 lg:gap-12">
-                            <ProductInfo product={product} />
+                    {/* Right Column - Meta Data (Sticky) */}
+                    <div className="w-full lg:w-[38%] flex flex-col pt-0 lg:pt-4 lg:sticky lg:top-32 h-fit">
+                        <div className="flex flex-col gap-10 lg:gap-12">
+
+                            <ProductInfo
+                                product={product}
+                                isWished={isWished}
+                                onToggleWishlist={handleToggleWishlist}
+                            />
+
+                            {/* SEO / Exploration Hub */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <Link href={`/product/${product.id}/gallery`} className="p-6 rounded-[2rem] bg-gray-50 border border-gray-100 hover:border-amber-400/30 transition-all group flex flex-col gap-3">
+                                    <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest">Visuals</span>
+                                    <h4 className="text-sm font-black text-gray-900 uppercase">Gallery</h4>
+                                    <p className="text-[11px] text-gray-400 font-medium leading-relaxed group-hover:text-gray-600 transition-colors">Experience details in high res.</p>
+                                </Link>
+                                <Link href={`/product/${product.id}/technical`} className="p-6 rounded-[2rem] bg-gray-50 border border-gray-100 hover:border-amber-400/30 transition-all group flex flex-col gap-3">
+                                    <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest">Metadata</span>
+                                    <h4 className="text-sm font-black text-gray-900 uppercase">Technical</h4>
+                                    <p className="text-[11px] text-gray-400 font-medium leading-relaxed group-hover:text-gray-600 transition-colors">Specs & licensing data.</p>
+                                </Link>
+                                <Link href={`/product/${product.id}/showcase`} className="p-6 rounded-[2rem] bg-gray-50 border border-gray-100 hover:border-amber-400/30 transition-all group flex flex-col gap-3">
+                                    <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest">Experience</span>
+                                    <h4 className="text-sm font-black text-gray-900 uppercase">Showcase</h4>
+                                    <p className="text-[11px] text-gray-400 font-medium leading-relaxed group-hover:text-gray-600 transition-colors">Narrative-driven walk-through.</p>
+                                </Link>
+                                <Link href={`/product/${product.id}/features`} className="p-6 rounded-[2rem] bg-gray-50 border border-gray-100 hover:border-amber-400/30 transition-all group flex flex-col gap-3">
+                                    <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest">Capabilities</span>
+                                    <h4 className="text-sm font-black text-gray-900 uppercase">Core Features</h4>
+                                    <p className="text-[11px] text-gray-400 font-medium leading-relaxed group-hover:text-gray-600 transition-colors">Deep dive into key features.</p>
+                                </Link>
+                            </div>
 
                             {/* Restricted Box acting as purchase boundary */}
                             <div className="w-full bg-[#f8f9fa] border border-gray-100 p-6 flex flex-col items-center justify-center text-center gap-6">
@@ -200,7 +202,7 @@ export default function ProductDetailsPage() {
                                         Try Pro Membership for UI Free. Only pro user download this UI and use this in any client or personal project.
                                     </p>
                                     <div className="flex flex-col gap-3 w-full">
-                                        <button onClick={handleDownload} className="w-full py-4 px-6 bg-blue-600 border border-transparent text-white text-sm font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-colors flex justify-center items-center gap-2 rounded-xl">
+                                        <button onClick={handleDownload} className="w-full py-4 px-6 bg-amber-500 border border-transparent text-white text-sm font-bold shadow-lg shadow-amber-500/20 hover:bg-amber-600 transition-colors flex justify-center items-center gap-2 rounded-xl">
                                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                                             Download Asset
                                         </button>
@@ -215,40 +217,6 @@ export default function ProductDetailsPage() {
                         </div>
                     </div>
 
-                </div>
-
-                {/* Full Width Discussion Area */}
-                <div className="w-full max-w-6xl mx-auto mt-24 pt-16 border-t border-gray-100 flex flex-col gap-6">
-                    <div className="flex items-center justify-between pb-4">
-                        <h3 className="text-2xl font-bold text-gray-900 tracking-tight">Discussion ({commentsCount})</h3>
-                        <div className="flex items-center gap-5">
-                            <button
-                                onClick={handleToggleLike}
-                                className={`flex items-center gap-2 text-[15px] font-bold transition-colors ${isLiked ? 'text-blue-600' : 'text-gray-500 hover:text-gray-900'}`}
-                            >
-                                <svg className={`w-6 h-6 ${isLiked ? 'fill-current' : 'fill-none'}`} viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                </svg>
-                                {likesCount}
-                            </button>
-                            <button
-                                onClick={handleToggleWishlist}
-                                className={`flex items-center gap-2 text-[15px] font-bold transition-colors ${isWished ? 'text-emerald-600' : 'text-gray-500 hover:text-gray-900'}`}
-                            >
-                                <svg className={`w-5 h-5 ${isWished ? 'fill-current' : 'fill-none'}`} viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                                </svg>
-                                Save
-                            </button>
-                        </div>
-                    </div>
-                    <div className="w-full bg-white rounded-3xl pb-8">
-                        <CommentSection
-                            uiId={product.id}
-                            variant="embedded"
-                            onCommentsChange={setCommentsCount}
-                        />
-                    </div>
                 </div>
 
             </main>

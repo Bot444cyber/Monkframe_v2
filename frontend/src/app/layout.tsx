@@ -31,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
-      <body className={`${interTight.variable} font-sans antialiased bg-white text-gray-900 selection:bg-blue-600/10 selection:text-blue-600`}>
+      <body className={`${interTight.variable} font-sans antialiased bg-white text-gray-900 selection:bg-amber-600/10 selection:text-amber-500`}>
         <AuthProvider>
           <Toaster
             position="bottom-right"
@@ -47,7 +47,7 @@ export default function RootLayout({
                 padding: '16px',
               },
               success: {
-                iconTheme: { primary: '#2563eb', secondary: '#ffffff' },
+                iconTheme: { primary: '#f59e0b', secondary: '#ffffff' },
               },
               error: {
                 iconTheme: { primary: '#ef4444', secondary: '#ffffff' },

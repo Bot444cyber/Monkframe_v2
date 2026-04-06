@@ -115,13 +115,13 @@ const NotificationTable = () => {
                                             )}
                                             <td className="px-8 py-6">
                                                 <div className="flex items-center gap-3">
-                                                    <div className={`h-2 w-2 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)] ${type === 'PAYMENT' ? 'bg-emerald-500 shadow-emerald-500/40' :
+                                                    <div className={`h-2 w-2 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)] ${type === 'PAYMENT' ? 'bg-amber-500 shadow-amber-500/40' :
                                                         type === 'LIKE' ? 'bg-rose-500 shadow-rose-500/40' :
-                                                            'bg-indigo-500 shadow-indigo-500/40'
+                                                            'bg-amber-500 shadow-amber-500/40'
                                                         }`} />
-                                                    <span className={`text-[10px] font-black tracking-widest px-2 py-0.5 rounded border ${type === 'PAYMENT' ? 'border-emerald-500/20 text-emerald-400 bg-emerald-500/5' :
+                                                    <span className={`text-[10px] font-black tracking-widest px-2 py-0.5 rounded border ${type === 'PAYMENT' ? 'border-amber-500/20 text-amber-500 bg-amber-500/5' :
                                                         type === 'LIKE' ? 'border-rose-500/20 text-rose-400 bg-rose-500/5' :
-                                                            'border-indigo-500/20 text-indigo-400 bg-indigo-500/5'
+                                                            'border-amber-500/20 text-amber-500 bg-amber-500/5'
                                                         }`}>
                                                         {type}
                                                     </span>

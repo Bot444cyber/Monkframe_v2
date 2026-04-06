@@ -90,8 +90,8 @@ const UsersSection: React.FC<UsersSectionProps> = ({
                                                 if (isOnline) {
                                                     return (
                                                         <>
-                                                            <div className="absolute inline-flex h-full w-full rounded-full animate-ping bg-emerald-400 opacity-75"></div>
-                                                            <div className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></div>
+                                                            <div className="absolute inline-flex h-full w-full rounded-full animate-ping bg-amber-400 opacity-75"></div>
+                                                            <div className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></div>
                                                         </>
                                                     );
                                                 }
@@ -109,7 +109,7 @@ const UsersSection: React.FC<UsersSectionProps> = ({
                                                 {(() => {
                                                     const lastActive = user.last_active_at ? new Date(user.last_active_at).getTime() : 0;
                                                     const isOnline = Date.now() - lastActive < 300000;
-                                                    if (isOnline) return <span className="text-[8px] font-bold text-emerald-500/60 uppercase tracking-tighter">Online</span>;
+                                                    if (isOnline) return <span className="text-[8px] font-bold text-amber-500/60 uppercase tracking-tighter">Online</span>;
                                                     return null;
                                                 })()}
                                             </div>
@@ -125,10 +125,10 @@ const UsersSection: React.FC<UsersSectionProps> = ({
                                             ? 'text-purple-400 border-purple-500/20 shadow-[0_0_10px_rgba(168,85,247,0.1)]'
                                             : user.role === 'EDITOR'
                                                 ? 'text-amber-400 border-amber-500/20 shadow-[0_0_10px_rgba(245,158,11,0.05)]'
-                                                : 'text-blue-400 border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.05)]'
+                                                : 'text-amber-500/80 border-amber-500/10 shadow-[0_0_10px_rgba(245,158,11,0.02)]'
                                             }`}
                                     >
-                                        <option value="CUSTOMER" className="bg-background text-blue-400">CUSTOMER</option>
+                                        <option value="CUSTOMER" className="bg-background text-amber-500">CUSTOMER</option>
                                         <option value="EDITOR" className="bg-background text-amber-400">EDITOR</option>
                                         <option value="ADMIN" className="bg-background text-purple-400">ADMIN</option>
                                     </select>

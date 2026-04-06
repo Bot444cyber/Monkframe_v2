@@ -35,7 +35,7 @@ export default function LicensesPage() {
                             <button
                                 key={i}
                                 onClick={() => scrollToCategory(cat)}
-                                className="px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors duration-200"
+                                className="px-5 py-2.5 rounded-full bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors duration-200"
                             >
                                 {cat}
                             </button>

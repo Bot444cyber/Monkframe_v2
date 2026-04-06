@@ -9,14 +9,8 @@ import toast from 'react-hot-toast';
 export default function ProductCard({ product }: { product: Product }) {
     const { user } = useAuth();
     const [isWishlisted, setIsWishlisted] = useState(product.wished);
-    const [isLiked, setIsLiked] = useState(product.liked);
-    const [likesCount, setLikesCount] = useState(product.likes);
-    const [isLikeAnimating, setIsLikeAnimating] = useState(false);
-    const [isCommentsOpen, setIsCommentsOpen] = useState(false);
 
     React.useEffect(() => {
-        setIsLiked(product.liked);
-        setLikesCount(product.likes);
         setIsWishlisted(product.wished);
     }, [product]);
 
@@ -36,29 +30,9 @@ export default function ProductCard({ product }: { product: Product }) {
         }
     };
 
-    const toggleLike = async (e: React.MouseEvent) => {
-        e.preventDefault(); e.stopPropagation();
-        if (!user) { toast.error("Please login to like this asset"); return; }
-        const newLikedState = !isLiked;
-        setIsLiked(newLikedState);
-        setLikesCount(prev => newLikedState ? prev + 1 : prev - 1);
-        if (newLikedState) { setIsLikeAnimating(true); setTimeout(() => setIsLikeAnimating(false), 1000); }
-        try {
-            const response = await InteractionService.toggleLike(product.id);
-            if (typeof response.likesCount === 'number') setLikesCount(response.likesCount);
-            if (response.liked !== undefined) {
-                setIsLiked(response.liked);
-                toast.success(response.message || (response.liked ? "Liked!" : "Unliked"));
-            }
-        } catch {
-            setIsLiked(!newLikedState);
-            setLikesCount(prev => !newLikedState ? prev + 1 : prev - 1);
-            toast.error("Failed to like");
-        }
-    };
 
     const fileLabel = product.fileType
-        ? `${likesCount > 0 ? likesCount + ' ' : ''}${product.fileType} file${likesCount !== 1 ? 's' : ''}`
+        ? `${product.fileType} file`
         : isFree ? 'Free download' : product.price;
 
     return (
@@ -99,30 +73,6 @@ export default function ProductCard({ product }: { product: Product }) {
                             </svg>
                         </button>
 
-                        {/* Like */}
-                        <button
-                            onClick={toggleLike}
-                            title={isLiked ? "Unlike" : "Like"}
-                            className={`flex h-8 w-8 items-center justify-center rounded-xl border backdrop-blur-sm shadow-sm transition-all duration-200 ${isLiked
-                                ? 'bg-rose-500 text-white border-rose-400'
-                                : 'bg-white/95 border-gray-200/80 text-gray-400 hover:text-rose-500'
-                                }`}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={isLiked ? "currentColor" : "none"} stroke="currentColor" strokeWidth={2} className={`w-4 h-4 ${isLikeAnimating ? 'animate-bounce' : ''}`}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                            </svg>
-                        </button>
-
-                        {/* Comment */}
-                        <button
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsCommentsOpen(true); }}
-                            title="Comments"
-                            className="flex h-8 w-8 items-center justify-center rounded-xl border border-gray-200/80 bg-white/95 backdrop-blur-sm text-gray-400 hover:text-gray-700 shadow-sm transition-all duration-200"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
-                            </svg>
-                        </button>
                     </div>
                 </div>
 
@@ -145,7 +95,6 @@ export default function ProductCard({ product }: { product: Product }) {
                 </div>
             </Link>
 
-            <CommentSection uiId={product.id} isOpen={isCommentsOpen} onClose={() => setIsCommentsOpen(false)} />
         </>
     );
 }

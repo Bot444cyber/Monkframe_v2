@@ -101,8 +101,8 @@ const PaymentsSection: React.FC<PaymentsSectionProps> = ({
                                         ${Number(tx.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                                     </td>
                                     <td className="px-8 py-6">
-                                        <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border ${status === 'COMPLETED' ? 'border-emerald-500/20 text-emerald-400 bg-emerald-500/10' :
-                                            status === 'PENDING' ? 'border-amber-500/20 text-amber-400 bg-amber-500/10' :
+                                        <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border ${status === 'COMPLETED' ? 'border-amber-500/20 text-amber-500 bg-amber-500/10' :
+                                            status === 'PENDING' ? 'border-amber-500/10 text-amber-400 bg-amber-500/5' :
                                                 status === 'FAILED' ? 'border-rose-500/20 text-rose-400 bg-rose-500/10' :
                                                     'border-border text-muted-foreground bg-secondary'
                                             }`}>

@@ -86,12 +86,10 @@ body {
   }
 }
 
-.animate-fade-in-up {
-  animation: fadeInUp 0.4s ease-out forwards;
-}
-
-.animate-scale-in {
-  animation: scaleIn 0.3s ease-out forwards;
+/* Selection */
+::selection {
+  background-color: #fbbf24; /* amber-400 */
+  color: #000000;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -118,19 +116,20 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #e5e7eb;
+  background-color: #f3f4f6; /* gray-100 */
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #d1d5db;
+  background-color: #fbbf24; /* amber-400 */
 }
 
 /* For Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #e5e7eb white;
+  scrollbar-color: #f3f4f6 white;
 }
+
 
 /* Hide Next.js Dev Badge */
 [data-next-badge-root],

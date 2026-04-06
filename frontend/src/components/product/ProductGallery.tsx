@@ -5,8 +5,8 @@ interface ProductGalleryProps {
 export default function ProductGallery({ product }: ProductGalleryProps) {
     const color = product.color || "bg-gray-100";
 
-    // Aggregate images
-    const heroImage = product.image || product.imageSrc;
+    // Banner is the primary hero image
+    const bannerImage = product.imageSrc || product.image;
 
     let showcase: string[] = [];
     if (Array.isArray(product.showcase)) {
@@ -15,27 +15,21 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
         try { showcase = JSON.parse(product.showcase); } catch { showcase = []; }
     }
 
-    // Fallback for showcases spelling
-    if (showcase.length === 0 && product.showcases) {
-        if (Array.isArray(product.showcases)) {
-            showcase = product.showcases;
-        } else if (typeof product.showcases === 'string') {
-            try { showcase = JSON.parse(product.showcases); } catch { showcase = []; }
-        }
-    }
+    // Limit showcase to 3 images
+    const galleryImages = showcase.slice(0, 3).filter(Boolean);
 
-    const allImages = [heroImage, ...showcase].filter(Boolean);
+    const allImages = [bannerImage, ...galleryImages].filter(Boolean);
 
     return (
         <div className="flex flex-col gap-6 w-full">
             {allImages.length > 0 ? (
                 allImages.map((src, idx) => (
-                    <div key={idx} className={`relative w-full overflow-hidden ${idx === 0 ? 'rounded-2xl border border-gray-100 shadow-sm' : ''} ${color} bg-opacity-20 aspect-[1.4/1]`}>
+                    <div key={idx} className={`relative w-full overflow-hidden rounded-xl sm:rounded-2xl border border-gray-100 shadow-sm ${color} bg-opacity-20 aspect-[16/10] sm:aspect-[1.4/1]`}>
                         <img
                             src={src}
                             alt={`${product.title} - view ${idx + 1}`}
                             referrerPolicy="no-referrer"
-                            className="absolute inset-0 w-full h-full object-cover"
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                         />
                     </div>
                 ))

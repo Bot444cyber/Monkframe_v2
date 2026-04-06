@@ -511,13 +511,13 @@ export default function Dashboard() {
                                 >
                                     {/* Active Indicator Glow */}
                                     {activeTab === item.id && (
-                                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full shadow-[0_0_12px_var(--primary)]"></div>
+                                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-amber-400 rounded-r-full shadow-[0_0_12px_rgba(251,191,36,0.5)]"></div>
                                     )}
 
-                                    <span className={`relative transition-colors duration-300 ${activeTab === item.id ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'}`}>
+                                    <span className={`relative transition-colors duration-300 ${activeTab === item.id ? 'text-amber-500' : 'text-muted-foreground group-hover:text-foreground'}`}>
                                         {item.icon}
                                     </span>
-                                    <span className={`text-sm font-medium tracking-wide transition-all ${activeTab === item.id ? 'translate-x-1' : 'group-hover:translate-x-1'}`}>
+                                    <span className={`text-sm font-bold uppercase tracking-widest transition-all ${activeTab === item.id ? 'translate-x-1' : 'group-hover:translate-x-1'}`}>
                                         {item.label}
                                     </span>
                                 </button>
@@ -532,15 +532,16 @@ export default function Dashboard() {
                     <nav className="space-y-2">
                         <Link
                             href="/"
-                            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all text-sm font-medium group"
+                            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all text-sm font-bold uppercase tracking-widest group"
                         >
-                            <span className="p-1 rounded-lg bg-secondary/80 group-hover:bg-primary/20 text-muted-foreground group-hover:text-primary transition-colors">
+                            <span className="p-1 rounded-lg bg-secondary/80 group-hover:bg-amber-400/20 text-muted-foreground group-hover:text-amber-500 transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                                 </svg>
                             </span>
                             View Live Site
                         </Link>
+
 
                         {user?.role === 'ADMIN' && (
                             <button

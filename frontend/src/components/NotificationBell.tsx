@@ -61,7 +61,7 @@ export default function NotificationBell({ disableToast = false, align = 'right'
         <div className="relative" ref={bellRef}>
             <button
                 onClick={() => { setIsOpen(!isOpen); setHasUnread(false); }}
-                className={`relative p-2 rounded-full transition-all duration-300 ${isOpen ? 'bg-blue-50 text-blue-600' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
+                className={`relative p-2 rounded-full transition-all duration-300 ${isOpen ? 'bg-amber-50 text-amber-500' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
@@ -85,9 +85,9 @@ export default function NotificationBell({ disableToast = false, align = 'right'
                             <div className="divide-y divide-gray-100">
                                 {notifications.map((notif: any, i) => (
                                     <div key={i} className="p-4 hover:bg-gray-50 transition-colors flex gap-3">
-                                        <div className={`mt-1 h-2 w-2 rounded-full shrink-0 ${notif.type === 'PAYMENT' ? 'bg-emerald-500' :
+                                        <div className={`mt-1 h-2 w-2 rounded-full shrink-0 ${notif.type === 'PAYMENT' ? 'bg-amber-500' :
                                             notif.type === 'LIKE' ? 'bg-pink-500' :
-                                                'bg-blue-500'
+                                                'bg-amber-500'
                                             }`} />
                                         <div>
                                             <p className="text-xs text-gray-700 leading-relaxed mb-1">{notif.message}</p>

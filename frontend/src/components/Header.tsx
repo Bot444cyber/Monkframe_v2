@@ -19,7 +19,7 @@ const DropdownMenu = ({ items }: { items: { label: string; href: string }[] }) =
             <Link
                 key={i}
                 href={item.href}
-                className="block px-4 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                className="block px-4 py-2 text-sm text-gray-600 hover:bg-amber-50 hover:text-amber-600 transition-colors"
             >
                 {item.label}
             </Link>
@@ -75,7 +75,7 @@ export default function Header() {
                                 <div key={item.label} className="relative group">
                                     <Link
                                         href={item.href}
-                                        className={`flex items-center gap-1 transition-colors py-4 ${pathname === item.href ? 'text-blue-600' : 'hover:text-blue-600'}`}
+                                        className={`flex items-center gap-1 transition-colors py-4 ${pathname === item.href ? 'text-amber-500' : 'hover:text-amber-500'}`}
                                     >
                                         {item.label}
                                     </Link>
@@ -93,7 +93,7 @@ export default function Header() {
                                 <div className="relative" ref={dropdownRef}>
                                     <button
                                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                        className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 text-blue-600 font-bold text-sm hover:bg-blue-100 transition-colors"
+                                        className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-50 text-amber-600 font-bold text-sm hover:bg-amber-100 transition-colors"
                                     >
                                         {user.full_name ? user.full_name.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase() || "U"}
                                     </button>
@@ -110,11 +110,11 @@ export default function Header() {
                                                     <p className="text-sm font-bold text-gray-900 truncate">{user.full_name || "User"}</p>
                                                     <p className="text-xs text-gray-500 truncate">{user.email}</p>
                                                 </div>
-                                                <Link href="/profile" className="block px-4 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600" onClick={() => setIsDropdownOpen(false)}>
+                                                <Link href="/profile" className="block px-4 py-2 text-sm text-gray-600 hover:bg-amber-50 hover:text-amber-600" onClick={() => setIsDropdownOpen(false)}>
                                                     Profile
                                                 </Link>
                                                 {canAccessDashboard && (
-                                                    <Link href="/dashboard" className="block px-4 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600" onClick={() => setIsDropdownOpen(false)}>
+                                                    <Link href="/dashboard" className="block px-4 py-2 text-sm text-gray-600 hover:bg-amber-50 hover:text-amber-600" onClick={() => setIsDropdownOpen(false)}>
                                                         Dashboard
                                                     </Link>
                                                 )}
@@ -130,10 +130,10 @@ export default function Header() {
                                 </div>
                             ) : (
                                 <div className="hidden sm:flex flex-row items-center gap-3">
-                                    <Link href="/login" className="text-[13px] font-bold text-gray-600 hover:text-blue-600 uppercase tracking-wide">
+                                    <Link href="/login" className="text-[13px] font-bold text-gray-600 hover:text-amber-500 uppercase tracking-wide">
                                         Login
                                     </Link>
-                                    <Link href="/signup" className="text-[13px] font-bold bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors uppercase tracking-wide">
+                                    <Link href="/signup" className="text-[13px] font-bold bg-amber-400 text-white px-4 py-2 rounded hover:bg-amber-500 transition-colors uppercase tracking-wide">
                                         Sign up
                                     </Link>
                                 </div>
@@ -170,7 +170,7 @@ export default function Header() {
                             {!user && (
                                 <div className="pt-4 border-t border-gray-100 space-y-3">
                                     <Link href="/login" className="block text-sm font-bold text-gray-600 uppercase" onClick={() => setIsMobileMenuOpen(false)}>Login</Link>
-                                    <Link href="/signup" className="block text-sm font-bold text-blue-600 uppercase" onClick={() => setIsMobileMenuOpen(false)}>Sign Up</Link>
+                                    <Link href="/signup" className="block text-sm font-bold text-amber-500 uppercase" onClick={() => setIsMobileMenuOpen(false)}>Sign Up</Link>
                                 </div>
                             )}
                         </div>

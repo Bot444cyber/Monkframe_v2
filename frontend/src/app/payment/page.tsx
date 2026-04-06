@@ -128,7 +128,7 @@ function PaymentContent() {
                 <div>
                     <h2 className="text-2xl font-bold text-gray-900 mb-6">Order Summary</h2>
                     <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                        <div className="w-16 h-16 rounded-xl bg-linear-to-br from-blue-50 to-blue-100 border border-blue-500/10 shrink-0" />
+                        <div className="w-16 h-16 rounded-xl bg-linear-to-br from-amber-50 to-amber-100 border border-amber-500/10 shrink-0" />
                         <div>
                             <h3 className="font-bold text-gray-900 leading-tight mb-1">{title}</h3>
                             <span className="text-xs text-gray-500 font-mono uppercase tracking-wide">Digital License</span>
@@ -164,7 +164,7 @@ function PaymentContent() {
                     </Elements>
                 ) : (
                     <div className="flex h-full items-center justify-center min-h-[300px]">
-                        <span className="loading loading-spinner text-blue-600">Loading payment...</span>
+                        <span className="loading loading-spinner text-amber-500">Loading payment...</span>
                     </div>
                 )}
             </div>
@@ -174,7 +174,7 @@ function PaymentContent() {
 
 export default function PaymentPage() {
     return (
-        <div className="min-h-screen bg-white text-gray-900 flex flex-col font-sans selection:bg-blue-600/10 selection:text-blue-600 transition-colors duration-500">
+        <div className="min-h-screen bg-white text-gray-900 flex flex-col font-sans selection:bg-amber-600/10 selection:text-amber-500 transition-colors duration-500">
             <Header />
 
             <main className="flex-1 flex items-center justify-center p-6 py-24 relative z-10 animate-fade-in-up">

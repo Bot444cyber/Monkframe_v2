@@ -98,8 +98,8 @@ export default function SignupPage() {
 
             <main className="flex-1 flex flex-col items-center justify-center py-24 px-6 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,white_100%)] pointer-events-none opacity-80" />
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-50/50 rounded-full blur-3xl -z-10 mix-blend-multiply" />
-                <div className="absolute bottom-1/4 right-1/4 w-md h-112 bg-indigo-50/50 rounded-full blur-3xl -z-10 mix-blend-multiply" />
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-50/50 rounded-full blur-3xl -z-10 mix-blend-multiply" />
+                <div className="absolute bottom-1/4 right-1/4 w-md h-112 bg-amber-50/50 rounded-full blur-3xl -z-10 mix-blend-multiply" />
 
                 <div className="w-full max-w-md mx-auto z-10 animate-fade-in-up">
                     <div className="text-center mb-10">
@@ -118,7 +118,7 @@ export default function SignupPage() {
                                     <div className="space-y-2 relative group">
                                         <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Full Name</label>
                                         <div className="relative">
-                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors duration-300">
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-amber-600 transition-colors duration-300">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                                                 </svg>
@@ -129,7 +129,7 @@ export default function SignupPage() {
                                                 value={formData.fullName}
                                                 onChange={handleInputChange}
                                                 required
-                                                className="w-full bg-gray-50/50 border border-gray-200 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] placeholder:text-gray-400 outline-none transition-all duration-300"
+                                                className="w-full bg-gray-50/50 border border-gray-200 focus:border-amber-500 focus:bg-white focus:ring-4 focus:ring-amber-500/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] placeholder:text-gray-400 outline-none transition-all duration-300"
                                                 placeholder="John Doe"
                                             />
                                         </div>
@@ -138,7 +138,7 @@ export default function SignupPage() {
                                     <div className="space-y-2 relative group">
                                         <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Email Address</label>
                                         <div className="relative">
-                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors duration-300">
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-amber-600 transition-colors duration-300">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
                                                 </svg>
@@ -149,7 +149,7 @@ export default function SignupPage() {
                                                 value={formData.email}
                                                 onChange={handleInputChange}
                                                 required
-                                                className="w-full bg-gray-50/50 border border-gray-200 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] placeholder:text-gray-400 outline-none transition-all duration-300"
+                                                className="w-full bg-gray-50/50 border border-gray-200 focus:border-amber-500 focus:bg-white focus:ring-4 focus:ring-amber-500/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] placeholder:text-gray-400 outline-none transition-all duration-300"
                                                 placeholder="name@example.com"
                                             />
                                         </div>
@@ -158,7 +158,7 @@ export default function SignupPage() {
                                     <div className="space-y-2 relative group">
                                         <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Password</label>
                                         <div className="relative">
-                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors duration-300">
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-amber-600 transition-colors duration-300">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                                                 </svg>
@@ -169,7 +169,7 @@ export default function SignupPage() {
                                                 value={formData.password}
                                                 onChange={handleInputChange}
                                                 required
-                                                className="w-full bg-gray-50/50 border border-gray-200 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] placeholder:text-gray-400 outline-none transition-all duration-300"
+                                                className="w-full bg-gray-50/50 border border-gray-200 focus:border-amber-500 focus:bg-white focus:ring-4 focus:ring-amber-500/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] placeholder:text-gray-400 outline-none transition-all duration-300"
                                                 placeholder="••••••••"
                                             />
                                         </div>
@@ -177,15 +177,15 @@ export default function SignupPage() {
                                 </div>
 
                                 <div className="flex items-center gap-3 mt-4">
-                                    <input type="checkbox" className="w-4 h-4 rounded border-gray-300 bg-transparent text-blue-600 focus:ring-offset-white focus:ring-blue-600" required />
-                                    <p className="text-xs text-gray-500">I agree to the <Link href="/licenses" className="text-blue-600 hover:text-blue-700 hover:underline">Terms of Service</Link>.</p>
+                                    <input type="checkbox" className="w-4 h-4 rounded border-gray-300 bg-transparent text-amber-600 focus:ring-offset-white focus:ring-amber-600" required />
+                                    <p className="text-xs text-gray-500">I agree to the <Link href="/licenses" className="text-amber-600 hover:text-amber-700 hover:underline">Terms of Service</Link>.</p>
                                 </div>
 
                                 <div className="space-y-4 pt-4">
                                     <button
                                         type="submit"
                                         disabled={loading}
-                                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-50 shadow-sm shadow-blue-600/20"
+                                        className="w-full bg-amber-500 hover:bg-amber-600 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-50 shadow-sm shadow-amber-500/20"
                                     >
                                         {loading ? (
                                             <span className="flex items-center justify-center gap-2">
@@ -231,7 +231,7 @@ export default function SignupPage() {
                                             maxLength={6}
                                             value={otp}
                                             onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                                            className="w-full bg-gray-50/50 border border-gray-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 py-6 text-center text-[40px] font-black tracking-[0.2em] text-gray-900 rounded-3xl outline-none transition-all duration-300 placeholder:text-gray-300"
+                                            className="w-full bg-gray-50/50 border border-gray-200 focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 py-6 text-center text-[40px] font-black tracking-[0.2em] text-gray-900 rounded-3xl outline-none transition-all duration-300 placeholder:text-gray-300"
                                             placeholder="000000"
                                             autoFocus
                                         />
@@ -243,7 +243,7 @@ export default function SignupPage() {
                                     <button
                                         type="submit"
                                         disabled={loading || otp.length < 6}
-                                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-50 shadow-sm shadow-blue-600/20"
+                                        className="w-full bg-amber-500 hover:bg-amber-600 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-50 shadow-sm shadow-amber-500/20"
                                     >
                                         {loading ? "Verifying..." : "Confirm & Sign Up"}
                                     </button>
@@ -262,7 +262,7 @@ export default function SignupPage() {
                         <div className="mt-8 pt-6 border-t border-gray-100 text-center">
                             <p className="text-gray-500 text-[15px]">
                                 Already a member? {' '}
-                                <Link href="/login" className="text-blue-600 font-bold hover:underline transition-colors">
+                                <Link href="/login" className="text-amber-600 font-bold hover:underline transition-colors">
                                     Sign in here
                                 </Link>
                             </p>
