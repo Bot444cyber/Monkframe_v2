@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter_Tight, Geist } from "next/font/google";
+import { Inter_Tight } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { Toaster } from "react-hot-toast";
@@ -8,11 +8,9 @@ import PresenceHandler from "@/components/PresenceHandler";
 import { ThemeProvider } from "next-themes";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
-
 const interTight = Inter_Tight({
   subsets: ["latin"],
-  variable: "--font-inter-tight",
+  variable: "--font-sans",
   display: "swap",
 });
 
@@ -30,8 +28,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
-      <body className={`${interTight.variable} font-sans antialiased bg-white text-gray-900 selection:bg-amber-600/10 selection:text-amber-500`}>
+    <html lang="en" suppressHydrationWarning className={interTight.variable}>
+      <body className="font-sans antialiased bg-white text-gray-900 selection:bg-amber-600/10 selection:text-amber-500">
         <AuthProvider>
           <Toaster
             position="bottom-right"
