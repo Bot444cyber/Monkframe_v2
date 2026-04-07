@@ -445,12 +445,13 @@ export default function Dashboard() {
 
             {/* Mobile Header (Dashboard Specific) */}
             <header className="lg:hidden fixed top-0 left-0 right-0 z-40 h-16 bg-background/80 backdrop-blur-xl border-b border-border flex items-center justify-between px-6">
-                <div className="flex items-center gap-2">
-                    <div className="relative flex items-center justify-center gap-2">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center">
-                            <img src="/logo/M_SHAPE.svg" alt="MOCKUPIDEA Logo" className="w-full h-full object-contain invert dark:invert-0" />
+                <div className="flex items-center gap-3">
+                    <div className="relative flex items-center justify-center gap-2.5">
+                        <div className="relative w-9 h-9 rounded-xl bg-card border border-border/50 flex items-center justify-center shadow-lg overflow-hidden shrink-0">
+                            <div className="absolute inset-0 bg-amber-500/5 blur-sm"></div>
+                            <img src="/logo/M_SHAPE.svg" alt="MOCKUPIDEA" className="w-6 h-6 object-contain relative z-10" />
                         </div>
-                        <span className="text-xl font-bold tracking-tighter text-foreground relative z-10">MOCKUPIDEA</span>
+                        <span className="text-lg font-black tracking-tighter text-foreground">MOCKUPIDEA</span>
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -478,18 +479,32 @@ export default function Dashboard() {
 
             {/* Unified Sidebar (Desktop & Mobile) */}
             <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-card border-r border-border transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} flex flex-col shadow-2xl`}>
-                {/* Brand Logo Area */}
-                <div className="h-20 flex items-center justify-between px-8 border-b border-border relative">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[50px] rounded-full pointer-events-none -mr-16 -mt-16"></div>
-                    <div className="flex items-center gap-3 relative z-10">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center">
-                            <img src="/logo/M_SHAPE.svg" alt="MOCKUPIDEA Logo" className="w-full h-full object-contain invert dark:invert-0" />
-                        </div>
-                        <span className="text-2xl font-black tracking-tighter text-foreground">
-                            MOCKUPIDEA
-                        </span>
-                    </div>
+                {/* Brand Logo Area - PRO Version */}
+                <div className="h-24 flex flex-col justify-center px-8 border-b border-border/50 relative overflow-hidden group/logo bg-linear-to-b from-secondary/20 to-transparent">
+                    {/* Dynamic Background Effects */}
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 blur-[50px] rounded-full pointer-events-none -mr-16 -mt-16 transition-all duration-700 group-hover/logo:bg-amber-500/20"></div>
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary/5 blur-[40px] rounded-full pointer-events-none -ml-12 -mb-12"></div>
 
+                    <div className="flex items-center gap-3.5 relative z-10">
+                        {/* Logo Container with Glass Effect and Glow */}
+                        <div className="relative group/icon">
+                            <div className="absolute inset-0 bg-amber-500/20 blur-md rounded-xl transition-all duration-500 group-hover/logo:bg-amber-500/40 group-hover/logo:scale-110"></div>
+                            <div className="relative w-10 h-10 rounded-xl bg-card border border-border/50 flex items-center justify-center shadow-2xl transition-all duration-500 group-hover/logo:rotate-3 group-hover/logo:scale-105 overflow-hidden">
+                                <div className="absolute inset-0 bg-linear-to-br from-white/10 to-transparent opacity-0 group-hover/logo:opacity-100 transition-opacity"></div>
+                                <img src="/logo/M_SHAPE.svg" alt="MOCKUPIDEA" className="w-7 h-7 object-contain transition-transform duration-500 group-hover/logo:scale-110" />
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col">
+                            <span className="text-xl font-black tracking-tight text-foreground leading-none mb-1 group-hover/logo:text-amber-500 transition-colors duration-300">
+                                MOCKUPIDEA
+                            </span>
+                            <div className="flex items-center gap-1.5">
+                                <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Platform Pro</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Main Navigation */}
