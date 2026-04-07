@@ -17,10 +17,10 @@ const interTight = Inter_Tight({
 });
 
 export const metadata: Metadata = {
-  title: "Monkframe",
+  title: "MOCKUPIDEA",
   description: "Premium UI Asset Marketplace",
   icons: {
-    icon: "/svg/logo.svg",
+    icon: "/logo/M_SHAPE.svg",
   },
 };
 

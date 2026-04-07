@@ -63,9 +63,9 @@ export default function Header() {
                 <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
                     <Link href="/" className="flex items-center gap-2 group">
                         <div className="w-8 h-8 rounded-lg flex items-center justify-center">
-                            <img src="/svg/logo.svg" alt="Monkframe Logo" className="w-full h-full object-contain" />
+                            <img src="/logo/M_SHAPE.svg" alt="MOCKUPIDEA Logo" className="w-full h-full object-contain" />
                         </div>
-                        <span className="font-bold tracking-wider text-[15px] text-gray-900">Monkframe</span>
+                        <span className="font-bold tracking-wider text-[15px] text-gray-900">MOCKUPIDEA</span>
                     </Link>
 
                     <div className="flex items-center gap-6">

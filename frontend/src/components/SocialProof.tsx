@@ -29,7 +29,7 @@ const rows: Cell[][] = [
 
 // Slim quote strip below mosaic
 const quotes = [
-    { text: "Shipped 3 weeks ahead of schedule using Monkframe kits.", author: "Priya N. · CTO, Flowstack" },
+    { text: "Shipped 3 weeks ahead of schedule using MOCKUPIDEA kits.", author: "Priya N. · CTO, Flowstack" },
     { text: "Every asset looks like it was built by a senior designer.", author: "Jake M. · Freelance Designer" },
     { text: "Cut our design sprint time in half. Essential for any dev team.", author: "Lena F. · Lead Designer, Linear" },
     { text: "The dark mode quality is unreal — matches our brand out of the box.", author: "Omar K. · Startup Founder" },

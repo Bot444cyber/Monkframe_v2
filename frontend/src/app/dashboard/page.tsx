@@ -448,9 +448,9 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2">
                     <div className="relative flex items-center justify-center gap-2">
                         <div className="w-8 h-8 rounded-lg flex items-center justify-center">
-                            <img src="/svg/logo.svg" alt="Monkframe Logo" className="w-full h-full object-contain invert dark:invert-0" />
+                            <img src="/logo/M_SHAPE.svg" alt="MOCKUPIDEA Logo" className="w-full h-full object-contain invert dark:invert-0" />
                         </div>
-                        <span className="text-xl font-bold tracking-tighter text-foreground relative z-10">Monkframe</span>
+                        <span className="text-xl font-bold tracking-tighter text-foreground relative z-10">MOCKUPIDEA</span>
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -483,10 +483,10 @@ export default function Dashboard() {
                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[50px] rounded-full pointer-events-none -mr-16 -mt-16"></div>
                     <div className="flex items-center gap-3 relative z-10">
                         <div className="w-8 h-8 rounded-lg flex items-center justify-center">
-                            <img src="/svg/logo.svg" alt="Monkframe Logo" className="w-full h-full object-contain invert dark:invert-0" />
+                            <img src="/logo/M_SHAPE.svg" alt="MOCKUPIDEA Logo" className="w-full h-full object-contain invert dark:invert-0" />
                         </div>
                         <span className="text-2xl font-black tracking-tighter text-foreground">
-                            Monkframe
+                            MOCKUPIDEA
                         </span>
                     </div>
 

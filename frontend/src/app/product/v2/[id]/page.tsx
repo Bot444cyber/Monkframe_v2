@@ -84,7 +84,7 @@ export default function ProductArtifactPage() {
                         </div>
 
                         <p className="text-base font-medium text-[#8E8379] leading-relaxed max-w-xl italic">
-                            {product.overview || "A masterful exploration of light and digital texture, hand-curated for the Monkframe permanent collection."}
+                            {product.overview || "A masterful exploration of light and digital texture, hand-curated for the MOCKUPIDEA permanent collection."}
                         </p>
 
                         <div className="p-10 bg-white rounded-[2rem] shadow-xl shadow-[#2D241E]/5 border border-[#F2EDE8] flex flex-col gap-8">
@@ -148,8 +148,8 @@ export default function ProductArtifactPage() {
                     <h2 className="text-4xl font-black text-center uppercase tracking-tight text-[#2D241E] mb-20">Artifact Provenance</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-24 gap-y-16">
                         {[
-                            { label: "Creation", value: "Monkframe Studio // Autumn 2025 Permanent Collection." },
-                            { label: "Authentication", value: "Verified digital signature. Inclusion in the immutable Monkframe archive." },
+                            { label: "Creation", value: "MOCKUPIDEA Studio // Autumn 2025 Permanent Collection." },
+                            { label: "Authentication", value: "Verified digital signature. Inclusion in the immutable MOCKUPIDEA archive." },
                             { label: "Exhibition", value: "Featured Showcase: Premium Design Infrastructure." },
                             { label: "Requirements", value: "Optimized for High-DPI professional workflows." },
                         ].map((item, idx) => (

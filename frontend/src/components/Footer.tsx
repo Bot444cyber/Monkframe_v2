@@ -40,7 +40,7 @@ export default function Footer() {
             <div className="text-white text-center md:text-left z-10 relative">
               <h4 className="text-lg font-black uppercase tracking-wider mb-1">OUR PARTNER</h4>
               <p className="text-sm font-medium opacity-90 leading-relaxed max-w-md">
-                All premium assets that are on Monkframe are secured and powered thanks to the technological partnership with our cloud providers.
+                All premium assets that are on MOCKUPIDEA are secured and powered thanks to the technological partnership with our cloud providers.
               </p>
             </div>
           </div>
@@ -54,8 +54,12 @@ export default function Footer() {
             <Link href="/contact" className="text-[12px] font-bold text-gray-500 uppercase hover:text-amber-500">Contact</Link>
             <Link href="/faq" className="text-[12px] font-bold text-gray-500 uppercase hover:text-amber-500">Faq</Link>
           </div>
+          <div className="flex items-center gap-2 mb-4 sm:mb-0">
+            <img src="/logo/M_SHAPE.svg" alt="MOCKUPIDEA Logo" className="w-6 h-6 object-contain" />
+            <span className="font-bold tracking-wider text-[14px] text-gray-900">MOCKUPIDEA</span>
+          </div>
           <p className="text-[13px] font-medium text-gray-500">
-            © 2026 Monkframe Design. All rights reserved
+            © 2026 MOCKUPIDEA Design. All rights reserved
           </p>
         </div>
       </div>

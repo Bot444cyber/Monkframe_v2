@@ -142,8 +142,8 @@ export default function ProfilePage() {
             >
                 <div className="w-9 h-9 rounded-xl overflow-hidden shrink-0 bg-gray-100 border border-gray-200 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
                     <Image
-                        src="/svg/logo.svg"
-                        alt="Monkframe"
+                        src="/logo/M_SHAPE.svg"
+                        alt="MOCKUPIDEA"
                         width={28}
                         height={28}
                         className="w-6 h-6 object-contain"
@@ -151,7 +151,7 @@ export default function ProfilePage() {
                 </div>
                 <div>
                     <span className="text-base font-black tracking-tight text-gray-900 leading-none block mb-0.5">
-                        Monkframe
+                        MOCKUPIDEA
                     </span>
                     <span className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.2em] block">
                         Design Assets
@@ -254,8 +254,8 @@ export default function ProfilePage() {
                     <button onClick={() => setSidebarOpen(true)} className="p-1.5 rounded-lg hover:bg-gray-50 transition-all">
                         <Icons.Menu className="w-5 h-5 text-gray-500" />
                     </button>
-                    <Image src="/svg/logo.svg" alt="Monkframe" width={22} height={22} className="invert dark:invert-0 opacity-90" />
-                    <span className="font-black text-sm tracking-tight text-gray-900">Monkframe</span>
+                    <Image src="/logo/M_SHAPE.svg" alt="MOCKUPIDEA" width={22} height={22} className="invert dark:invert-0 opacity-90" />
+                    <span className="font-black text-sm tracking-tight text-gray-900">MOCKUPIDEA</span>
                     <span className="ml-auto text-xs text-gray-500 font-semibold">{tabTitle}</span>
                 </div>
 
