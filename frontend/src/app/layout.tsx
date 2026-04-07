@@ -15,7 +15,7 @@ const interTight = Inter_Tight({
 });
 
 export const metadata: Metadata = {
-  title: "MOCKUPIDEA",
+  title: "Mockupidea",
   description: "Premium UI Asset Marketplace",
   icons: {
     icon: "/logo/M_SHAPE.svg",
