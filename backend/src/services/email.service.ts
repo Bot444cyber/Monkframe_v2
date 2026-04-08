@@ -5,8 +5,19 @@ import { otpTemplate } from './Email/otp.template';
 import { passwordChangeTemplate } from './Email/password-change.template';
 import { paymentSuccessTemplate } from './Email/payment-success.template';
 
+import path from 'path';
+
 // Load environment variables from .env file
 dotenv.config();
+
+const LOGO_PATH = path.join(__dirname, '../../../frontend/public/logo/M_SHAPE.svg');
+
+// Define interface for attachment
+interface Attachment {
+  filename: string;
+  path: string;
+  cid: string;
+}
 
 // Define interface for email options
 interface MailOptions {
@@ -15,6 +26,7 @@ interface MailOptions {
   subject: string;
   html: string;
   text?: string;
+  attachments?: Attachment[];
 }
 
 /**
@@ -33,12 +45,14 @@ function createTransport() {
 
 const DEFAULT_FROM = '"Mockupidea | UI/UX" <noreply@www.mockupidea.com>';
 
+const DEFAULT_LOGO_ATTACHMENT = {
+  filename: 'logo.svg',
+  path: LOGO_PATH,
+  cid: 'logo_id'
+};
+
 /**
  * Sends a professional OTP email with the Mockupidea branding.
- * @param userEmail Recipient email address
- * @param otp The 6-digit OTP code
- * @param isForgotPassword Whether this is for a password reset
- * @returns boolean indicating success
  */
 export async function sendOTPEmail(userEmail: string, otp: string | number, isForgotPassword = false): Promise<boolean> {
   if (!userEmail || !otp) {
@@ -57,6 +71,7 @@ export async function sendOTPEmail(userEmail: string, otp: string | number, isFo
       subject,
       text: `Your verification code is ${otp}`,
       html,
+      attachments: [DEFAULT_LOGO_ATTACHMENT]
     };
 
     const info = await transport.sendMail(mailOptions);
@@ -86,6 +101,7 @@ export async function sendWelcomeEmail(userEmail: string, name: string): Promise
       to: userEmail,
       subject: 'Welcome to Mockupidea | Premium Design Assets',
       html,
+      attachments: [DEFAULT_LOGO_ATTACHMENT]
     };
 
     const info = await transport.sendMail(mailOptions);
@@ -115,6 +131,7 @@ export async function sendPasswordChangeSuccessEmail(userEmail: string): Promise
       to: userEmail,
       subject: 'Security Alert: Password Changed | Mockupidea',
       html,
+      attachments: [DEFAULT_LOGO_ATTACHMENT]
     };
 
     const info = await transport.sendMail(mailOptions);
@@ -144,6 +161,7 @@ export async function sendPaymentSuccessEmail(userEmail: string, details: { orde
       to: userEmail,
       subject: 'Payment Successful | Mockupidea Receipt',
       html,
+      attachments: [DEFAULT_LOGO_ATTACHMENT]
     };
 
     const info = await transport.sendMail(mailOptions);
