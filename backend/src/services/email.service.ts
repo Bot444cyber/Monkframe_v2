@@ -10,7 +10,7 @@ import path from 'path';
 // Load environment variables from .env file
 dotenv.config();
 
-const LOGO_PATH = path.join(__dirname, '../../../frontend/public/logo/M_SHAPE.svg');
+const LOGO_PATH = path.join(__dirname, '../../public/logo/M_SHAPE.svg');
 
 // Define interface for attachment
 interface Attachment {
