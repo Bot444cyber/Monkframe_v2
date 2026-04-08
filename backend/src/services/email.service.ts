@@ -31,10 +31,10 @@ function createTransport() {
   });
 }
 
-const DEFAULT_FROM = '"Monkframer | UI/UX" <noreply@www.mockupidea.com>';
+const DEFAULT_FROM = '"Mockupidea | UI/UX" <noreply@mockupidea.com>';
 
 /**
- * Sends a professional OTP email with the Monkframer branding.
+ * Sends a professional OTP email with the Mockupidea branding.
  * @param userEmail Recipient email address
  * @param otp The 6-digit OTP code
  * @param isForgotPassword Whether this is for a password reset
@@ -48,7 +48,7 @@ export async function sendOTPEmail(userEmail: string, otp: string | number, isFo
 
   try {
     const transport = createTransport();
-    const subject = isForgotPassword ? 'Reset Your Password | Monkframer' : 'Your Verification Code | Monkframer';
+    const subject = isForgotPassword ? 'Reset Your Password | Mockupidea' : 'Your Verification Code | Mockupidea';
     const html = otpTemplate(otp.toString(), isForgotPassword);
 
     const mailOptions: MailOptions = {
@@ -84,7 +84,7 @@ export async function sendWelcomeEmail(userEmail: string, name: string): Promise
     const mailOptions: MailOptions = {
       from: DEFAULT_FROM,
       to: userEmail,
-      subject: 'Welcome to Monkframer | Premium UI/UX',
+      subject: 'Welcome to Mockupidea | Premium Design Assets',
       html,
     };
 
@@ -113,7 +113,7 @@ export async function sendPasswordChangeSuccessEmail(userEmail: string): Promise
     const mailOptions: MailOptions = {
       from: DEFAULT_FROM,
       to: userEmail,
-      subject: 'Security Alert: Password Changed | Monkframer',
+      subject: 'Security Alert: Password Changed | Mockupidea',
       html,
     };
 
@@ -142,7 +142,7 @@ export async function sendPaymentSuccessEmail(userEmail: string, details: { orde
     const mailOptions: MailOptions = {
       from: DEFAULT_FROM,
       to: userEmail,
-      subject: 'Payment Successful | Monkframer Receipt',
+      subject: 'Payment Successful | Mockupidea Receipt',
       html,
     };
 

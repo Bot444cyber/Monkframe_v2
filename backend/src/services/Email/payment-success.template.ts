@@ -35,13 +35,13 @@ export function paymentSuccessTemplate(details: PaymentDetails): string {
     </div>
 
     <div class="button-container">
-      <a href="https://www.monkframer.online/profile" class="button">View Invoice in Dashboard</a>
+      <a href="https://www.mockupidea.com/profile" class="button">View Invoice in profile.</a>
     </div>
 
     <p>Your subscription is now active. You have full access to all features included in the <strong>${details.planName}</strong> plan.</p>
     
     <p>If you have any questions regarding this transaction, please contact our billing department.</p>
-    <p>Cheers,<br>The Monkframer Team</p>
+    <p>Cheers,<br>The Mockupidea Team</p>
   `;
-    return baseLayout('Payment Receipt | Monkframer', content);
+    return baseLayout('Payment Receipt | Mockupidea', content);
 }
