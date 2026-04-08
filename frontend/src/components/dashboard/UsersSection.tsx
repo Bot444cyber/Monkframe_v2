@@ -1,9 +1,23 @@
 import React, { useState } from 'react';
 import Pagination from '@/components/Pagination';
 import toast from 'react-hot-toast';
+import { Trash2, Shield, User as UserIcon, Mail, Globe, Clock, DollarSign, ShoppingBag } from 'lucide-react';
+
+interface User {
+    user_id: number;
+    full_name: string;
+    email: string;
+    role: 'ADMIN' | 'CUSTOMER' | 'EDITOR';
+    status: string;
+    google_id: string | null;
+    created_at: string;
+    last_active_at: string;
+    purchases?: number;
+    lifetimeValue?: number;
+}
 
 interface UsersSectionProps {
-    users: any[]; // Consider defining a User type
+    users: User[];
     usersPage: number;
     usersTotalPages: number;
     setUsersPage: (page: number) => void;
@@ -18,6 +32,7 @@ const UsersSection: React.FC<UsersSectionProps> = ({
     onRefresh
 }) => {
     const [updatingId, setUpdatingId] = useState<number | null>(null);
+    const [deletingId, setDeletingId] = useState<number | null>(null);
 
     const handleRoleChange = async (userId: number, newRole: string) => {
         setUpdatingId(userId);
@@ -40,7 +55,7 @@ const UsersSection: React.FC<UsersSectionProps> = ({
 
             if (data.status) {
                 toast.success(data.message, { id: loadingToast });
-                onRefresh(); // Refresh the list
+                onRefresh();
             } else {
                 toast.error(data.message || "Failed to update role", { id: loadingToast });
             }
@@ -52,111 +67,175 @@ const UsersSection: React.FC<UsersSectionProps> = ({
         }
     };
 
+    const handleDeleteUser = async (userId: number, userEmail: string) => {
+        if (!window.confirm(`Are you sure you want to permanently delete the account for ${userEmail}? This action cannot be undone and will remove all associated data.`)) {
+            return;
+        }
+
+        setDeletingId(userId);
+        const loadingToast = toast.loading("Deleting user account...");
+
+        try {
+            const token = localStorage.getItem('auth_token');
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
+
+            const res = await fetch(`${apiUrl}/api/admin/users/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const data = await res.json();
+
+            if (data.status) {
+                toast.success(data.message, { id: loadingToast });
+                onRefresh();
+            } else {
+                toast.error(data.message || "Failed to delete user", { id: loadingToast });
+            }
+        } catch (error) {
+            console.error("Delete user error", error);
+            toast.error("An error occurred while deleting the user", { id: loadingToast });
+        } finally {
+            setDeletingId(null);
+        }
+    };
+
     return (
-        <div className="bg-card border border-border rounded-4xl overflow-hidden animate-fade-in mb-20">
+        <div className="bg-card border border-border rounded-[2.5rem] overflow-hidden animate-fade-in mb-20 shadow-2xl">
             {/* Header with Summary Stats */}
-            <div className="p-5 sm:p-8 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-6 bg-secondary/10">
-                <div>
-                    <h3 className="text-xl font-bold text-foreground tracking-tight mb-1">Customer Ecosystem</h3>
-                    <p className="text-sm text-muted-foreground">Relationship management and user engagement metrics</p>
-                </div>
-                <div className="flex gap-4">
-                    <div className="text-right">
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Total Users</p>
-                        <p className="text-xl font-bold text-foreground">{users.length}</p>
-                    </div>
+            <div className="p-8 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-6 bg-secondary/10 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[80px] rounded-full -mr-16 -mt-16 pointer-events-none" />
+                <div className="relative z-10">
+                    <h3 className="text-2xl font-bold text-foreground tracking-tight mb-1 flex items-center gap-3">
+                        Customer
+                    </h3>
+                    <p className="text-sm text-muted-foreground font-medium">Manage your customers and their engagement</p>
                 </div>
             </div>
 
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="border-b border-border text-[10px] font-bold text-muted-foreground uppercase tracking-widest bg-secondary/10">
-                            <th className="px-8 py-5 whitespace-nowrap">User Identity</th>
-                            <th className="px-8 py-5 whitespace-nowrap">Role</th>
-                            <th className="px-8 py-5 whitespace-nowrap">Ingress Date</th>
-                            <th className="px-8 py-5 whitespace-nowrap text-right">Lifetime Value</th>
+                        <tr className="border-b border-border text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] bg-secondary/5">
+                            <th className="px-8 py-6 whitespace-nowrap">User Identity</th>
+                            <th className="px-8 py-6 whitespace-nowrap">Role</th>
+                            <th className="px-8 py-6 whitespace-nowrap">Access</th>
+                            <th className="px-8 py-6 whitespace-nowrap">Ingress Date</th>
+                            <th className="px-8 py-6 whitespace-nowrap text-right">Activity</th>
+                            <th className="px-8 py-6 whitespace-nowrap text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
                         {users.map((user, idx) => (
-                            <tr key={user.user_id ?? user.id ?? idx} className="hover:bg-secondary/50 transition-all group">
+                            <tr key={user.user_id ?? idx} className="hover:bg-secondary/30 transition-all group">
                                 <td className="px-8 py-6">
-                                    <div className="flex items-center gap-3">
-                                        <div className="relative flex h-2 w-2 shrink-0">
+                                    <div className="flex items-center gap-4">
+                                        <div className="relative shrink-0">
+                                            <div className="h-10 w-10 rounded-xl bg-secondary border border-border flex items-center justify-center text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-all duration-300">
+                                                <UserIcon size={18} />
+                                            </div>
                                             {(() => {
                                                 const lastActive = user.last_active_at ? new Date(user.last_active_at).getTime() : 0;
                                                 const isOnline = Date.now() - lastActive < 300000;
                                                 if (isOnline) {
                                                     return (
-                                                        <>
-                                                            <div className="absolute inline-flex h-full w-full rounded-full animate-ping bg-amber-400 opacity-75"></div>
-                                                            <div className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></div>
-                                                        </>
+                                                        <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-background border-2 border-background">
+                                                            <div className="h-2 w-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.6)] animate-pulse"></div>
+                                                        </div>
                                                     );
                                                 }
-                                                return <div className="relative inline-flex rounded-full h-2 w-2 bg-muted"></div>;
+                                                return null;
                                             })()}
                                         </div>
-                                        <div className="flex flex-col">
-                                            <p className="font-bold text-foreground text-sm group-hover:text-primary transition-colors">
-                                                {user.name && user.name !== 'Unknown' ? user.name : user.email}
+                                        <div className="flex flex-col min-w-0">
+                                            <p className="font-bold text-foreground text-sm truncate max-w-[180px]">
+                                                {user.full_name && user.full_name !== 'Unknown' ? user.full_name : user.email.split('@')[0]}
                                             </p>
                                             <div className="flex items-center gap-2">
-                                                {user.name && user.name !== 'Unknown' && (
-                                                    <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">{user.email}</p>
-                                                )}
-                                                {(() => {
-                                                    const lastActive = user.last_active_at ? new Date(user.last_active_at).getTime() : 0;
-                                                    const isOnline = Date.now() - lastActive < 300000;
-                                                    if (isOnline) return <span className="text-[8px] font-bold text-amber-500/60 uppercase tracking-tighter">Online</span>;
-                                                    return null;
-                                                })()}
+                                                <p className="text-[10px] font-bold text-muted-foreground/60 truncate max-w-[150px]">{user.email}</p>
                                             </div>
                                         </div>
                                     </div>
                                 </td>
                                 <td className="px-8 py-6">
-                                    <select
-                                        value={user.role}
-                                        onChange={(e) => handleRoleChange(user.user_id, e.target.value)}
-                                        disabled={updatingId === user.user_id}
-                                        className={`text-[10px] font-bold uppercase tracking-[0.2em] px-3 py-1.5 rounded-lg border bg-transparent outline-none cursor-pointer transition-all hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed ${user.role === 'ADMIN'
-                                            ? 'text-purple-400 border-purple-500/20 shadow-[0_0_10px_rgba(168,85,247,0.1)]'
-                                            : user.role === 'EDITOR'
-                                                ? 'text-amber-400 border-amber-500/20 shadow-[0_0_10px_rgba(245,158,11,0.05)]'
-                                                : 'text-amber-500/80 border-amber-500/10 shadow-[0_0_10px_rgba(245,158,11,0.02)]'
-                                            }`}
-                                    >
-                                        <option value="CUSTOMER" className="bg-background text-amber-500">CUSTOMER</option>
-                                        <option value="EDITOR" className="bg-background text-amber-400">EDITOR</option>
-                                        <option value="ADMIN" className="bg-background text-purple-400">ADMIN</option>
-                                    </select>
+                                    <div className="relative inline-block">
+                                        <select
+                                            value={user.role}
+                                            onChange={(e) => handleRoleChange(user.user_id, e.target.value)}
+                                            disabled={updatingId === user.user_id}
+                                            className={`text-[9px] font-extrabold uppercase tracking-[0.2em] px-4 py-2 rounded-xl border bg-background/50 backdrop-blur-sm outline-none cursor-pointer transition-all hover:border-primary/40 disabled:opacity-50 disabled:cursor-not-allowed appearance-none pr-8 ${user.role === 'ADMIN'
+                                                ? 'text-purple-400 border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.1)]'
+                                                : user.role === 'EDITOR'
+                                                    ? 'text-amber-400 border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.05)]'
+                                                    : 'text-muted-foreground border-border shadow-sm'
+                                                }`}
+                                        >
+                                            <option value="CUSTOMER">CUSTOMER</option>
+                                            <option value="EDITOR">EDITOR</option>
+                                            <option value="ADMIN">ADMIN</option>
+                                        </select>
+                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground/40">
+                                            <Shield size={10} />
+                                        </div>
+                                    </div>
                                 </td>
-                                <td className="px-8 py-6 text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] font-mono">
-                                    {user.created_at ? new Date(user.created_at).toLocaleDateString('en-US', {
-                                        month: 'short',
-                                        day: 'numeric',
-                                        year: 'numeric'
-                                    }) : 'N/A'}
+                                <td className="px-8 py-6">
+                                    <div className="flex items-center gap-2">
+                                        {user.google_id ? (
+                                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/5 border border-amber-500/10 text-amber-500">
+                                                <Globe size={12} />
+                                                <span className="text-[9px] font-bold uppercase tracking-widest">Google</span>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary border border-border text-muted-foreground">
+                                                <Mail size={12} />
+                                                <span className="text-[9px] font-bold uppercase tracking-widest">Email</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </td>
+                                <td className="px-8 py-6">
+                                    <div className="flex items-center gap-2 text-muted-foreground">
+                                        <Clock size={12} className="opacity-50" />
+                                        <span className="text-[10px] font-bold uppercase tracking-widest tabular-nums">
+                                            {user.created_at ? new Date(user.created_at).toLocaleDateString('en-US', {
+                                                month: 'short',
+                                                day: 'numeric',
+                                                year: 'numeric'
+                                            }) : 'N/A'}
+                                        </span>
+                                    </div>
                                 </td>
                                 <td className="px-8 py-6 text-right">
-                                    <div className="flex flex-col items-end">
-                                        <span className="text-sm font-bold text-foreground">{user.purchases} <span className="text-[10px] text-muted-foreground/60 font-bold ml-1 uppercase tracking-widest">Orders</span></span>
-                                        <span className="text-[10px] font-bold text-primary uppercase tracking-widest mt-0.5">LTV: ${user.lifetimeValue || 0}</span>
+                                    <div className="flex items-center justify-end gap-2">
+                                        <span className="text-xs font-bold text-foreground tabular-nums">{user.purchases || 0}</span>
+                                        <ShoppingBag size={12} className="text-muted-foreground/40" />
                                     </div>
+                                </td>
+                                <td className="px-8 py-6 text-right">
+                                    <button
+                                        onClick={() => handleDeleteUser(user.user_id, user.email)}
+                                        disabled={deletingId === user.user_id}
+                                        className="p-3 text-muted-foreground/40 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all duration-300 disabled:opacity-30 group/del"
+                                        title="Delete User"
+                                    >
+                                        <Trash2 size={18} className="group-hover/del:scale-110 transition-transform" />
+                                    </button>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
 
-                <Pagination
-                    currentPage={usersPage}
-                    totalPages={usersTotalPages}
-                    onPageChange={setUsersPage}
-                    className="pb-6"
-                />
+                <div className="p-8 bg-secondary/5 border-t border-border">
+                    <Pagination
+                        currentPage={usersPage}
+                        totalPages={usersTotalPages}
+                        onPageChange={setUsersPage}
+                    />
+                </div>
             </div>
         </div>
     );

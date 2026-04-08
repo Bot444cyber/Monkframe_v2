@@ -388,14 +388,11 @@ export default function Dashboard() {
                 return headerRow + rows;
             };
 
-            const usersCSV = createCSV(usersData.data, ['id', 'name', 'email', 'role', 'joinedDate', 'purchases', 'lifetimeValue']);
-            const paymentsCSV = createCSV(paymentsData.data, ['id', 'customerName', 'email', 'item', 'amount', 'status', 'date']);
-            const uisCSV = createCSV(uisData.data, ['id', 'title', 'price', 'category', 'author', 'downloads', 'likes', 'rating']);
+            const usersCSV = createCSV(usersData.data, ['user_id', 'full_name', 'email', 'role', 'google_id', 'created_at', 'purchases', 'lifetimeValue']);
+            const paymentsCSV = createCSV(paymentsData.data, ['payment_id', 'user_id', 'email', 'amount', 'status', 'created_at']);
+            const uisCSV = createCSV(uisData.data, ['id', 'title', 'category', 'author', 'downloads', 'likes']);
 
-            // Simple Zip-like download (or just download 3 files, but let's do a single JSON for now or just one main CSV if simple. 
-            // Better: Download Payments CSV as it's most critical, OR trigger 3 downloads.)
-
-            // Let's trigger 3 downloads for full export "Pro" style
+            // Simple Zip-like download
             const downloadFile = (content: string, filename: string) => {
                 const blob = new Blob([content], { type: 'text/csv' });
                 const url = window.URL.createObjectURL(blob);
@@ -407,9 +404,9 @@ export default function Dashboard() {
                 document.body.removeChild(a);
             };
 
-            downloadFile(usersCSV, 'lumina_users.csv');
-            setTimeout(() => downloadFile(paymentsCSV, 'lumina_payments.csv'), 500);
-            setTimeout(() => downloadFile(uisCSV, 'lumina_inventory.csv'), 1000);
+            downloadFile(usersCSV, 'mockupidea_users.csv');
+            setTimeout(() => downloadFile(paymentsCSV, 'mockupidea_payments.csv'), 500);
+            setTimeout(() => downloadFile(uisCSV, 'mockupidea_inventory.csv'), 1000);
 
             toast.success("Export successful!", { id: loadingToast });
         } catch (error) {
@@ -545,6 +542,11 @@ export default function Dashboard() {
                 <div className="p-6 border-t border-border bg-secondary/10 backdrop-blur-sm">
                     <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4 pl-4">System</h2>
                     <nav className="space-y-2">
+                        <div className="lg:hidden flex items-center justify-between px-4 py-2.5 rounded-xl bg-secondary/50 border border-border/50 mb-2">
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Appearance</span>
+                            <ThemeToggle />
+                        </div>
+
                         <Link
                             href="/"
                             className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all text-sm font-bold uppercase tracking-widest group"

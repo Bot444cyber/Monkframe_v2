@@ -105,6 +105,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
             email: users.email,
             role: users.role,
             status: users.status,
+            google_id: users.google_id,
             created_at: users.created_at,
             last_active_at: users.last_active_at
         }).from(users).orderBy(desc(users.created_at));
@@ -156,6 +157,41 @@ export const updateUserStatus = async (req: Request, res: Response) => {
     } catch (error) {
         console.error("Update User Status Error:", error);
         res.status(500).json({ status: false, message: "Failed to update user status" });
+    }
+};
+
+export const deleteUser = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const requestingUserId = req.user?.user_id;
+
+        // Prevent admin from deleting themselves
+        if (requestingUserId && parseInt(id) === requestingUserId) {
+            return res.status(400).json({ status: false, message: "You cannot delete your own account from the dashboard" });
+        }
+
+        // Check if user exists
+        const [user] = await db.select().from(users).where(eq(users.user_id, parseInt(id))).limit(1);
+        if (!user) {
+            return res.status(404).json({ status: false, message: "User not found" });
+        }
+
+        // Delete user - Cascading handles related data if configured, 
+        // otherwise we might need to delete likes, comments, etc. manually.
+        // Based on schema.ts, we don't have explicit cascade, so let's be safe.
+        await db.transaction(async (tx) => {
+            await tx.delete(likes).where(eq(likes.user_id, parseInt(id)));
+            await tx.delete(comments).where(eq(comments.user_id, parseInt(id)));
+            await tx.delete(wishlists).where(eq(wishlists.user_id, parseInt(id)));
+            await tx.delete(notifications).where(eq(notifications.userId, parseInt(id)));
+            await tx.delete(payments).where(eq(payments.userId, parseInt(id)));
+            await tx.delete(users).where(eq(users.user_id, parseInt(id)));
+        });
+
+        res.json({ status: true, message: "User account and all associated data deleted successfully" });
+    } catch (error) {
+        console.error("Delete User Error:", error);
+        res.status(500).json({ status: false, message: "Failed to delete user" });
     }
 };
 
