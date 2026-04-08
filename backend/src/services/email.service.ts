@@ -31,7 +31,7 @@ function createTransport() {
   });
 }
 
-const DEFAULT_FROM = '"Mockupidea | UI/UX" <noreply@mockupidea.com>';
+const DEFAULT_FROM = '"Mockupidea | UI/UX" <noreply@www.mockupidea.com>';
 
 /**
  * Sends a professional OTP email with the Mockupidea branding.
