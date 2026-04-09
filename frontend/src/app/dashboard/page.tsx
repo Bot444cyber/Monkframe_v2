@@ -473,7 +473,7 @@ export default function Dashboard() {
     }
 
     return (
-        <>
+        <div className="min-h-screen bg-background text-foreground overflow-x-hidden relative">
             {/* Dynamic Dashboard Theme Override */}
             {user?.role === 'ADMIN' && <AdminSystemAlerts />}
             <style dangerouslySetInnerHTML={{
@@ -646,7 +646,7 @@ export default function Dashboard() {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 lg:ml-72 pt-20 lg:pt-8 px-6 lg:px-12 pb-12 overflow-x-hidden w-full">
+            <main className="lg:ml-72 pt-20 lg:pt-8 px-6 lg:px-12 pb-12">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-10 animate-fade-in relative z-10">
                     <div>
                         <h1 className="text-3xl font-black text-foreground tracking-tight mb-2">Dashboard</h1>
@@ -747,6 +747,6 @@ export default function Dashboard() {
                 isOpen={isResetOpen}
                 onClose={() => setIsResetOpen(false)}
             />
-        </>
+        </div>
     );
 }
