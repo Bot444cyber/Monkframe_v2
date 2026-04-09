@@ -489,8 +489,8 @@ export default function Dashboard() {
                 {/* Brand Logo Area - PRO Version */}
                 <div className="h-24 flex flex-col justify-center px-8 border-b border-border/50 relative overflow-hidden group/logo bg-linear-to-b from-secondary/20 to-transparent">
                     {/* Dynamic Background Effects */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 blur-[50px] rounded-full pointer-events-none -mr-16 -mt-16 transition-all duration-700 group-hover/logo:bg-blue-600/20"></div>
-                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary/5 blur-[40px] rounded-full pointer-events-none -ml-12 -mb-12"></div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 blur-3xl rounded-full pointer-events-none -mr-16 -mt-16 transition-all duration-700 group-hover/logo:bg-blue-600/20"></div>
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary/5 blur-2xl rounded-full pointer-events-none -ml-12 -mb-12"></div>
 
                     <div className="flex items-center gap-3.5 relative z-10">
                         {/* Logo Container with Glass Effect and Glow */}

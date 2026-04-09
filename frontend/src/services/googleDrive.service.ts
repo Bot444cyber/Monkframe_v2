@@ -8,9 +8,31 @@ class GoogleDriveService {
         };
     }
 
-    async listFiles() {
-        const response = await fetch(`${API_URL}/api/admin/drive/files`, {
+    async listFiles(pageSize: number = 20, pageToken?: string) {
+        let url = `${API_URL}/api/admin/drive/files?pageSize=${pageSize}`;
+        if (pageToken) url += `&pageToken=${pageToken}`;
+
+        const response = await fetch(url, {
             headers: this.getHeaders(),
+        });
+        return response.json();
+    }
+
+    async getStorageUsage() {
+        const response = await fetch(`${API_URL}/api/admin/drive/usage`, {
+            headers: this.getHeaders(),
+        });
+        return response.json();
+    }
+
+    async bulkDelete(fileIds: string[]) {
+        const response = await fetch(`${API_URL}/api/admin/drive/bulk-delete`, {
+            method: 'POST',
+            headers: {
+                ...this.getHeaders(),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ fileIds }),
         });
         return response.json();
     }
