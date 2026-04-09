@@ -25,7 +25,7 @@ export default function Footer() {
 
         {/* Partner Banner - Matching UI exactly, but genericized or strictly as requested */}
         <div className="flex justify-center mb-12">
-          <div className="w-full max-w-3xl bg-[#1e40af] rounded-lg p-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden border border-blue-400/20 shadow-sm shadow-blue-500/10">
+          <div className="w-full max-w-3xl bg-[#1200FF] rounded-lg p-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden border border-blue-400/20 shadow-sm shadow-blue-500/10">
             {/* Abstract decorative circles */}
             <div className="absolute top-0 right-0 w-32 h-32 border-2 border-white/10 rounded-full -mr-16 -mt-16"></div>
             <div className="absolute bottom-0 right-1/4 w-24 h-24 border border-white/5 rounded-full mb-4"></div>
