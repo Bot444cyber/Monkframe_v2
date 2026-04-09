@@ -10,6 +10,8 @@
   "/licenses/page": "app/licenses/page.js",
   "/page": "app/page.js",
   "/payment/page": "app/payment/page.js",
-  "/product/[id]/page": "app/product/[id]/page.js",
+  "/product/v1/[id]/page": "app/product/v1/[id]/page.js",
+  "/product/v2/[id]/page": "app/product/v2/[id]/page.js",
+  "/product/v3/[id]/page": "app/product/v3/[id]/page.js",
   "/profile/page": "app/profile/page.js"
 }

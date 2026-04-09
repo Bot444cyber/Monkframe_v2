@@ -39,6 +39,7 @@ import paymentRoutes from "./routes/payment.routes";
 import notificationRoutes from "./routes/notification.routes";
 import dashboardRoutes from "./routes/dashboard.routes";
 import newsletterRoutes from "./routes/newsletter.routes";
+import googleDriveRoutes from "./routes/googleDrive.routes";
 
 const app: Express = express();
 const PORT = process.env.PORT || 8000;
@@ -223,6 +224,7 @@ app.use('/api/payment', paymentRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/newsletter', newsletterRoutes);
+app.use('/api/admin/drive', googleDriveRoutes);
 
 // 404 handler
 app.use((req: Request, res: Response) => {

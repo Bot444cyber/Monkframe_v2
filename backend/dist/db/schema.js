@@ -34,10 +34,10 @@ exports.authOtp = (0, mysql_core_1.mysqlTable)('AuthOtp', {
 exports.uis = (0, mysql_core_1.mysqlTable)('uis', {
     id: (0, mysql_core_1.varchar)('id', { length: 36 }).primaryKey().$defaultFn(() => (0, crypto_1.randomUUID)()),
     title: (0, mysql_core_1.varchar)('title', { length: 255 }).notNull(),
-    price: (0, mysql_core_1.varchar)('price', { length: 50 }).notNull(),
-    author: (0, mysql_core_1.varchar)('author', { length: 255 }).notNull(),
+    price: (0, mysql_core_1.varchar)('price', { length: 50 }).notNull().default('Free'),
+    author: (0, mysql_core_1.varchar)('author', { length: 255 }).notNull().default(''),
     category: (0, mysql_core_1.varchar)('category', { length: 100 }).notNull(),
-    imageSrc: (0, mysql_core_1.text)('imageSrc').notNull(),
+    imageSrc: (0, mysql_core_1.text)('imageSrc').notNull().default(''),
     google_file_id: (0, mysql_core_1.varchar)('google_file_id', { length: 255 }),
     color: (0, mysql_core_1.varchar)('color', { length: 50 }),
     tags: (0, mysql_core_1.json)('tags'),

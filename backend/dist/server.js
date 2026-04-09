@@ -49,6 +49,7 @@ const payment_routes_1 = __importDefault(require("./routes/payment.routes"));
 const notification_routes_1 = __importDefault(require("./routes/notification.routes"));
 const dashboard_routes_1 = __importDefault(require("./routes/dashboard.routes"));
 const newsletter_routes_1 = __importDefault(require("./routes/newsletter.routes"));
+const googleDrive_routes_1 = __importDefault(require("./routes/googleDrive.routes"));
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 8000;
 const isProd = process.env.NODE_ENV === 'production';
@@ -208,6 +209,7 @@ app.use('/api/payment', payment_routes_1.default);
 app.use('/api/notifications', notification_routes_1.default);
 app.use('/api/dashboard', dashboard_routes_1.default);
 app.use('/api/newsletter', newsletter_routes_1.default);
+app.use('/api/admin/drive', googleDrive_routes_1.default);
 // 404 handler
 app.use((req, res) => {
     res.status(404).json({

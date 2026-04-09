@@ -11,6 +11,7 @@ const router = express_1.default.Router();
 router.get('/users', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN'), admin_controller_1.getAllUsers);
 router.patch('/users/:id/role', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN'), admin_controller_1.updateUserRole);
 router.patch('/users/:id/status', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN'), admin_controller_1.updateUserStatus);
+router.delete('/users/:id', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN'), admin_controller_1.deleteUser);
 router.get('/payments', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN'), admin_controller_1.getAllPayments);
 router.delete('/payments/:id', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN'), admin_controller_1.deletePayment);
 router.get('/stats', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN'), admin_controller_1.getOverviewStats);

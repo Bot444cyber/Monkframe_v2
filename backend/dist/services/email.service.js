@@ -22,8 +22,10 @@ const welcome_template_1 = require("./Email/welcome.template");
 const otp_template_1 = require("./Email/otp.template");
 const password_change_template_1 = require("./Email/password-change.template");
 const payment_success_template_1 = require("./Email/payment-success.template");
+const path_1 = __importDefault(require("path"));
 // Load environment variables from .env file
 dotenv_1.default.config();
+const LOGO_PATH = path_1.default.join(__dirname, '../../public/logo/M_SHAPE.svg');
 /**
  * Creates and returns the nodemailer transport
  */
@@ -37,13 +39,14 @@ function createTransport() {
         },
     });
 }
-const DEFAULT_FROM = '"Monkframer | UI/UX" <noreply@www.mockupidea.com>';
+const DEFAULT_FROM = '"Mockupidea | UI/UX" <noreply@www.mockupidea.com>';
+const DEFAULT_LOGO_ATTACHMENT = {
+    filename: 'M_SHAPE.svg',
+    path: LOGO_PATH,
+    cid: 'logo_id'
+};
 /**
- * Sends a professional OTP email with the Monkframer branding.
- * @param userEmail Recipient email address
- * @param otp The 6-digit OTP code
- * @param isForgotPassword Whether this is for a password reset
- * @returns boolean indicating success
+ * Sends a professional OTP email with the Mockupidea branding.
  */
 function sendOTPEmail(userEmail_1, otp_1) {
     return __awaiter(this, arguments, void 0, function* (userEmail, otp, isForgotPassword = false) {
@@ -53,7 +56,7 @@ function sendOTPEmail(userEmail_1, otp_1) {
         }
         try {
             const transport = createTransport();
-            const subject = isForgotPassword ? 'Reset Your Password | Monkframer' : 'Your Verification Code | Monkframer';
+            const subject = isForgotPassword ? 'Reset Your Password | Mockupidea' : 'Your Verification Code | Mockupidea';
             const html = (0, otp_template_1.otpTemplate)(otp.toString(), isForgotPassword);
             const mailOptions = {
                 from: DEFAULT_FROM,
@@ -61,6 +64,7 @@ function sendOTPEmail(userEmail_1, otp_1) {
                 subject,
                 text: `Your verification code is ${otp}`,
                 html,
+                attachments: [DEFAULT_LOGO_ATTACHMENT]
             };
             const info = yield transport.sendMail(mailOptions);
             console.log('✅ OTP Email sent:', info.messageId);
@@ -87,8 +91,9 @@ function sendWelcomeEmail(userEmail, name) {
             const mailOptions = {
                 from: DEFAULT_FROM,
                 to: userEmail,
-                subject: 'Welcome to Monkframer | Premium UI/UX',
+                subject: 'Welcome to Mockupidea | Premium Design Assets',
                 html,
+                attachments: [DEFAULT_LOGO_ATTACHMENT]
             };
             const info = yield transport.sendMail(mailOptions);
             console.log('✅ Welcome Email sent:', info.messageId);
@@ -115,8 +120,9 @@ function sendPasswordChangeSuccessEmail(userEmail) {
             const mailOptions = {
                 from: DEFAULT_FROM,
                 to: userEmail,
-                subject: 'Security Alert: Password Changed | Monkframer',
+                subject: 'Security Alert: Password Changed | Mockupidea',
                 html,
+                attachments: [DEFAULT_LOGO_ATTACHMENT]
             };
             const info = yield transport.sendMail(mailOptions);
             console.log('✅ Password Change Success Email sent:', info.messageId);
@@ -143,8 +149,9 @@ function sendPaymentSuccessEmail(userEmail, details) {
             const mailOptions = {
                 from: DEFAULT_FROM,
                 to: userEmail,
-                subject: 'Payment Successful | Monkframer Receipt',
+                subject: 'Payment Successful | Mockupidea Receipt',
                 html,
+                attachments: [DEFAULT_LOGO_ATTACHMENT]
             };
             const info = yield transport.sendMail(mailOptions);
             console.log('✅ Payment Success Email sent:', info.messageId);

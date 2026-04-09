@@ -10,6 +10,8 @@
   "/licenses/page": "/licenses",
   "/page": "/",
   "/payment/page": "/payment",
-  "/product/[id]/page": "/product/[id]",
+  "/product/v1/[id]/page": "/product/v1/[id]",
+  "/product/v2/[id]/page": "/product/v2/[id]",
+  "/product/v3/[id]/page": "/product/v3/[id]",
   "/profile/page": "/profile"
 }

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.baseLayout = baseLayout;
 /**
- * Base professional layout for Monkframer emails.
+ * Base professional layout for Mockupidea emails.
  * Uses a Zinc/Dark aesthetic with high-fidelity styling.
  */
 function baseLayout(title, content) {
@@ -44,13 +44,19 @@ function baseLayout(title, content) {
 
         /* Header */
         .header {
-            background-color: #09090b;
+            background-color: #ffffff;
             padding: 32px;
             text-align: center;
+            border-bottom: 1px solid #f4f4f5;
+        }
+
+        .header img {
+            height: 48px;
+            margin-bottom: 12px;
         }
 
         .header h1 {
-            color: #ffffff;
+            color: #09090b;
             margin: 0;
             font-size: 24px;
             font-weight: 700;
@@ -59,7 +65,7 @@ function baseLayout(title, content) {
         }
 
         .header p {
-            color: #a1a1aa;
+            color: #71717a;
             margin: 8px 0 0 0;
             font-size: 14px;
         }
@@ -149,8 +155,9 @@ function baseLayout(title, content) {
     <div class="wrapper">
         <div class="container">
             <div class="header">
-                <h1>Monkframer</h1>
-                <p>Premium UI/UX Solutions</p>
+                <img src="cid:logo_id" alt="Mockupidea Logo">
+                <h1>Mockupidea</h1>
+                <p>Curated Design Assets & Templates</p>
             </div>
             
             <div class="content">
@@ -158,10 +165,10 @@ function baseLayout(title, content) {
             </div>
 
             <div class="footer">
-                &copy; ${new Date().getFullYear()} Monkframer. All rights reserved.<br>
-                123 Design Avenue, Creative Suite 404.<br>
+                &copy; ${new Date().getFullYear()} Mockupidea. All rights reserved.<br>
+                Premium Digital Assets Platform.<br>
                 <br>
-                You received this email because you are a registered user of Monkframer.<br>
+                You received this email because you are a registered user of Mockupidea.<br>
                 <a href="#">Privacy Policy</a> • <a href="#">Terms of Service</a>
             </div>
         </div>

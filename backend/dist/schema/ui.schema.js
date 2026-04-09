@@ -5,15 +5,20 @@ const zod_1 = require("zod");
 const payload = {
     body: (0, zod_1.object)({
         title: (0, zod_1.string)().min(1, "Title is required"),
-        price: (0, zod_1.string)().min(1, "Price is required").or((0, zod_1.number)().transform(val => val.toString())),
         category: (0, zod_1.string)().min(1, "Category is required"),
-        author: (0, zod_1.string)().min(1, "Author is required"),
-        color: (0, zod_1.string)().nullable().optional(),
+        // author is now "Additional Information" — optional
+        author: (0, zod_1.string)().optional().default(''),
+        // overview maps to Description
         overview: (0, zod_1.string)().nullable().optional(),
-        highlights: (0, zod_1.string)().nullable().optional().or((0, zod_1.any)().array()).optional(), // Can be JSON string or array
+        // price, color, rating, highlights, specifications are no longer submitted by the form
+        // but kept here as optional for backward-compat / edit flows
+        price: (0, zod_1.string)().nullable().optional(),
+        color: (0, zod_1.string)().nullable().optional(),
+        highlights: (0, zod_1.string)().nullable().optional().or((0, zod_1.any)().array()).optional(),
         rating: (0, zod_1.string)().nullable().optional().or((0, zod_1.number)().transform(val => val.toString())).optional(),
         imageSrc: (0, zod_1.string)().nullable().optional(),
         google_file_id: (0, zod_1.string)().nullable().optional(),
+        specifications: (0, zod_1.any)().optional(),
     }),
 };
 const params = {

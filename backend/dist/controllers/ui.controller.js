@@ -146,9 +146,16 @@ const getUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             wished = !!wishResult;
             const numericUserId = typeof userId === 'string' ? parseInt(userId, 10) : userId;
             const [paymentRecord] = yield db_1.db.select().from(schema_1.payments).where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.payments.userId, numericUserId), (0, drizzle_orm_1.eq)(schema_1.payments.uiId, ui.id), (0, drizzle_orm_1.eq)(schema_1.payments.status, 'COMPLETED'))).limit(1);
-            if (paymentRecord || ui.creatorId === userId) {
+            const isFree = !ui.price || ui.price === '0' || ui.price.toLowerCase() === 'free';
+            if (paymentRecord || ui.creatorId === userId || isFree) {
                 purchased = true;
             }
+        }
+        else {
+            // Even if not logged in, we check if it's free for the UI flag
+            const isFree = !ui.price || ui.price === '0' || ui.price.toLowerCase() === 'free';
+            if (isFree)
+                purchased = true;
         }
         // Fetch File Size from Drive if exists
         let fileSize = "Unknown";
@@ -204,12 +211,8 @@ const downloadUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         }
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.user_id;
         const numericUserId = typeof userId === 'string' ? parseInt(userId, 10) : userId;
-        let canDownload = false;
-        if (userId) {
-            const [payment] = yield db_1.db.select().from(schema_1.payments).where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.payments.userId, numericUserId), (0, drizzle_orm_1.eq)(schema_1.payments.uiId, ui.id), (0, drizzle_orm_1.eq)(schema_1.payments.status, 'COMPLETED'))).limit(1);
-            if (payment || ui.creatorId === userId)
-                canDownload = true;
-        }
+        let canDownload = true; // All users can download
+        // The UI requires all users (admin/non-admin) to download without any purchasing
         if (!canDownload) {
             return res.status(403).json({ status: false, message: "You must purchase this asset to download it." });
         }
@@ -245,9 +248,10 @@ const downloadUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.downloadUI = downloadUI;
 // Create new UI
 const createUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _a, _b, _c;
     try {
-        const { title, price, category, author, color, overview, highlights, rating } = req.body;
+        // Only title, category, overview (description), author (additional info) come from form now
+        const { title, category, author, overview } = req.body;
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.user_id;
         // Handle Files
         const files = req.files;
@@ -260,14 +264,14 @@ const createUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             const file = files['banner'][0];
             bannerUpload = (0, drive_service_1.uploadFileToDrive)(file.path, file.originalname, file.mimetype, true);
         }
-        // 2. UI File
+        // 2. UI File (Assets)
         if (files && files['uiFile'] && files['uiFile'][0]) {
             const file = files['uiFile'][0];
             uiFileUpload = (0, drive_service_1.uploadFileToDrive)(file.path, file.originalname, file.mimetype, false);
         }
-        // 3. Showcase Images
+        // 3. Showcase Images (up to 4)
         if (files && files['showcase']) {
-            for (const file of files['showcase']) {
+            for (const file of files['showcase'].slice(0, 4)) {
                 showcaseUploads.push((0, drive_service_1.uploadFileToDrive)(file.path, file.originalname, file.mimetype, true));
             }
         }
@@ -284,64 +288,43 @@ const createUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     fs_1.default.unlinkSync(file.path);
             });
         }
-        // Parse highlights
-        let parsedHighlights = [];
-        if (highlights) {
-            try {
-                parsedHighlights = typeof highlights === 'string' ? JSON.parse(highlights) : highlights;
-            }
-            catch (e) {
-                parsedHighlights = [highlights];
-            }
-        }
-        // Parse specifications
-        let parsedSpecifications = [];
-        const { specifications } = req.body;
-        if (specifications) {
-            try {
-                parsedSpecifications = typeof specifications === 'string' ? JSON.parse(specifications) : specifications;
-            }
-            catch (e) {
-                console.error("Failed to parse specifications", e);
-                parsedSpecifications = []; // Fallback
-            }
-        }
         const generatedId = (0, crypto_1.randomUUID)();
-        // Create UI Record with actual URLs
+        // Create UI Record — removed fields use sensible defaults
         yield db_1.db.insert(schema_1.uis).values({
             id: generatedId,
             title,
-            price: price.toString(),
             category,
-            imageSrc: bannerResult ? bannerResult.publicUrl : '', // Use actual URL
-            author,
-            google_file_id: uiFileResult ? uiFileResult.id : null, // Use actual ID
-            color: color || null,
-            overview: overview || null,
-            highlights: parsedHighlights,
-            specifications: parsedSpecifications,
-            rating: rating ? parseFloat(rating) : 4.8,
-            showcase: showcaseResults.map(res => res.publicUrl), // Use actual URLs
-            fileType: (files && files['uiFile'] && files['uiFile'][0]) ? (_b = files['uiFile'][0].originalname.split('.').pop()) === null || _b === void 0 ? void 0 : _b.toUpperCase() : null,
+            price: 'Free', // Default: free asset
+            author: author || '', // "Additional Information"
+            overview: overview || null, // "Description"
+            imageSrc: bannerResult ? bannerResult.publicUrl : '',
+            google_file_id: uiFileResult ? uiFileResult.id : null,
+            color: null,
+            highlights: [],
+            specifications: [],
+            rating: 4.8,
+            showcase: showcaseResults.map((res) => res.publicUrl),
+            fileType: (files && files['uiFile'] && files['uiFile'][0])
+                ? (_c = (_b = files['uiFile'][0].originalname.split('.').pop()) === null || _b === void 0 ? void 0 : _b.toUpperCase()) !== null && _c !== void 0 ? _c : null
+                : null,
             creatorId: userId
         });
         const [newUI] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, generatedId)).limit(1);
         if (newUI) {
-            // Emit initial socket event
             const ioData = Object.assign(Object.assign({}, newUI), { imageSrc: (0, helpers_1.transformToProxy)(newUI.imageSrc, req), showcase: parseArray(newUI.showcase).map((url) => (0, helpers_1.transformToProxy)(url, req)), specifications: parseArray(newUI.specifications), highlights: parseArray(newUI.highlights) });
             res.status(201).json({
                 status: true,
-                message: "UI Created and files uploaded.",
+                message: "Asset created and files uploaded.",
                 data: ioData
             });
         }
         else {
-            res.status(500).json({ status: false, message: "Failed to create UI" });
+            res.status(500).json({ status: false, message: "Failed to create asset" });
         }
     }
     catch (error) {
         console.error("Create UI Error:", error);
-        res.status(500).json({ status: false, message: "Failed to create UI" });
+        res.status(500).json({ status: false, message: "Failed to create asset" });
     }
 });
 exports.createUI = createUI;
@@ -350,7 +333,8 @@ const updateUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
         const { id } = req.params;
-        const { title, price, category, author, overview, highlights, rating } = req.body;
+        // New form fields: title, category, overview (description), author (additional info)
+        const { title, category, author, overview } = req.body;
         // Fetch existing UI
         const [existingUI] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id)).limit(1);
         if (!existingUI) {
@@ -359,86 +343,33 @@ const updateUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // Handle Files
         const files = req.files;
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.user_id;
-        // Queue Updatable Files
-        // 1. Banner
+        // Queue background file uploads (banner, uiFile, showcase)
         if (files && files['banner'] && files['banner'][0]) {
             const file = files['banner'][0];
-            (0, upload_service_1.processUpload)({
-                filePath: file.path,
-                fileName: file.originalname,
-                mimeType: file.mimetype,
-                uiId: id,
-                type: 'BANNER',
-                isPublic: true,
-                userId
-            });
+            (0, upload_service_1.processUpload)({ filePath: file.path, fileName: file.originalname, mimeType: file.mimetype, uiId: id, type: 'BANNER', isPublic: true, userId });
         }
-        // 2. UI File
         if (files && files['uiFile'] && files['uiFile'][0]) {
             const file = files['uiFile'][0];
-            (0, upload_service_1.processUpload)({
-                filePath: file.path,
-                fileName: file.originalname,
-                mimeType: file.mimetype,
-                uiId: id,
-                type: 'UI_FILE',
-                isPublic: false,
-                userId
-            });
+            (0, upload_service_1.processUpload)({ filePath: file.path, fileName: file.originalname, mimeType: file.mimetype, uiId: id, type: 'UI_FILE', isPublic: false, userId });
         }
-        // 3. Showcase
         if (files && files['showcase']) {
-            for (const file of files['showcase']) {
-                (0, upload_service_1.processUpload)({
-                    filePath: file.path,
-                    fileName: file.originalname,
-                    mimeType: file.mimetype,
-                    uiId: id,
-                    type: 'SHOWCASE',
-                    isPublic: true,
-                    userId
-                });
+            for (const file of files['showcase'].slice(0, 4)) {
+                (0, upload_service_1.processUpload)({ filePath: file.path, fileName: file.originalname, mimeType: file.mimetype, uiId: id, type: 'SHOWCASE', isPublic: true, userId });
             }
         }
-        // Parse highlights
-        let parsedHighlights = undefined;
-        if (highlights) {
-            try {
-                parsedHighlights = typeof highlights === 'string' ? JSON.parse(highlights) : highlights;
-            }
-            catch (e) {
-                parsedHighlights = [highlights];
-            }
-        }
-        // Parse specifications
-        let parsedSpecifications = undefined;
-        const { specifications } = req.body;
-        if (specifications) {
-            try {
-                parsedSpecifications = typeof specifications === 'string' ? JSON.parse(specifications) : specifications;
-            }
-            catch (e) {
-                console.error("Failed to parse specifications update", e);
-            }
-        }
-        // Update Text Fields Immediately
-        yield db_1.db.update(schema_1.uis).set(Object.assign({ title: title || undefined, price: price !== undefined ? price.toString() : undefined, category: category || undefined, author: author || undefined, overview: overview || undefined, rating: rating ? parseFloat(rating) : undefined, highlights: parsedHighlights !== undefined ? parsedHighlights : existingUI.highlights, specifications: parsedSpecifications !== undefined ? parsedSpecifications : existingUI.specifications }, (files && files['uiFile'] && files['uiFile'][0] ? {
+        // Update only the new form text fields immediately
+        yield db_1.db.update(schema_1.uis).set(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (title ? { title } : {})), (category ? { category } : {})), (author !== undefined ? { author } : {})), (overview !== undefined ? { overview } : {})), (files && files['uiFile'] && files['uiFile'][0] ? {
             fileType: (_b = files['uiFile'][0].originalname.split('.').pop()) === null || _b === void 0 ? void 0 : _b.toUpperCase()
         } : {}))).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id));
         const [updatedUI] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id)).limit(1);
         if (updatedUI) {
-            // Emit real-time update
             const ioData = Object.assign(Object.assign({}, updatedUI), { imageSrc: (0, helpers_1.transformToProxy)(updatedUI.imageSrc, req), showcase: parseArray(updatedUI.showcase).map((url) => (0, helpers_1.transformToProxy)(url, req)), specifications: parseArray(updatedUI.specifications), highlights: parseArray(updatedUI.highlights) });
-            res.json({
-                status: true,
-                message: "UI Updated. Files are processing in background.",
-                data: ioData
-            });
+            res.json({ status: true, message: "Asset updated. Files processing in background.", data: ioData });
         }
     }
     catch (error) {
         console.error("Update UI Error:", error);
-        res.status(500).json({ status: false, message: "Failed to update UI" });
+        res.status(500).json({ status: false, message: "Failed to update asset" });
     }
 });
 exports.updateUI = updateUI;

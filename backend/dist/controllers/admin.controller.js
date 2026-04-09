@@ -42,7 +42,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetData = exports.getRecentActivity = exports.deletePayment = exports.getAllPayments = exports.updateUserStatus = exports.updateUserRole = exports.getAllUsers = exports.getOverviewStats = void 0;
+exports.resetData = exports.getRecentActivity = exports.deletePayment = exports.getAllPayments = exports.deleteUser = exports.updateUserStatus = exports.updateUserRole = exports.getAllUsers = exports.getOverviewStats = void 0;
 const db_1 = require("../db");
 const schema_1 = require("../db/schema");
 const drizzle_orm_1 = require("drizzle-orm");
@@ -140,6 +140,7 @@ const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             email: schema_1.users.email,
             role: schema_1.users.role,
             status: schema_1.users.status,
+            google_id: schema_1.users.google_id,
             created_at: schema_1.users.created_at,
             last_active_at: schema_1.users.last_active_at
         }).from(schema_1.users).orderBy((0, drizzle_orm_1.desc)(schema_1.users.created_at));
@@ -191,6 +192,39 @@ const updateUserStatus = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.updateUserStatus = updateUserStatus;
+const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const { id } = req.params;
+        const requestingUserId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.user_id;
+        // Prevent admin from deleting themselves
+        if (requestingUserId && parseInt(id) === requestingUserId) {
+            return res.status(400).json({ status: false, message: "You cannot delete your own account from the dashboard" });
+        }
+        // Check if user exists
+        const [user] = yield db_1.db.select().from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.user_id, parseInt(id))).limit(1);
+        if (!user) {
+            return res.status(404).json({ status: false, message: "User not found" });
+        }
+        // Delete user - Cascading handles related data if configured, 
+        // otherwise we might need to delete likes, comments, etc. manually.
+        // Based on schema.ts, we don't have explicit cascade, so let's be safe.
+        yield db_1.db.transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+            yield tx.delete(schema_1.likes).where((0, drizzle_orm_1.eq)(schema_1.likes.user_id, parseInt(id)));
+            yield tx.delete(schema_1.comments).where((0, drizzle_orm_1.eq)(schema_1.comments.user_id, parseInt(id)));
+            yield tx.delete(schema_1.wishlists).where((0, drizzle_orm_1.eq)(schema_1.wishlists.user_id, parseInt(id)));
+            yield tx.delete(schema_1.notifications).where((0, drizzle_orm_1.eq)(schema_1.notifications.userId, parseInt(id)));
+            yield tx.delete(schema_1.payments).where((0, drizzle_orm_1.eq)(schema_1.payments.userId, parseInt(id)));
+            yield tx.delete(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.user_id, parseInt(id)));
+        }));
+        res.json({ status: true, message: "User account and all associated data deleted successfully" });
+    }
+    catch (error) {
+        console.error("Delete User Error:", error);
+        res.status(500).json({ status: false, message: "Failed to delete user" });
+    }
+});
+exports.deleteUser = deleteUser;
 const getAllPayments = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const page = parseInt(req.query.page) || 1;

@@ -49,12 +49,28 @@
   },
   "dynamicRoutes": [
     {
-      "page": "/product/[id]",
-      "regex": "^/product/([^/]+?)(?:/)?$",
+      "page": "/product/v1/[id]",
+      "regex": "^/product/v1/([^/]+?)(?:/)?$",
       "routeKeys": {
         "nxtPid": "nxtPid"
       },
-      "namedRegex": "^/product/(?<nxtPid>[^/]+?)(?:/)?$"
+      "namedRegex": "^/product/v1/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/product/v2/[id]",
+      "regex": "^/product/v2/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/product/v2/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/product/v3/[id]",
+      "regex": "^/product/v3/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/product/v3/(?<nxtPid>[^/]+?)(?:/)?$"
     }
   ],
   "staticRoutes": [
