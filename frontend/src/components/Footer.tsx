@@ -9,14 +9,14 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6">
         {/* Social Icons */}
         <div className="flex justify-center items-center gap-6 mb-8">
-          <a href="#" className="flex justify-center items-center text-gray-900 hover:text-amber-500 transition-colors font-bold text-lg">Bē</a>
-          <a href="#" className="flex justify-center items-center text-gray-900 hover:text-amber-500 transition-colors">
+          <a href="#" className="flex justify-center items-center text-gray-900 hover:text-blue-600 transition-colors font-bold text-lg">Bē</a>
+          <a href="#" className="flex justify-center items-center text-gray-900 hover:text-blue-600 transition-colors">
             <Instagram className="w-5 h-5" />
           </a>
-          <a href="#" className="flex justify-center items-center text-gray-900 hover:text-amber-500 transition-colors">
+          <a href="#" className="flex justify-center items-center text-gray-900 hover:text-blue-600 transition-colors">
             <Facebook className="w-5 h-5" />
           </a>
-          <a href="#" className="flex justify-center items-center text-gray-900 hover:text-amber-500 transition-colors">
+          <a href="#" className="flex justify-center items-center text-gray-900 hover:text-blue-600 transition-colors">
             <Twitter className="w-5 h-5" />
           </a>
         </div>
@@ -25,7 +25,7 @@ export default function Footer() {
 
         {/* Partner Banner - Matching UI exactly, but genericized or strictly as requested */}
         <div className="flex justify-center mb-12">
-          <div className="w-full max-w-3xl bg-[#000000] rounded-lg p-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden border border-gray-100 shadow-sm">
+          <div className="w-full max-w-3xl bg-[#1e40af] rounded-lg p-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden border border-blue-400/20 shadow-sm shadow-blue-500/10">
             {/* Abstract decorative circles */}
             <div className="absolute top-0 right-0 w-32 h-32 border-2 border-white/10 rounded-full -mr-16 -mt-16"></div>
             <div className="absolute bottom-0 right-1/4 w-24 h-24 border border-white/5 rounded-full mb-4"></div>
@@ -50,9 +50,9 @@ export default function Footer() {
 
         <div className="flex flex-col sm:flex-row justify-between items-center text-center">
           <div className="flex gap-4 mb-4 sm:mb-0">
-            <Link href="/licenses" className="text-[12px] font-bold text-gray-500 uppercase hover:text-amber-500">Licenses</Link>
-            <Link href="/contact" className="text-[12px] font-bold text-gray-500 uppercase hover:text-amber-500">Contact</Link>
-            <Link href="/faq" className="text-[12px] font-bold text-gray-500 uppercase hover:text-amber-500">Faq</Link>
+            <Link href="/licenses" className="text-[12px] font-bold text-gray-500 uppercase hover:text-blue-600">Licenses</Link>
+            <Link href="/contact" className="text-[12px] font-bold text-gray-500 uppercase hover:text-blue-600">Contact</Link>
+            <Link href="/faq" className="text-[12px] font-bold text-gray-500 uppercase hover:text-blue-600">Faq</Link>
           </div>
           <div className="flex items-center gap-2 mb-4 sm:mb-0">
             <img src="/logo/M_SHAPE.svg" alt="MOCKUPIDEA Logo" className="w-6 h-6 object-contain" />

@@ -87,7 +87,7 @@ export default function ProductHeader({
                     </div>
 
                     {/* Verified High Quality Badge - Solid Color */}
-                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-100 text-amber-500 text-sm font-medium">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-100 text-blue-600 text-sm font-medium">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
                             <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
                         </svg>
@@ -106,14 +106,14 @@ export default function ProductHeader({
                 {/* Author Info */}
                 <div className="flex items-center gap-3 text-sm mt-1">
                     <div className="flex -space-x-2">
-                        <div className="h-8 w-8 rounded-full bg-linear-to-br from-amber-200 to-yellow-400 ring-2 ring-white flex items-center justify-center text-xs font-bold text-amber-900 shadow-lg">
+                        <div className="h-8 w-8 rounded-full bg-linear-to-br from-blue-200 to-blue-400 ring-2 ring-white flex items-center justify-center text-xs font-bold text-blue-900 shadow-lg">
                             {author.charAt(0)}
                         </div>
                     </div>
                     <div className="flex flex-col">
                         <span className="text-gray-400 text-xs font-medium uppercase tracking-wide">Created by</span>
                         <div className="flex items-center gap-2">
-                            <span className="text-gray-900 font-semibold hover:text-amber-600 transition-colors cursor-pointer">{author}</span>
+                            <span className="text-gray-900 font-semibold hover:text-blue-600 transition-colors cursor-pointer"> {author} </span>
                             <span className="h-1 w-1 rounded-full bg-gray-200"></span>
                             <span className="text-gray-400">Updated recently</span>
                         </div>
@@ -175,7 +175,7 @@ export default function ProductHeader({
                 {isFree ? (
                     <a
                         href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000'}/api/uis/${id}/download`}
-                        className="h-10 rounded-full bg-amber-500 text-white px-6 text-sm font-bold flex items-center gap-2 transition-all hover:bg-amber-600 hover:scale-105 active:scale-95 shadow-md shadow-amber-500/20"
+                        className="h-10 rounded-full bg-blue-600 text-white px-6 text-sm font-bold flex items-center gap-2 transition-all hover:bg-blue-700 hover:scale-105 active:scale-95 shadow-md shadow-blue-600/20"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M12 12.75l-3-3m3 3l3-3m-3 3V3" />
@@ -191,7 +191,7 @@ export default function ProductHeader({
                             }
                             setIsPaymentOpen(true);
                         }}
-                        className="h-10 rounded-full bg-amber-500 text-white px-6 text-sm font-bold flex items-center gap-2 transition-all hover:bg-amber-600 hover:scale-105 active:scale-95 shadow-md shadow-amber-500/20"
+                        className="h-10 rounded-full bg-blue-600 text-white px-6 text-sm font-bold flex items-center gap-2 transition-all hover:bg-blue-700 hover:scale-105 active:scale-95 shadow-md shadow-blue-600/20"
                     >
                         Purchase for {price}
                     </button>

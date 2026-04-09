@@ -102,7 +102,7 @@ const FAQ: React.FC = () => {
             <button
               key={i}
               onClick={() => scrollToCategory(cat)}
-              className="px-5 py-2.5 rounded-full bg-amber-400 hover:bg-amber-500 text-white text-sm font-bold uppercase tracking-widest transition-colors duration-200"
+              className="px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold uppercase tracking-widest transition-colors duration-200"
             >
               {cat}
             </button>
@@ -115,7 +115,7 @@ const FAQ: React.FC = () => {
           <div
             key={catIndex}
             id={`faq-category-${section.category.replace(/\s+/g, '-').toLowerCase()}`}
-            className="bg-gray-50/70 p-8 md:p-10 rounded-2xl scroll-mt-24"
+            className="bg-blue-50/30 p-8 md:p-10 rounded-2xl scroll-mt-24 border border-blue-50"
           >
             <h3 className="text-2xl font-bold text-gray-900 mb-6">{section.category}</h3>
 
@@ -130,7 +130,7 @@ const FAQ: React.FC = () => {
                       onClick={() => toggleItem(catIndex, itemIndex)}
                       className="w-full flex items-center justify-between py-5 text-left bg-transparent"
                     >
-                      <span className={`text-[15px] font-bold transition-colors duration-200 ${isOpen ? 'text-amber-500' : 'text-gray-700 hover:text-amber-500'}`}>
+                      <span className={`text-[15px] font-bold transition-colors duration-200 ${isOpen ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'}`}>
                         {item.q}
                       </span>
                       <div className="shrink-0 ml-6">
@@ -141,7 +141,7 @@ const FAQ: React.FC = () => {
                           viewBox="0 0 24 24"
                           strokeWidth={3}
                           stroke="currentColor"
-                          className={`w-3.5 h-3.5 transition-transform duration-300 ${isOpen ? 'rotate-90 text-amber-500' : 'text-gray-400 group-hover:text-amber-500'}`}
+                          className={`w-3.5 h-3.5 transition-transform duration-300 ${isOpen ? 'rotate-90 text-blue-600' : 'text-gray-400 group-hover:text-blue-600'}`}
                         >
                           <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                         </svg>

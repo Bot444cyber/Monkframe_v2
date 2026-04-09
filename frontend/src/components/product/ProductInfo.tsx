@@ -34,7 +34,7 @@ export default function ProductInfo({ product, isWished, onToggleWishlist }: Pro
             <div className="flex flex-col gap-6">
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                        <span className="px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-600 text-[10px] font-black uppercase tracking-[0.2em] rounded-full">
+                        <span className="px-3 py-1 bg-blue-600/10 border border-blue-600/20 text-blue-600 text-[10px] font-black uppercase tracking-[0.2em] rounded-full">
                             {category}
                         </span>
                         <div className="hidden sm:block h-px w-12 bg-gray-100" />
@@ -44,8 +44,8 @@ export default function ProductInfo({ product, isWished, onToggleWishlist }: Pro
                         <button
                             onClick={onToggleWishlist}
                             className={`group flex items-center gap-2.5 px-5 py-2.5 rounded-full border transition-all duration-300 text-[11px] font-black uppercase tracking-[0.15em] shrink-0 ${isWished
-                                ? 'bg-amber-500 border-amber-400 text-white shadow-lg shadow-amber-500/20'
-                                : 'bg-white border-gray-100 text-gray-400 hover:text-amber-500 hover:border-amber-200 shadow-sm'}`}
+                                ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-600/20'
+                                : 'bg-white border-gray-100 text-gray-400 hover:text-blue-600 hover:border-blue-200 shadow-sm'}`}
                         >
                             <svg className={`w-3.5 h-3.5 ${isWished ? 'fill-current' : 'fill-none'}`} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
@@ -62,8 +62,8 @@ export default function ProductInfo({ product, isWished, onToggleWishlist }: Pro
 
             {/* Description / Overview */}
             <div className="relative">
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-amber-500/20 rounded-full" />
-                <div className="pl-6 text-gray-600 leading-relaxed text-[16px] font-medium selection:bg-amber-400/30 break-words">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-600/20 rounded-full" />
+                <div className="pl-6 text-gray-600 leading-relaxed text-[16px] font-medium selection:bg-blue-500/30 break-words">
                     <p className="whitespace-pre-wrap italic opacity-90">
                         {product?.overview || product?.description || "This premium quality UI kit is carefully crafted and organized. Highly useful for any professional design work, featuring a modern aesthetic and scalable components."}
                     </p>
@@ -73,10 +73,10 @@ export default function ProductInfo({ product, isWished, onToggleWishlist }: Pro
             {/* Additional Information Section */}
             {additionalInfo && (
                 <div className="flex flex-col gap-6 p-8 sm:p-10 rounded-[2.5rem] bg-secondary border border-border shadow-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 blur-3xl rounded-full -mr-10 -mt-10 group-hover:bg-amber-500/10 transition-transform duration-1000" />
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 blur-3xl rounded-full -mr-10 -mt-10 group-hover:bg-blue-600/10 transition-transform duration-1000" />
 
                     <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 flex items-center justify-center bg-background rounded-2xl border border-border text-amber-500 shadow-sm group-hover:scale-110 transition-all">
+                        <div className="h-10 w-10 flex items-center justify-center bg-background rounded-2xl border border-border text-blue-600 shadow-sm group-hover:scale-110 transition-all">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
                             </svg>
@@ -96,7 +96,7 @@ export default function ProductInfo({ product, isWished, onToggleWishlist }: Pro
             {tagsToRender.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-4">
                     {tagsToRender.map((tag: string, idx: number) => (
-                        <span key={idx} className="px-4 py-2 rounded-xl border border-gray-100 bg-white text-gray-500 text-[11px] font-bold uppercase tracking-wider hover:border-amber-400/50 hover:text-amber-500 hover:bg-amber-50/30 transition-all cursor-default shadow-sm">
+                        <span key={idx} className="px-4 py-2 rounded-xl border border-gray-100 bg-white text-gray-500 text-[11px] font-bold uppercase tracking-wider hover:border-blue-600/50 hover:text-blue-600 hover:bg-blue-50/30 transition-all cursor-default shadow-sm">
                             {tag}
                         </span>
                     ))}

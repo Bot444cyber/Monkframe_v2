@@ -64,8 +64,8 @@ export default function ProductCard({ product }: { product: Product }) {
                             onClick={toggleWishlist}
                             title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                             className={`flex h-8 w-8 items-center justify-center rounded-xl border backdrop-blur-sm shadow-sm transition-all duration-200 ${isWishlisted
-                                ? 'bg-amber-400 text-white border-amber-300'
-                                : 'bg-white/95 border-gray-200/80 text-gray-400 hover:text-amber-500'
+                                ? 'bg-blue-600 text-white border-blue-500'
+                                : 'bg-white/95 border-gray-200/80 text-gray-400 hover:text-blue-600'
                                 }`}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={isWishlisted ? "currentColor" : "none"} stroke="currentColor" strokeWidth={2} className="w-4 h-4">
@@ -79,7 +79,7 @@ export default function ProductCard({ product }: { product: Product }) {
                 {/* ── Text Info ── */}
                 <div className="flex flex-col gap-1 px-0.5">
                     {/* Category */}
-                    <span className="text-[11px] font-bold text-amber-400 uppercase tracking-widest leading-none">
+                    <span className="text-[11px] font-bold text-blue-600 uppercase tracking-widest leading-none">
                         {product.category}
                     </span>
 

@@ -142,7 +142,7 @@ const UsersSection: React.FC<UsersSectionProps> = ({
                                                 if (isOnline) {
                                                     return (
                                                         <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-background border-2 border-background">
-                                                            <div className="h-2 w-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.6)] animate-pulse"></div>
+                                                            <div className="h-2 w-2 rounded-full bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)] animate-pulse"></div>
                                                         </div>
                                                     );
                                                 }
@@ -168,7 +168,7 @@ const UsersSection: React.FC<UsersSectionProps> = ({
                                             className={`text-[9px] font-extrabold uppercase tracking-[0.2em] px-4 py-2 rounded-xl border bg-background/50 backdrop-blur-sm outline-none cursor-pointer transition-all hover:border-primary/40 disabled:opacity-50 disabled:cursor-not-allowed appearance-none pr-8 ${user.role === 'ADMIN'
                                                 ? 'text-purple-400 border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.1)]'
                                                 : user.role === 'EDITOR'
-                                                    ? 'text-amber-400 border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.05)]'
+                                                    ? 'text-blue-500 border-blue-500/20 shadow-[0_0_15px_rgba(37,99,235,0.05)]'
                                                     : 'text-muted-foreground border-border shadow-sm'
                                                 }`}
                                         >
@@ -184,7 +184,7 @@ const UsersSection: React.FC<UsersSectionProps> = ({
                                 <td className="px-8 py-6">
                                     <div className="flex items-center gap-2">
                                         {user.google_id ? (
-                                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/5 border border-amber-500/10 text-amber-500">
+                                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600/5 border border-blue-600/10 text-blue-600">
                                                 <Globe size={12} />
                                                 <span className="text-[9px] font-bold uppercase tracking-widest">Google</span>
                                             </div>

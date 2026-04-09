@@ -111,7 +111,7 @@ export default function ProfilePage() {
         return (
             <div className="min-h-screen bg-white flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="w-8 h-8 rounded-full border-2 border-gray-100 border-t-amber-500 animate-spin" />
+                    <div className="w-8 h-8 rounded-full border-2 border-gray-100 border-t-blue-600 animate-spin" />
                     <p className="text-gray-500 text-xs font-semibold uppercase tracking-widest">Loading</p>
                 </div>
             </div>
@@ -169,7 +169,7 @@ export default function ProfilePage() {
                             key={id}
                             onClick={() => handleTabChange(id)}
                             className={`w-full flex items-center gap-3.5 px-3 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${isActive
-                                ? 'bg-amber-500/10 text-amber-500 shadow-sm border border-amber-500/20'
+                                ? 'bg-blue-600/10 text-blue-600 shadow-sm border border-blue-600/20'
                                 : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
                                 }`}
                         >
@@ -184,7 +184,7 @@ export default function ProfilePage() {
                     <div className="pt-2 mt-2 border-t border-border">
                         <Link
                             href="/dashboard"
-                            className="w-full flex items-center gap-3.5 px-3 py-3 rounded-xl text-sm font-semibold text-amber-500 hover:text-amber-600 hover:bg-amber-500/5 transition-all duration-200"
+                            className="w-full flex items-center gap-3.5 px-3 py-3 rounded-xl text-sm font-semibold text-blue-600 hover:text-blue-700 hover:bg-blue-600/5 transition-all duration-200"
                             onClick={() => setSidebarOpen(false)}
                         >
                             <Icons.Shield className="w-[18px] h-[18px] shrink-0" />
@@ -207,7 +207,7 @@ export default function ProfilePage() {
                         <p className="text-[11px] text-gray-500 truncate">{displayUser.email}</p>
                     </div>
                     {String(displayUser.role) === 'ADMIN' && (
-                        <div className="w-2 h-2 rounded-full bg-amber-500 shrink-0 shadow-[0_0_8px_rgba(245,158,11,0.5)]" title="Admin Account" />
+                        <div className="w-2 h-2 rounded-full bg-blue-600 shrink-0 shadow-[0_0_8px_rgba(37,99,235,0.5)]" title="Admin Account" />
                     )}
                 </div>
 
@@ -347,7 +347,7 @@ export default function ProfilePage() {
                                                     <div className="flex flex-col gap-1.5">
                                                         <div className="flex items-center flex-wrap gap-2">
                                                             <h3 className="text-lg font-black text-gray-900 truncate max-w-[300px]">{p.ui?.title || 'Digital Asset'}</h3>
-                                                            <span className="px-2 py-0.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[9px] font-black text-amber-600 uppercase tracking-widest">
+                                                            <span className="px-2 py-0.5 rounded-lg bg-blue-600/10 border border-blue-600/20 text-[9px] font-black text-blue-600 uppercase tracking-widest">
                                                                 {p.ui?.category || 'Asset'}
                                                             </span>
                                                             {p.ui?.fileType && (
@@ -374,8 +374,8 @@ export default function ProfilePage() {
                                                         <div className="flex flex-col gap-1">
                                                             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Order Status</span>
                                                             <div className="flex items-center gap-2">
-                                                                <div className={`w-1.5 h-1.5 rounded-full ${p.status === 'COMPLETED' ? 'bg-amber-500' : 'bg-amber-300'}`} />
-                                                                <span className={`text-[11px] font-black uppercase tracking-widest ${p.status === 'COMPLETED' ? 'text-amber-500' : 'text-amber-400'}`}>
+                                                                <div className={`w-1.5 h-1.5 rounded-full ${p.status === 'COMPLETED' ? 'bg-blue-600' : 'bg-blue-400'}`} />
+                                                                <span className={`text-[11px] font-black uppercase tracking-widest ${p.status === 'COMPLETED' ? 'text-blue-600' : 'text-blue-500'}`}>
                                                                     {p.status}
                                                                 </span>
                                                             </div>
@@ -444,7 +444,7 @@ export default function ProfilePage() {
                                     {initials}
                                 </div>
                                 {/* Online indicator */}
-                                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-amber-500 border-2 border-white rounded-full" />
+                                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-blue-600 border-2 border-white rounded-full" />
                             </div>
 
                             <h2 className="text-2xl font-black tracking-tight text-gray-900 mb-0.5">{displayUser.full_name || '—'}</h2>
@@ -471,7 +471,7 @@ export default function ProfilePage() {
                                         icon: (
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>
                                         ),
-                                        badge: { text: 'Verified', color: 'text-amber-600 bg-amber-50 border-amber-100' },
+                                        badge: { text: 'Verified', color: 'text-blue-600 bg-blue-50 border-blue-100' },
                                     },
                                     {
                                         label: 'Account Role',
@@ -486,7 +486,7 @@ export default function ProfilePage() {
                                         badge: (() => {
                                             const r = String(displayUser.role).toUpperCase();
                                             if (r === 'ADMIN') return { text: 'Admin', color: 'text-gray-900 bg-gray-100 border-gray-200' };
-                                            if (r === 'EDITOR') return { text: 'Editor', color: 'text-amber-600 bg-amber-50 border-amber-200' };
+                                            if (r === 'EDITOR') return { text: 'Editor', color: 'text-blue-600 bg-blue-50 border-blue-200' };
                                             if (r === 'CUSTOMER') return { text: 'Customer', color: 'text-gray-500 bg-gray-50 border-gray-100' };
                                             return { text: 'Member', color: 'text-gray-500 bg-gray-50 border-gray-100' };
                                         })(),
@@ -502,7 +502,7 @@ export default function ProfilePage() {
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
                                         ),
                                         badge: displayUser.google_id
-                                            ? { text: 'OAuth', color: 'text-amber-500 bg-amber-50 border-amber-100' }
+                                            ? { text: 'OAuth', color: 'text-blue-500 bg-blue-50 border-blue-100' }
                                             : null,
                                     },
                                     {
@@ -513,7 +513,7 @@ export default function ProfilePage() {
                                         ),
                                         badge: displayUser.status === 'SUSPENDED'
                                             ? { text: 'Suspended', color: 'text-red-500 bg-red-50 border-red-100' }
-                                            : { text: 'Active', color: 'text-amber-600 bg-amber-50 border-amber-100' },
+                                            : { text: 'Active', color: 'text-blue-600 bg-blue-50 border-blue-100' },
                                     },
                                     {
                                         label: 'Member Since',

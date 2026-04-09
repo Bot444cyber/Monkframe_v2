@@ -66,7 +66,7 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                                             </div>
                                         </td>
                                         <td className="px-8 py-6">
-                                            <span className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full ${product.price === 'Free' ? 'bg-amber-400/10 text-amber-500 border border-amber-500/20' : 'bg-secondary text-foreground border border-border'}`}>
+                                            <span className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full ${product.price === 'Free' ? 'bg-blue-600/10 text-blue-600 border border-blue-600/20' : 'bg-secondary text-foreground border border-border'}`}>
                                                 {product.price}
                                             </span>
                                         </td>
@@ -75,7 +75,7 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                                         </td>
                                         <td className="px-8 py-6">
                                             <div className="flex gap-2">
-                                                <button onClick={() => { setCurrentUI(product); setIsEditOpen(true); }} className="px-4 py-2 bg-secondary hover:bg-amber-400/10 rounded-lg text-xs font-bold text-amber-500 transition-colors">Edit</button>
+                                                <button onClick={() => { setCurrentUI(product); setIsEditOpen(true); }} className="px-4 py-2 bg-secondary hover:bg-blue-600/10 rounded-lg text-xs font-bold text-blue-600 transition-colors">Edit</button>
                                                 <button onClick={() => handleDelete(product.id)} className="px-4 py-2 bg-red-500/5 hover:bg-red-500/10 rounded-lg text-xs font-bold text-red-500 transition-colors">Delete</button>
                                             </div>
                                         </td>

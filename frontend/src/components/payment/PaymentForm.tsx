@@ -74,7 +74,7 @@ export default function PaymentForm({ productTitle, productPrice, onSuccess, onC
                     disabled={isProcessing || !stripe || !elements}
                     className={`mt-4 w-full h-14 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-lg ${isProcessing || !stripe || !elements
                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-50'
-                        : 'bg-amber-500 text-white hover:opacity-90 hover:scale-[1.02] active:scale-[0.98]'
+                        : 'bg-blue-600 text-white hover:opacity-90 hover:scale-[1.02] active:scale-[0.98]'
                         }`}
                 >
                     {isProcessing ? (

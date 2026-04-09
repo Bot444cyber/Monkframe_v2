@@ -130,7 +130,7 @@ export default function ProductDetailsPage() {
         return (
             <div className="min-h-screen bg-white text-gray-900 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="h-10 w-10 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+                    <div className="h-10 w-10 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
                     <p className="text-gray-400 animate-pulse">Loading details...</p>
                 </div>
             </div>
@@ -146,7 +146,7 @@ export default function ProductDetailsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-amber-400/30">
+        <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-blue-500/30">
             <Header />
 
             <main className="relative mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-16 py-8 sm:py-12 lg:py-16">
@@ -171,19 +171,18 @@ export default function ProductDetailsPage() {
                                 onToggleWishlist={handleToggleWishlist}
                             />
 
-                            {/* Restricted Box acting as purchase boundary */}
+                            {/* Free Download Box */}
                             <div className="w-full bg-[#f8f9fa] border border-gray-100 p-6 flex flex-col items-center justify-center text-center gap-6">
                                 <div className="max-w-md">
                                     <p className="text-[13px] text-gray-600 leading-relaxed mb-6">
-                                        Try Pro Membership for UI Free. Only pro user download this UI and use this in any client or personal project.
+                                        This UI asset is completely free to download. Feel free to use it in any of your client or personal projects without restrictions.
                                     </p>
                                     <div className="flex flex-col gap-3 w-full">
-                                        <button onClick={handleDownload} className="w-full py-4 px-6 bg-amber-500 border border-transparent text-white text-sm font-bold shadow-lg shadow-amber-500/20 hover:bg-amber-600 transition-colors flex justify-center items-center gap-2 rounded-xl">
-                                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                                            Download Asset
-                                        </button>
-                                        <button className="w-full py-3.5 px-6 bg-gray-50 border border-gray-200 text-gray-900 text-sm font-bold hover:bg-gray-100 transition-colors shadow-sm rounded-xl">
-                                            Join Pro
+                                        <button onClick={handleDownload} className="w-full py-4 px-6 bg-blue-600 border border-transparent text-white text-sm font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-colors flex justify-center items-center gap-2 rounded-xl">
+                                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                            </svg>
+                                            Free Download
                                         </button>
                                     </div>
                                 </div>

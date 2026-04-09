@@ -89,7 +89,7 @@ export default function ProductIncludes({ product }: ProductIncludesProps) {
                 </p>
 
                 {subscribed ? (
-                    <div className="p-4 rounded-xl bg-amber-50 border border-amber-100 text-amber-600 text-sm font-medium text-center">
+                    <div className="p-4 rounded-xl bg-blue-50 border border-blue-100 text-blue-600 text-sm font-medium text-center">
                         Thanks for subscribing!
                     </div>
                 ) : (
@@ -104,12 +104,12 @@ export default function ProductIncludes({ product }: ProductIncludesProps) {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             disabled={isSubmitting}
-                            className="w-full px-4 py-3.5 rounded-none border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-all shadow-sm placeholder:text-gray-400 disabled:opacity-50"
+                            className="w-full px-4 py-3.5 rounded-none border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-all shadow-sm placeholder:text-gray-400 disabled:opacity-50"
                         />
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full py-3.5 rounded-none bg-amber-500 text-white text-sm font-bold hover:bg-amber-600 transition-colors disabled:opacity-50 flex justify-center items-center gap-2"
+                            className="w-full py-3.5 rounded-none bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition-colors disabled:opacity-50 flex justify-center items-center gap-2"
                         >
                             {isSubmitting ? (
                                 <>

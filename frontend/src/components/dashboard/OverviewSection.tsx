@@ -23,11 +23,11 @@ const Icons = {
 
 const getColorStyles = (color: string) => {
     switch (color) {
-        case 'emerald': return { bg: 'bg-amber-400/10', text: 'text-amber-500', border: 'border-amber-400/20', glow: 'bg-amber-400' };
-        case 'indigo': return { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20', glow: 'bg-amber-500' };
-        case 'amber': return { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20', glow: 'bg-amber-500' };
+        case 'emerald': return { bg: 'bg-blue-600/10', text: 'text-blue-600', border: 'border-blue-600/20', glow: 'bg-blue-600' };
+        case 'indigo': return { bg: 'bg-blue-500/10', text: 'text-blue-500', border: 'border-blue-500/20', glow: 'bg-blue-500' };
+        case 'blue': return { bg: 'bg-blue-600/10', text: 'text-blue-600', border: 'border-blue-600/20', glow: 'bg-blue-600' };
         case 'rose': return { bg: 'bg-rose-500/10', text: 'text-rose-400', border: 'border-rose-500/20', glow: 'bg-rose-500' };
-        default: return { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20', glow: 'bg-amber-500' };
+        default: return { bg: 'bg-blue-500/10', text: 'text-blue-500', border: 'border-blue-500/20', glow: 'bg-blue-500' };
     }
 };
 
@@ -55,7 +55,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
         // Note: 'Total Downloads' will be intercepted in render
         if (label.includes('download')) { icon = Icons.Download; colorKey = 'emerald'; }
         else if (label.includes('active user')) { icon = Icons.TrendingUp; colorKey = 'indigo'; }
-        else if (label.includes('live ui')) { icon = Icons.Layers; colorKey = 'amber'; }
+        else if (label.includes('live ui')) { icon = Icons.Layers; colorKey = 'blue'; }
 
 
         return { ...stat, icon, styles: getColorStyles(colorKey) };
@@ -70,13 +70,13 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
                     if (stat.label === 'Total Revenue') {
                         return (
                             <div key={idx} className="group relative p-6 rounded-3xl bg-card border border-border hover:border-border/80 transition-all duration-500 hover:-translate-y-1 shadow-2xl overflow-hidden">
-                                <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full blur-[60px] opacity-0 group-hover:opacity-10 transition-opacity duration-700 bg-amber-500" />
+                                <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full blur-[60px] opacity-0 group-hover:opacity-10 transition-opacity duration-700 bg-blue-500" />
                                 <div className="relative z-10 flex flex-col justify-between h-full min-h-[140px]">
                                     <div className="flex justify-between items-start mb-4">
-                                        <div className="p-3 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                        <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-500 border border-blue-500/20">
                                             <svg className="w-5 h-5 fill-none stroke-current stroke-[2.5]" viewBox="0 0 24 24"><Icons.Dollar /></svg>
                                         </div>
-                                        <div className="flex items-center gap-1.5 text-[10px] font-bold px-3 py-1.5 rounded-full border border-amber-500/20 text-amber-400 bg-amber-500/5">
+                                        <div className="flex items-center gap-1.5 text-[10px] font-bold px-3 py-1.5 rounded-full border border-blue-500/20 text-blue-500 bg-blue-500/5">
                                             +12.5%
                                         </div>
                                     </div>
@@ -92,7 +92,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
 
                                     {/* Mini Sparkline Decoration */}
                                     <div className="absolute bottom-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity">
-                                        <svg width="60" height="30" viewBox="0 0 60 30" fill="none" className="stroke-amber-500 stroke-2">
+                                        <svg width="60" height="30" viewBox="0 0 60 30" fill="none" className="stroke-blue-500 stroke-2">
                                             <path d="M0 25 L10 20 L20 22 L30 10 L40 15 L50 5 L60 8" />
                                         </svg>
                                     </div>
@@ -111,7 +111,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
                                             <stat.icon />
                                         </svg>
                                     </div>
-                                    <div className={`flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full border ${stat.change.includes('+') ? 'border-amber-500/20 text-amber-500 bg-amber-500/5' : 'border-rose-500/20 text-rose-400 bg-rose-500/5'}`}>
+                                    <div className={`flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full border ${stat.change.includes('+') ? 'border-blue-500/20 text-blue-600 bg-blue-500/5' : 'border-rose-500/20 text-rose-400 bg-rose-500/5'}`}>
                                         {stat.change.includes('+') ? '↑' : '↓'} {stat.change.replace(/[+-]/g, '')}
                                     </div>
                                 </div>
@@ -136,16 +136,16 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
                 {/* ECOSYSTEM GROWTH / TRADING TERMINAL */}
                 <div className="lg:col-span-8 bg-card border border-border p-8 rounded-[2.5rem] flex flex-col min-h-[480px] relative shadow-2xl overflow-hidden">
                     {/* Background decoration */}
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-amber-600/5 blur-[80px] rounded-full pointer-events-none -mr-16 -mt-16" />
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/5 blur-[80px] rounded-full pointer-events-none -mr-16 -mt-16" />
 
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 relative z-10">
                         <div>
                             <h3 className="text-2xl font-bold text-foreground tracking-tight flex items-center gap-2">
                                 Ecosystem Growth
-                                <span className="text-[10px] font-bold text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1.5">
+                                <span className="text-[10px] font-bold text-blue-600 bg-blue-600/10 border border-blue-600/20 px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1.5">
                                     <span className="relative flex h-1.5 w-1.5">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-500"></span>
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-600"></span>
                                     </span>
                                     Live
                                 </span>
@@ -182,7 +182,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
                     <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between border-t border-border pt-6 gap-4 relative z-10">
                         <div className="flex gap-8">
                             <div className="flex items-center gap-3">
-                                <div className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.6)]"></div>
+                                <div className="w-2.5 h-2.5 rounded-full bg-blue-400 shadow-[0_0_12px_rgba(37,99,235,0.6)]"></div>
                                 <div className="flex flex-col">
                                     <span className="text-[10px] text-muted-foreground font-bold uppercase">Users Acquisition</span>
                                     {overviewData.dailyStats && (
@@ -191,7 +191,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
-                                <div className="w-2.5 h-2.5 rounded-full bg-amber-600 shadow-[0_0_12px_rgba(217,119,6,0.6)]"></div>
+                                <div className="w-2.5 h-2.5 rounded-full bg-blue-600 shadow-[0_0_12px_rgba(30,64,175,0.6)]"></div>
                                 <div className="flex flex-col">
                                     <span className="text-[10px] text-muted-foreground font-bold uppercase">UIs Deployment</span>
                                     {overviewData.dailyStats && (
@@ -212,19 +212,19 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
                     <div className="bg-card border border-border p-8 rounded-[2.5rem] flex flex-col h-[400px] shadow-2xl relative overflow-hidden">
                         <div className="flex items-center justify-between mb-6 shrink-0">
                             <h3 className="text-lg font-bold text-foreground flex items-center gap-3">
-                                <span className="p-2 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/10"><svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><Icons.Bell /></svg></span>
+                                <span className="p-2 rounded-xl bg-blue-600/10 text-blue-600 border border-blue-600/10"><svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><Icons.Bell /></svg></span>
                                 Terminal
                             </h3>
                             <span className="relative flex h-2.5 w-2.5">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]"></span>
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-600 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.5)]"></span>
                             </span>
                         </div>
 
                         <div className="space-y-3 overflow-y-auto pr-2 custom-scrollbar flex-1">
                             {recentActivities.map((activity, i) => (
                                 <div key={i} className="flex gap-4 p-3.5 rounded-2xl bg-secondary/20 border border-border hover:border-primary/20 hover:bg-secondary/40 transition-all cursor-pointer group">
-                                    <div className={`mt-0.5 min-w-[32px] h-8 rounded-lg flex items-center justify-center border ${activity.type === 'PAYMENT' ? 'bg-amber-500/10 border-amber-500/10 text-amber-500' : 'bg-amber-400/10 border-amber-400/10 text-amber-400'}`}>
+                                    <div className={`mt-0.5 min-w-[32px] h-8 rounded-lg flex items-center justify-center border ${activity.type === 'PAYMENT' ? 'bg-blue-600/10 border-blue-600/10 text-blue-600' : 'bg-blue-400/10 border-blue-400/10 text-blue-500'}`}>
                                         <svg className="w-4 h-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
                                             {activity.type === 'PAYMENT' ? <Icons.Zap /> : <Icons.TrendingUp />}
                                         </svg>
@@ -254,14 +254,14 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
                     <div className="bg-card border border-border p-8 rounded-[2.5rem] shadow-2xl h-auto">
                         <div className="flex items-center justify-between mb-6">
                             <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Revenue Status</h3>
-                            <span className="text-[10px] font-bold text-amber-500 px-2 py-1 bg-amber-500/10 rounded-md border border-amber-500/10 uppercase tracking-wider">Healthy</span>
+                            <span className="text-[10px] font-bold text-blue-600 px-2 py-1 bg-blue-600/10 rounded-md border border-blue-600/10 uppercase tracking-wider">Healthy</span>
                         </div>
 
                         <div className="flex h-2.5 w-full bg-muted rounded-full overflow-hidden mb-8 ring-1 ring-border/50 p-0.5">
                             {payTotal > 0 ? (
                                 <>
-                                    <div className="h-full rounded-l-full bg-amber-500 transition-all duration-1000" style={{ width: `${(payCompleted / payTotal) * 100}%` }} />
-                                    <div className="h-full bg-amber-300 transition-all duration-1000" style={{ width: `${(payPending / payTotal) * 100}%` }} />
+                                    <div className="h-full rounded-l-full bg-blue-600 transition-all duration-1000" style={{ width: `${(payCompleted / payTotal) * 100}%` }} />
+                                    <div className="h-full bg-blue-300 transition-all duration-1000" style={{ width: `${(payPending / payTotal) * 100}%` }} />
                                     <div className="h-full rounded-r-full bg-rose-500 transition-all duration-1000 flex-1" style={{ width: `${(payFailed / payTotal) * 100}%` }} />
                                 </>
                             ) : (
@@ -299,9 +299,9 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleL
                             <div className="min-w-0 flex-1">
                                 <h4 className="text-[13px] font-bold text-foreground truncate mb-3 group-hover:text-primary transition-colors">{ui.title}</h4>
                                 <div className="flex items-center gap-4">
-                                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-amber-500/10 border border-amber-500/10">
-                                        <svg className="w-3 h-3 text-amber-500 fill-current" viewBox="0 0 24 24"><Icons.Download /></svg>
-                                        <span className="text-[10px] font-bold text-amber-500 tabular-nums">{ui.downloads}</span>
+                                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-blue-600/10 border border-blue-600/10">
+                                        <svg className="w-3 h-3 text-blue-600 fill-current" viewBox="0 0 24 24"><Icons.Download /></svg>
+                                        <span className="text-[10px] font-bold text-blue-600 tabular-nums">{ui.downloads}</span>
                                     </div>
                                     <button onClick={(e) => handleLike(e, ui.id)} className="flex items-center gap-1.5 group/btn">
                                         <svg className="w-4 h-4 text-muted-foreground/60 group-hover/btn:text-rose-500 transition-colors fill-current" viewBox="0 0 24 24">

@@ -139,7 +139,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
                 ) : comments.length > 0 ? (
                     comments.map((comment) => (
                         <div key={comment.id} className="flex gap-3 group relative">
-                            <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-xs font-bold text-amber-600 border border-amber-200 shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-600 border border-blue-200 shrink-0">
                                 {comment.user.full_name?.charAt(0) || '?'}
                             </div>
                             <div className="flex-1">
@@ -189,12 +189,12 @@ const CommentSection: React.FC<CommentSectionProps> = ({
                                 value={newComment}
                                 onChange={(e) => setNewComment(e.target.value)}
                                 placeholder="Add a comment..."
-                                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20 placeholder:text-gray-400 pr-12 transition-all shadow-sm"
+                                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/20 placeholder:text-gray-400 pr-12 transition-all shadow-sm"
                             />
                             <button
                                 type="submit"
                                 disabled={!newComment.trim()}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-amber-500 rounded-lg text-white disabled:opacity-50 disabled:bg-gray-200 transition-all hover:bg-amber-600 shadow-sm"
+                                className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-blue-600 rounded-lg text-white disabled:opacity-50 disabled:bg-gray-200 transition-all hover:bg-blue-700 shadow-sm"
                             >
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
                             </button>
@@ -203,7 +203,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
                 ) : (
                     <div className="text-center py-6 mt-4">
                         <p className="text-sm text-gray-500 mb-3">Please login to join the discussion</p>
-                        <Link href="/login" className="inline-block px-8 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold transition-colors shadow-sm">
+                        <Link href="/login" className="inline-block px-8 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition-colors shadow-sm">
                             Login
                         </Link>
                     </div>

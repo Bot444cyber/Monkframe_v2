@@ -30,11 +30,11 @@ const MegaMenu = ({ data, onClose }: { data: MegaMenuData; onClose: () => void }
   >
     <div className="flex flex-col sm:flex-row">
       {/* Trending card */}
-      <div className="sm:w-52 bg-amber-400 p-6 flex flex-col justify-between shrink-0">
+      <div className="sm:w-52 bg-blue-600 p-6 flex flex-col justify-between shrink-0">
         <div>
-          <span className="text-[11px] font-black text-amber-800 uppercase tracking-widest">Trending</span>
+          <span className="text-[11px] font-black text-blue-800 uppercase tracking-widest">Trending</span>
           <h3 className="mt-2 text-[18px] font-black text-white leading-snug">{data.trending.title}</h3>
-          <p className="mt-2 text-[13px] text-amber-100 leading-relaxed hidden sm:block">{data.trending.description}</p>
+          <p className="mt-2 text-[13px] text-blue-100 leading-relaxed hidden sm:block">{data.trending.description}</p>
         </div>
         <a href="#" onClick={onClose} className="mt-4 inline-flex items-center gap-1 text-[13px] font-bold text-white hover:underline">
           Browse collection →
@@ -49,7 +49,7 @@ const MegaMenu = ({ data, onClose }: { data: MegaMenuData; onClose: () => void }
             <ul className="space-y-2.5">
               {col.items.map((item, ii) => (
                 <li key={ii}>
-                  <a href="#" onClick={onClose} className="block text-[14px] text-gray-600 hover:text-amber-500 transition-colors">
+                  <a href="#" onClick={onClose} className="block text-[14px] text-gray-600 hover:text-blue-600 transition-colors">
                     {item}
                   </a>
                 </li>
@@ -76,7 +76,7 @@ const SimpleDropdown = ({ items, onClose }: { items: string[]; onClose: () => vo
         key={i}
         href="#"
         onClick={onClose}
-        className="block px-4 py-2.5 text-[14px] text-gray-600 hover:bg-amber-50 hover:text-amber-600 transition-colors"
+        className="block px-4 py-2.5 text-[14px] text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors"
       >
         {item}
       </a>
@@ -145,11 +145,11 @@ const SearchDropdown = ({
             onClick={() => onSelect(item.title)}
             className="w-full flex items-center gap-3 px-3 sm:px-4 py-2.5 hover:bg-gray-50 transition-colors text-left group"
           >
-            <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-base shrink-0 group-hover:bg-amber-50">
+            <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-base shrink-0 group-hover:bg-blue-50">
               {item.icon}
             </div>
             <div className="min-w-0">
-              <p className="text-[13px] font-semibold text-gray-800 group-hover:text-amber-500 transition-colors truncate">
+              <p className="text-[13px] font-semibold text-gray-800 group-hover:text-blue-600 transition-colors truncate">
                 {item.title}
               </p>
               <p className="text-[11px] text-gray-400 truncate">{item.desc}</p>
@@ -367,7 +367,7 @@ function HomeContent() {
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-tight text-gray-900">
               Design Better With
             </h1>
-            <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-tight text-amber-400 mt-1">
+            <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-tight text-blue-600 mt-1">
               Flawless Mockups
             </h2>
             <p className="mt-4 sm:mt-5 text-gray-400 text-sm sm:text-base leading-relaxed max-w-xs sm:max-w-md mx-auto">
@@ -383,7 +383,7 @@ function HomeContent() {
             className="mt-8 sm:mt-10 max-w-xl mx-auto relative"
             ref={searchWrapperRef}
           >
-            <div className={`flex items-center gap-2 sm:gap-3 bg-white border rounded-full px-4 sm:px-5 py-2.5 sm:py-3 shadow-sm transition-all duration-200 ${isSearchFocused ? 'border-amber-400 shadow-amber-100 shadow-md' : 'border-gray-200'
+            <div className={`flex items-center gap-2 sm:gap-3 bg-white border rounded-full px-4 sm:px-5 py-2.5 sm:py-3 shadow-sm transition-all duration-200 ${isSearchFocused ? 'border-blue-600 shadow-blue-100 shadow-md' : 'border-gray-200'
               }`}>
               <Search className="w-4 h-4 text-gray-400 shrink-0" />
               <input
@@ -450,9 +450,9 @@ function HomeContent() {
                     <button
                       onClick={() => { setSelectedCategory(item); setPage(1); }}
                       className={`flex items-center gap-1 py-1.5 transition-colors cursor-pointer ${isAll
-                        ? `px-3 sm:px-4 rounded-full text-[12px] sm:text-[13px] font-bold uppercase tracking-widest ${isActive ? 'bg-amber-400 text-white' : 'bg-gray-100 text-gray-600 hover:bg-amber-400 hover:text-white'
+                        ? `px-3 sm:px-4 rounded-full text-[12px] sm:text-[13px] font-bold uppercase tracking-widest ${isActive ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-blue-600 hover:text-white'
                         }`
-                        : `hover:text-amber-500 ${isActive ? 'text-amber-500' : ''}`
+                        : `hover:text-blue-600 ${isActive ? 'text-blue-600' : ''}`
                         }`}
                     >
                       {item}
@@ -495,7 +495,7 @@ function HomeContent() {
         <section className="max-w-7xl mx-auto px-4 sm:px-8 pt-6 sm:pt-8 pb-16 sm:pb-20">
           {loading ? (
             <div className="flex justify-center items-center py-16 sm:py-24">
-              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-amber-400" />
+              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-600" />
             </div>
           ) : filteredProducts.length > 0 ? (
             <>
@@ -520,7 +520,7 @@ function HomeContent() {
               <p className="text-gray-400 text-sm sm:text-base">Try selecting a different category or search term.</p>
               <button
                 onClick={() => { setSelectedCategory("All"); setSearchQuery(""); setPage(1); }}
-                className="mt-2 px-5 sm:px-6 py-2 sm:py-2.5 bg-amber-400 text-white text-sm font-bold rounded-full hover:bg-amber-500 transition-all"
+                className="mt-2 px-5 sm:px-6 py-2 sm:py-2.5 bg-blue-600 text-white text-sm font-bold rounded-full hover:bg-blue-700 transition-all"
               >
                 Reset Filter
               </button>

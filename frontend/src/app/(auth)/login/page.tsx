@@ -166,8 +166,8 @@ export default function LoginPage() {
       <main className="flex-1 flex flex-col items-center justify-center py-24 px-6 relative overflow-hidden">
         {/* Subtle Background Pattern matching home page aesthetic */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,white_100%)] pointer-events-none opacity-80" />
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-50/50 rounded-full blur-3xl -z-10 mix-blend-multiply" />
-        <div className="absolute bottom-1/4 right-1/4 w-md h-112 bg-amber-50/50 rounded-full blur-3xl -z-10 mix-blend-multiply" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-50/50 rounded-full blur-3xl -z-10 mix-blend-multiply" />
+        <div className="absolute bottom-1/4 right-1/4 w-md h-112 bg-blue-50/50 rounded-full blur-3xl -z-10 mix-blend-multiply" />
 
 
         <div className="w-full max-w-md mx-auto z-10 animate-fade-in-up">
@@ -193,7 +193,7 @@ export default function LoginPage() {
                   <div className="space-y-2 relative group">
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Email Address</label>
                     <div className="relative">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-amber-600 transition-colors duration-300">
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
                         </svg>
@@ -203,8 +203,9 @@ export default function LoginPage() {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
+                        inputMode="email"
                         required
-                        className="w-full bg-gray-50/50 border border-gray-200 focus:border-amber-500 focus:bg-white focus:ring-4 focus:ring-amber-500/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] placeholder:text-gray-400 outline-none transition-all duration-300"
+                        className="w-full bg-gray-50/50 border border-gray-200 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] placeholder:text-gray-400 outline-none transition-all duration-300"
                         placeholder="name@example.com"
                       />
                     </div>
@@ -216,13 +217,13 @@ export default function LoginPage() {
                       <button
                         type="button"
                         onClick={() => setFlow('forgot-email')}
-                        className="text-xs font-bold text-amber-600 hover:text-amber-700 transition-colors"
+                        className="text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors"
                       >
                         FORGOT?
                       </button>
                     </div>
                     <div className="relative">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-amber-600 transition-colors duration-300">
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                         </svg>
@@ -232,8 +233,9 @@ export default function LoginPage() {
                         name="password"
                         value={formData.password}
                         onChange={handleInputChange}
+                        autoComplete="current-password"
                         required
-                        className="w-full bg-gray-50/50 border border-gray-200 focus:border-amber-500 focus:bg-white focus:ring-4 focus:ring-amber-500/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] placeholder:text-gray-400 outline-none transition-all duration-300"
+                        className="w-full bg-gray-50/50 border border-gray-200 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] placeholder:text-gray-400 outline-none transition-all duration-300"
                         placeholder="••••••••"
                       />
                     </div>
@@ -244,7 +246,7 @@ export default function LoginPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-amber-500 hover:bg-amber-600 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-50 shadow-sm shadow-amber-500/20"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-50 shadow-sm shadow-blue-600/20"
                   >
                     {loading ? (
                       <span className="flex items-center justify-center gap-2">
@@ -288,7 +290,7 @@ export default function LoginPage() {
                 <div className="space-y-2 relative group">
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Registered Email</label>
                   <div className="relative">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-amber-600 transition-colors duration-300">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors duration-300">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
                       </svg>
@@ -298,8 +300,9 @@ export default function LoginPage() {
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
+                      inputMode="email"
                       required
-                      className="w-full bg-gray-50/50 border border-gray-200 focus:border-amber-500 focus:bg-white focus:ring-4 focus:ring-amber-500/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] placeholder:text-gray-400 outline-none transition-all duration-300"
+                      className="w-full bg-gray-50/50 border border-gray-200 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] placeholder:text-gray-400 outline-none transition-all duration-300"
                       placeholder="name@example.com"
                     />
                   </div>
@@ -309,7 +312,7 @@ export default function LoginPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-amber-500 hover:bg-amber-600 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-50 shadow-sm shadow-amber-500/20"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-50 shadow-sm shadow-blue-600/20"
                   >
                     {loading ? "Processing..." : "Continue"}
                   </button>
@@ -333,7 +336,7 @@ export default function LoginPage() {
                       maxLength={6}
                       value={otp}
                       onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                      className="w-full bg-gray-50/50 border border-gray-200 focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 py-6 text-center text-[40px] font-black tracking-[0.2em] text-gray-900 rounded-3xl outline-none transition-all duration-300 placeholder:text-gray-300"
+                      className="w-full bg-gray-50/50 border border-gray-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 py-6 text-center text-[40px] font-black tracking-[0.2em] text-gray-900 rounded-3xl outline-none transition-all duration-300 placeholder:text-gray-300"
                       placeholder="000000"
                       autoFocus
                     />
@@ -345,7 +348,7 @@ export default function LoginPage() {
                   <button
                     type="submit"
                     disabled={otp.length < 6 || loading}
-                    className="w-full bg-amber-500 hover:bg-amber-600 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-50 shadow-sm shadow-amber-500/20"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-50 shadow-sm shadow-blue-600/20"
                   >
                     {loading ? "Verifying..." : "Verify Code"}
                   </button>
@@ -366,7 +369,7 @@ export default function LoginPage() {
                   <div className="space-y-2 relative group">
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">New Password</label>
                     <div className="relative">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-amber-600 transition-colors duration-300">
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                         </svg>
@@ -375,8 +378,9 @@ export default function LoginPage() {
                         type="password"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
+                        autoComplete="new-password"
                         required
-                        className="w-full bg-gray-50/50 border border-gray-200 focus:border-amber-500 focus:bg-white focus:ring-4 focus:ring-amber-500/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] placeholder:text-gray-400 outline-none transition-all duration-300"
+                        className="w-full bg-gray-50/50 border border-gray-200 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] placeholder:text-gray-400 outline-none transition-all duration-300"
                         placeholder="••••••••"
                       />
                     </div>
@@ -385,7 +389,7 @@ export default function LoginPage() {
                   <div className="space-y-2 relative group">
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Confirm New Password</label>
                     <div className="relative">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-amber-600 transition-colors duration-300">
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -394,8 +398,9 @@ export default function LoginPage() {
                         type="password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
+                        autoComplete="new-password"
                         required
-                        className="w-full bg-gray-50/50 border border-gray-200 focus:border-amber-500 focus:bg-white focus:ring-4 focus:ring-amber-500/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] placeholder:text-gray-400 outline-none transition-all duration-300"
+                        className="w-full bg-gray-50/50 border border-gray-200 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] placeholder:text-gray-400 outline-none transition-all duration-300"
                         placeholder="••••••••"
                       />
                     </div>
@@ -406,7 +411,7 @@ export default function LoginPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-amber-500 hover:bg-amber-600 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-50 shadow-sm shadow-amber-500/20"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-50 shadow-sm shadow-blue-600/20"
                   >
                     {loading ? "Updating..." : "Update Password"}
                   </button>
@@ -424,7 +429,7 @@ export default function LoginPage() {
             <div className="mt-8 pt-6 border-t border-gray-100 text-center">
               <p className="text-gray-500 text-[15px]">
                 Not a member? {' '}
-                <Link href="/signup" className="text-amber-600 font-bold hover:underline transition-colors">
+                <Link href="/signup" className="text-blue-600 font-bold hover:underline transition-colors">
                   Create an account
                 </Link>
               </p>

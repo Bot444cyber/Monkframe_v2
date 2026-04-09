@@ -35,7 +35,7 @@ export default function Dashboard() {
         stats: [
             { label: 'Total Downloads', value: '0', change: '+0%', color: 'emerald' },
             { label: 'Active Users', value: '0', change: '+0%', color: 'indigo' },
-            { label: 'Live UIs', value: '0', change: '+0%', color: 'amber' },
+            { label: 'Live UIs', value: '0', change: '+0%', color: 'blue' },
 
         ],
         graphData: [],
@@ -445,7 +445,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-3">
                     <div className="relative flex items-center justify-center gap-2.5">
                         <div className="relative w-9 h-9 rounded-xl bg-card border border-border/50 flex items-center justify-center shadow-lg overflow-hidden shrink-0">
-                            <div className="absolute inset-0 bg-amber-500/5 blur-sm"></div>
+                            <div className="absolute inset-0 bg-blue-600/5 blur-sm"></div>
                             <img src="/logo/M_SHAPE.svg" alt="MOCKUPIDEA" className="w-6 h-6 object-contain relative z-10" />
                         </div>
                         <span className="text-lg font-black tracking-tighter text-foreground">MOCKUPIDEA</span>
@@ -479,13 +479,13 @@ export default function Dashboard() {
                 {/* Brand Logo Area - PRO Version */}
                 <div className="h-24 flex flex-col justify-center px-8 border-b border-border/50 relative overflow-hidden group/logo bg-linear-to-b from-secondary/20 to-transparent">
                     {/* Dynamic Background Effects */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 blur-[50px] rounded-full pointer-events-none -mr-16 -mt-16 transition-all duration-700 group-hover/logo:bg-amber-500/20"></div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 blur-[50px] rounded-full pointer-events-none -mr-16 -mt-16 transition-all duration-700 group-hover/logo:bg-blue-600/20"></div>
                     <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary/5 blur-[40px] rounded-full pointer-events-none -ml-12 -mb-12"></div>
 
                     <div className="flex items-center gap-3.5 relative z-10">
                         {/* Logo Container with Glass Effect and Glow */}
                         <div className="relative group/icon">
-                            <div className="absolute inset-0 bg-amber-500/20 blur-md rounded-xl transition-all duration-500 group-hover/logo:bg-amber-500/40 group-hover/logo:scale-110"></div>
+                            <div className="absolute inset-0 bg-blue-600/20 blur-md rounded-xl transition-all duration-500 group-hover/logo:bg-blue-600/40 group-hover/logo:scale-110"></div>
                             <div className="relative w-10 h-10 rounded-xl bg-card border border-border/50 flex items-center justify-center shadow-2xl transition-all duration-500 group-hover/logo:rotate-3 group-hover/logo:scale-105 overflow-hidden">
                                 <div className="absolute inset-0 bg-linear-to-br from-white/10 to-transparent opacity-0 group-hover/logo:opacity-100 transition-opacity"></div>
                                 <img src="/logo/M_SHAPE.svg" alt="MOCKUPIDEA" className="w-7 h-7 object-contain transition-transform duration-500 group-hover/logo:scale-110" />
@@ -493,11 +493,11 @@ export default function Dashboard() {
                         </div>
 
                         <div className="flex flex-col">
-                            <span className="text-xl font-black tracking-tight text-foreground leading-none mb-1 group-hover/logo:text-amber-500 transition-colors duration-300">
+                            <span className="text-xl font-black tracking-tight text-foreground leading-none mb-1 group-hover/logo:text-blue-600 transition-colors duration-300">
                                 MOCKUPIDEA
                             </span>
                             <div className="flex items-center gap-1.5">
-                                <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                <span className="h-1.5 w-1.5 rounded-full bg-blue-600 animate-pulse"></span>
                                 <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Platform Pro</span>
                             </div>
                         </div>
@@ -523,10 +523,10 @@ export default function Dashboard() {
                                 >
                                     {/* Active Indicator Glow */}
                                     {activeTab === item.id && (
-                                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-amber-400 rounded-r-full shadow-[0_0_12px_rgba(251,191,36,0.5)]"></div>
+                                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-blue-500 rounded-r-full shadow-[0_0_12px_rgba(37,99,235,0.5)]"></div>
                                     )}
 
-                                    <span className={`relative transition-colors duration-300 ${activeTab === item.id ? 'text-amber-500' : 'text-muted-foreground group-hover:text-foreground'}`}>
+                                    <span className={`relative transition-colors duration-300 ${activeTab === item.id ? 'text-blue-600' : 'text-muted-foreground group-hover:text-foreground'}`}>
                                         {item.icon}
                                     </span>
                                     <span className={`text-sm font-bold uppercase tracking-widest transition-all ${activeTab === item.id ? 'translate-x-1' : 'group-hover:translate-x-1'}`}>
@@ -551,7 +551,7 @@ export default function Dashboard() {
                             href="/"
                             className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all text-sm font-bold uppercase tracking-widest group"
                         >
-                            <span className="p-1 rounded-lg bg-secondary/80 group-hover:bg-amber-400/20 text-muted-foreground group-hover:text-amber-500 transition-colors">
+                            <span className="p-1 rounded-lg bg-secondary/80 group-hover:bg-blue-600/20 text-muted-foreground group-hover:text-blue-600 transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                                 </svg>

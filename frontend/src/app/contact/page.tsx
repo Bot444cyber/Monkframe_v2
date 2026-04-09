@@ -46,37 +46,37 @@ export default function ContactPage() {
                     <div className="bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
                         {status === 'sent' ? (
                             <div className="h-full flex flex-col items-center justify-center text-center py-20">
-                                <div className="w-16 h-16 rounded-full bg-amber-400 text-white flex items-center justify-center mb-4 shadow-xl">
+                                <div className="w-16 h-16 rounded-full bg-blue-600 text-white flex items-center justify-center mb-4 shadow-xl">
                                     <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                                 </div>
                                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Message Sent</h3>
                                 <p className="text-gray-500">We'll get back to you shortly.</p>
-                                <button onClick={() => setStatus('idle')} className="mt-8 text-sm font-bold text-gray-900 hover:text-amber-500 transition-colors">Send another</button>
+                                <button onClick={() => setStatus('idle')} className="mt-8 text-sm font-bold text-gray-900 hover:text-blue-600 transition-colors">Send another</button>
                             </div>
                         ) : (
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
                                         <label className="text-xs font-bold text-gray-500 uppercase">First Name</label>
-                                        <input className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:border-amber-400 outline-none transition-colors placeholder:text-gray-400" placeholder="John" required />
+                                        <input className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:border-blue-600 outline-none transition-colors placeholder:text-gray-400" placeholder="John" required />
                                     </div>
                                     <div className="space-y-1">
                                         <label className="text-xs font-bold text-gray-500 uppercase">Last Name</label>
-                                        <input className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:border-amber-400 outline-none transition-colors placeholder:text-gray-400" placeholder="Doe" required />
+                                        <input className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:border-blue-600 outline-none transition-colors placeholder:text-gray-400" placeholder="Doe" required />
                                     </div>
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-xs font-bold text-gray-500 uppercase">Email Address</label>
-                                    <input type="email" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:border-amber-400 outline-none transition-colors placeholder:text-gray-400" placeholder="john@example.com" required />
+                                    <input type="email" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:border-blue-600 outline-none transition-colors placeholder:text-gray-400" placeholder="john@example.com" required />
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-xs font-bold text-gray-500 uppercase">Message</label>
-                                    <textarea rows={4} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:border-amber-400 outline-none transition-colors resize-none placeholder:text-gray-400" placeholder="Tell us about your project..." required />
+                                    <textarea rows={4} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:border-blue-600 outline-none transition-colors resize-none placeholder:text-gray-400" placeholder="Tell us about your project..." required />
                                 </div>
                                 <button
                                     type="submit"
                                     disabled={status === 'sending'}
-                                    className="w-full py-3 text-sm bg-gray-900 text-white font-bold rounded-xl hover:bg-amber-400 transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest"
+                                    className="w-full py-3 text-sm bg-gray-900 text-white font-bold rounded-xl hover:bg-blue-600 transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest"
                                 >
                                     {status === 'sending' ? 'Sending...' : 'Send Message'}
                                 </button>

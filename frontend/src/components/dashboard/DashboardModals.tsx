@@ -69,7 +69,7 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                     {/* Title */}
                     <input
                         placeholder="Title"
-                        className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-foreground focus:border-amber-400 outline-none"
+                        className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-foreground focus:border-blue-600 outline-none"
                         value={currentUI.title || ''}
                         onChange={e => setCurrentUI({ ...currentUI, title: e.target.value })}
                     />
@@ -77,7 +77,7 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                     {/* Description */}
                     <textarea
                         placeholder="Description"
-                        className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-foreground focus:border-amber-400 outline-none h-24 resize-none"
+                        className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-foreground focus:border-blue-600 outline-none h-24 resize-none"
                         value={currentUI.overview || ''}
                         onChange={e => setCurrentUI({ ...currentUI, overview: e.target.value })}
                     />
@@ -85,7 +85,7 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                     {/* Category */}
                     <input
                         placeholder="Category"
-                        className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-foreground focus:border-amber-400 outline-none"
+                        className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-foreground focus:border-blue-600 outline-none"
                         value={currentUI.category || ''}
                         onChange={e => setCurrentUI({ ...currentUI, category: e.target.value })}
                     />
@@ -104,10 +104,10 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                                 />
                                 <label
                                     htmlFor="file-upload"
-                                    className={`flex items-center gap-4 w-full p-4 rounded-xl border cursor-pointer transition-all ${files.uiFile ? 'bg-amber-500/10 border-amber-500/50' : 'bg-secondary border-border hover:bg-secondary/80'
+                                    className={`flex items-center gap-4 w-full p-4 rounded-xl border cursor-pointer transition-all ${files.uiFile ? 'bg-blue-600/10 border-blue-600/50' : 'bg-secondary border-border hover:bg-secondary/80'
                                         }`}
                                 >
-                                    <div className={`p-3 rounded-lg ${files.uiFile ? 'bg-amber-500/20 text-amber-500' : 'bg-secondary text-muted-foreground'}`}>
+                                    <div className={`p-3 rounded-lg ${files.uiFile ? 'bg-blue-600/20 text-blue-600' : 'bg-secondary text-muted-foreground'}`}>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                                         </svg>
@@ -116,7 +116,7 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                                         {files.uiFile ? (
                                             <>
                                                 <p className="text-sm font-bold text-foreground truncate max-w-[180px]">{files.uiFile.name}</p>
-                                                <p className="text-[10px] text-amber-500 font-medium">{(files.uiFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                                                <p className="text-[10px] text-blue-600 font-medium">{(files.uiFile.size / 1024 / 1024).toFixed(2)} MB</p>
                                             </>
                                         ) : (
                                             <>
@@ -136,7 +136,7 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                     {/* Additional Information */}
                     <input
                         placeholder="Additional Information"
-                        className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-foreground focus:border-amber-400 outline-none"
+                        className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-foreground focus:border-blue-600 outline-none"
                         value={currentUI.author || ''}
                         onChange={e => setCurrentUI({ ...currentUI, author: e.target.value })}
                     />
@@ -162,7 +162,7 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                                 <label
                                     htmlFor="banner-upload"
                                     className={`flex flex-col items-center justify-center w-full h-40 rounded-xl border-2 border-dashed transition-all cursor-pointer overflow-hidden ${previews.banner || currentUI.imageSrc
-                                        ? 'border-amber-400/50 bg-amber-400/5'
+                                        ? 'border-blue-600/50 bg-blue-600/5'
                                         : 'border-border hover:bg-secondary'
                                         }`}
                                 >
@@ -206,7 +206,7 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                                     return (
                                         <div key={idx} className="relative group aspect-square">
                                             {displayUrl ? (
-                                                <div className="w-full h-full relative rounded-2xl overflow-hidden border border-border shadow-lg group-hover:border-amber-400/30 transition-all">
+                                                <div className="w-full h-full relative rounded-2xl overflow-hidden border border-border shadow-lg group-hover:border-blue-600/30 transition-all">
                                                     <img src={displayUrl} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                                                     <div className="absolute inset-0 bg-background/80 opacity-0 group-hover:opacity-100 transition-all flex flex-col items-center justify-center gap-2 backdrop-blur-sm">
                                                         <input
@@ -220,7 +220,7 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                                                                 }
                                                             }}
                                                         />
-                                                        <label htmlFor={`showcase-change-${idx}`} className="p-2 bg-amber-500/20 text-amber-500 rounded-lg hover:bg-amber-500 hover:text-white transition-all cursor-pointer transform hover:scale-110" title="Replace">
+                                                        <label htmlFor={`showcase-change-${idx}`} className="p-2 bg-blue-600/20 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all cursor-pointer transform hover:scale-110" title="Replace">
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7l3.181 3.182m-4.722 4.99v-4.99m0 0h-4.992m4.993 0l-3.181-3.181a8.25 8.25 0 00-13.803 3.7l3.181-3.182" />
                                                             </svg>
@@ -254,7 +254,7 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                                                     />
                                                     <label
                                                         htmlFor={`showcase-${idx}`}
-                                                        className="flex flex-col items-center justify-center w-full h-full rounded-2xl border-2 border-dashed border-border bg-secondary/50 hover:border-amber-400/30 hover:bg-amber-400/5 transition-all cursor-pointer"
+                                                        className="flex flex-col items-center justify-center w-full h-full rounded-2xl border-2 border-dashed border-border bg-secondary/50 hover:border-blue-600/30 hover:bg-blue-600/5 transition-all cursor-pointer"
                                                     >
                                                         <div className="p-2 rounded-lg bg-secondary">
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 text-muted-foreground">

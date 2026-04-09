@@ -46,7 +46,7 @@ function createTransport() {
 const DEFAULT_FROM = '"Mockupidea | UI/UX" <noreply@www.mockupidea.com>';
 
 const DEFAULT_LOGO_ATTACHMENT = {
-  filename: 'logo.svg',
+  filename: 'M_SHAPE.svg',
   path: LOGO_PATH,
   cid: 'logo_id'
 };
