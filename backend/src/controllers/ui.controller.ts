@@ -496,7 +496,7 @@ export const deleteUI = async (req: Request, res: Response) => {
         }
 
         // 4. Delete Showcase Images
-        const showcase = ui.showcase as string[];
+        const showcase = parseArray(ui.showcase);
         if (showcase && showcase.length > 0) {
             for (const url of showcase) {
                 const fileId = extractDriveFileId(url);
