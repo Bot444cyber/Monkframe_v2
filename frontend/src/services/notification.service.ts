@@ -24,7 +24,30 @@ export const NotificationService = {
             });
             return response.data;
         } catch (error) {
-            console.error("Error fetching notifications:", error);
+            throw error;
+        }
+    },
+    resolveNotification: async (id: string) => {
+        try {
+            const response = await axios.patch(`${API_URL}/notifications/resolve/${id}`, {}, {
+                withCredentials: true,
+                headers: NotificationService._getHeaders()
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error resolving notification:", error);
+            throw error;
+        }
+    },
+    dismissNotification: async (id: string) => {
+        try {
+            const response = await axios.patch(`${API_URL}/notifications/dismiss/${id}`, {}, {
+                withCredentials: true,
+                headers: NotificationService._getHeaders()
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error dismissing notification:", error);
             throw error;
         }
     }

@@ -117,11 +117,13 @@ const NotificationTable = () => {
                                                 <div className="flex items-center gap-3">
                                                     <div className={`h-2 w-2 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)] ${type === 'PAYMENT' ? 'bg-blue-600 shadow-blue-600/40' :
                                                         type === 'LIKE' ? 'bg-rose-500 shadow-rose-500/40' :
-                                                            'bg-blue-600 shadow-blue-600/40'
+                                                            type === 'SYSTEM' ? 'bg-red-600 shadow-red-600/40' :
+                                                                'bg-blue-600 shadow-blue-600/40'
                                                         }`} />
                                                     <span className={`text-[10px] font-black tracking-widest px-2 py-0.5 rounded border ${type === 'PAYMENT' ? 'border-blue-600/20 text-blue-600 bg-blue-600/5' :
                                                         type === 'LIKE' ? 'border-rose-500/20 text-rose-400 bg-rose-500/5' :
-                                                            'border-blue-600/20 text-blue-600 bg-blue-600/5'
+                                                            type === 'SYSTEM' ? 'border-red-600/20 text-red-500 bg-red-600/5' :
+                                                                'border-blue-600/20 text-blue-600 bg-blue-600/5'
                                                         }`}>
                                                         {type}
                                                     </span>

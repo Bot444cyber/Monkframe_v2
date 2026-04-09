@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { db } from '../db';
 import { notifications as notificationsTable, users, uis } from '../db/schema';
-import { eq, desc, count } from 'drizzle-orm';
+import { eq, desc, count, and } from 'drizzle-orm';
 
 export const getNotifications = async (req: Request, res: Response) => {
     try {
@@ -21,7 +21,7 @@ export const getNotifications = async (req: Request, res: Response) => {
         let total = 0;
 
         if (role === 'ADMIN' && scope === 'all') {
-            const [totalRes] = await db.select({ value: count() }).from(notificationsTable);
+            const [totalRes] = await db.select({ value: count() }).from(notificationsTable).where(eq(notificationsTable.status, 'PENDING'));
             total = totalRes.value;
 
             const rows = await db
@@ -32,6 +32,7 @@ export const getNotifications = async (req: Request, res: Response) => {
                     isRead: notificationsTable.isRead,
                     userId: notificationsTable.userId,
                     uiId: notificationsTable.uiId,
+                    status: notificationsTable.status,
                     created_at: notificationsTable.created_at,
                     user_full_name: users.full_name,
                     user_email: users.email,
@@ -42,6 +43,7 @@ export const getNotifications = async (req: Request, res: Response) => {
                 .from(notificationsTable)
                 .leftJoin(users, eq(users.user_id, notificationsTable.userId))
                 .leftJoin(uis, eq(uis.id, notificationsTable.uiId))
+                .where(eq(notificationsTable.status, 'PENDING'))
                 .orderBy(desc(notificationsTable.created_at))
                 .limit(limit)
                 .offset(skip);
@@ -51,6 +53,7 @@ export const getNotifications = async (req: Request, res: Response) => {
                 type: r.type,
                 message: r.message,
                 isRead: r.isRead,
+                status: r.status,
                 userId: r.userId,
                 uiId: r.uiId,
                 created_at: r.created_at,
@@ -109,5 +112,31 @@ export const getNotifications = async (req: Request, res: Response) => {
     } catch (error) {
         console.error("Error fetching notifications:", error);
         res.status(500).json({ error: "Failed to fetch notifications" });
+    }
+};
+
+export const resolveNotification = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        await db.update(notificationsTable)
+            .set({ status: 'FIXED', isRead: true })
+            .where(eq(notificationsTable.id, id));
+        return res.status(200).json({ status: true, message: "Notification marked as FIXED" });
+    } catch (error) {
+        console.error("Error resolving notification:", error);
+        res.status(500).json({ error: "Failed to resolve notification" });
+    }
+};
+
+export const dismissNotification = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        await db.update(notificationsTable)
+            .set({ status: 'DISMISSED', isRead: true })
+            .where(eq(notificationsTable.id, id));
+        return res.status(200).json({ status: true, message: "Notification marked as DISMISSED" });
+    } catch (error) {
+        console.error("Error dismissing notification:", error);
+        res.status(500).json({ error: "Failed to dismiss notification" });
     }
 };

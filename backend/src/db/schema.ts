@@ -165,6 +165,7 @@ export const notifications = mysqlTable('notifications', {
   type: mysqlEnum('type', ['PAYMENT', 'COMMENT', 'LIKE', 'WISHLIST', 'SYSTEM']).notNull(),
   message: text('message').notNull(),
   isRead: boolean('isRead').default(false).notNull(),
+  status: mysqlEnum('status', ['PENDING', 'FIXED', 'DISMISSED']).default('PENDING').notNull(),
   userId: int('userId').notNull(),
   uiId: varchar('uiId', { length: 36 }),
   created_at: timestamp('created_at').defaultNow().notNull(),

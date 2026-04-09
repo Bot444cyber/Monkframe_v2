@@ -15,6 +15,7 @@ import UsersSection from '@/components/dashboard/UsersSection';
 import DriveSection from '@/components/dashboard/DriveSection';
 import DashboardModals from '@/components/dashboard/DashboardModals';
 import ResetDataModal from '@/components/dashboard/ResetDataModal';
+import AdminSystemAlerts from '@/components/dashboard/AdminSystemAlerts';
 import { OverviewData } from '@/components/dashboard/types';
 import NotificationBell from '@/components/NotificationBell';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -22,6 +23,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 type Tab = 'overview' | 'uis' | 'payments' | 'users' | 'activity' | 'drive';
 
 import { useAuth } from '@/context/AuthContext';
+import { NotificationService } from '@/services/notification.service';
 import toast from 'react-hot-toast';
 
 export default function Dashboard() {
@@ -199,6 +201,47 @@ export default function Dashboard() {
     React.useEffect(() => { if (activeTab === 'uis') fetchUIs(); }, [activeTab, uisPage]);
     React.useEffect(() => { if (activeTab === 'users') fetchUsers(); }, [activeTab, usersPage]);
     React.useEffect(() => { if (activeTab === 'payments') fetchPayments(); }, [activeTab, paymentsPage]);
+
+    // System Alert Toasts on Login
+    React.useEffect(() => {
+        const hasShownToasts = sessionStorage.getItem('system_alerts_shown');
+        if (!authLoading && user?.role === 'ADMIN' && !hasShownToasts) {
+            const showToasts = async () => {
+                try {
+                    const result = await NotificationService.getNotifications(1, 5, 'all');
+                    if (result && result.data) {
+                        const systemAlerts = result.data.filter((n: any) => n.type === 'SYSTEM');
+                        systemAlerts.forEach((alert: any, index: number) => {
+                            setTimeout(() => {
+                                toast.error(alert.message, {
+                                    duration: 6000,
+                                    position: 'top-center',
+                                    style: {
+                                        background: '#fff',
+                                        color: '#ef4444',
+                                        border: '1px solid #fee2e2',
+                                        padding: '16px',
+                                        borderRadius: '16px',
+                                        fontWeight: '800',
+                                        fontSize: '14px',
+                                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                                        maxWidth: '500px',
+                                    },
+                                    icon: '🚨',
+                                });
+                            }, index * 500);
+                        });
+                        if (systemAlerts.length > 0) {
+                            sessionStorage.setItem('system_alerts_shown', 'true');
+                        }
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch initial alerts", error);
+                }
+            };
+            showToasts();
+        }
+    }, [user, authLoading]);
 
     React.useEffect(() => {
         const interval = setInterval(() => {
@@ -430,8 +473,9 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-background text-foreground flex flex-col lg:flex-row transition-colors duration-500">
+        <>
             {/* Dynamic Dashboard Theme Override */}
+            {user?.role === 'ADMIN' && <AdminSystemAlerts />}
             <style dangerouslySetInnerHTML={{
                 __html: `
                 ::-webkit-scrollbar-track {
@@ -477,12 +521,14 @@ export default function Dashboard() {
             </header>
 
             {/* Mobile Sidebar Overlay */}
-            {isSidebarOpen && (
-                <div
-                    className="fixed inset-0 bg-background/80 z-40 lg:hidden backdrop-blur-sm"
-                    onClick={() => setIsSidebarOpen(false)}
-                />
-            )}
+            {
+                isSidebarOpen && (
+                    <div
+                        className="fixed inset-0 bg-background/80 z-40 lg:hidden backdrop-blur-sm"
+                        onClick={() => setIsSidebarOpen(false)}
+                    />
+                )
+            }
 
             {/* Unified Sidebar (Desktop & Mobile) */}
             <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-card border-r border-border transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} flex flex-col shadow-2xl`}>
@@ -701,6 +747,6 @@ export default function Dashboard() {
                 isOpen={isResetOpen}
                 onClose={() => setIsResetOpen(false)}
             />
-        </div>
+        </>
     );
 }

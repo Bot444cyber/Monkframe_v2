@@ -87,7 +87,8 @@ export default function NotificationBell({ disableToast = false, align = 'right'
                                     <div key={i} className="p-4 hover:bg-gray-50 transition-colors flex gap-3">
                                         <div className={`mt-1 h-2 w-2 rounded-full shrink-0 ${notif.type === 'PAYMENT' ? 'bg-blue-600' :
                                             notif.type === 'LIKE' ? 'bg-pink-500' :
-                                                'bg-blue-600'
+                                                notif.type === 'SYSTEM' ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]' :
+                                                    'bg-blue-600'
                                             }`} />
                                         <div>
                                             <p className="text-xs text-gray-700 leading-relaxed mb-1">{notif.message}</p>
