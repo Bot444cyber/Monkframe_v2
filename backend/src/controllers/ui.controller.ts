@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { db } from '../db';
-import { uis, comments as commentsTable, users, likes, wishlists, payments } from '../db/schema';
+import { uis, comments as commentsTable, users, likes, wishlists, payments, notifications } from '../db/schema';
 import { eq, and, or, like, desc, count, sql } from 'drizzle-orm';
 import { google } from 'googleapis';
 import fs from 'fs';
@@ -267,30 +267,65 @@ export const downloadUI = async (req: Request, res: Response) => {
 
         const drive = google.drive({ version: 'v3', auth });
 
-        const fileStream = await drive.files.get(
-            { fileId: ui.google_file_id, alt: 'media' },
-            { responseType: 'stream' }
-        );
+        try {
+            const fileStream = await drive.files.get(
+                { fileId: ui.google_file_id, alt: 'media' },
+                { responseType: 'stream' }
+            );
 
-        // Set headers for download
-        res.setHeader('Content-Disposition', `attachment; filename="${ui.title || 'download'}.zip"`);
-        res.setHeader('Content-Type', 'application/octet-stream');
+            // Set headers for download
+            res.setHeader('Content-Disposition', `attachment; filename="${ui.title || 'download'}.zip"`);
+            res.setHeader('Content-Type', 'application/octet-stream');
 
-        // Increment Download Counter
-        await db.update(uis).set({ downloads: sql`${uis.downloads} + 1` }).where(eq(uis.id, id));
+            // Increment Download Counter
+            await db.update(uis).set({ downloads: sql`${uis.downloads} + 1` }).where(eq(uis.id, id));
 
-        fileStream.data.pipe(res);
+            fileStream.data.pipe(res);
 
-        // Prevent memory leak: destroy stream if client disconnects
-        req.on('close', () => {
-            if (!res.writableEnded) {
-                fileStream.data.destroy();
+            // Prevent memory leak: destroy stream if client disconnects
+            req.on('close', () => {
+                if (!res.writableEnded) {
+                    fileStream.data.destroy();
+                }
+            });
+        } catch (driveError: any) {
+            // Check for 404 File Not Found
+            if (driveError.code === 404 || (driveError.message && driveError.message.includes('File not found'))) {
+                console.error(`[CRITICAL] Drive File Missing for UI ${id}: ${ui.google_file_id}`);
+
+                // 1. Notify Admins through the notification system
+                try {
+                    const adminUsers = await db.select({ user_id: users.user_id }).from(users).where(eq(users.role, 'ADMIN'));
+
+                    if (adminUsers.length > 0) {
+                        const notificationPromises = adminUsers.map(admin => {
+                            return db.insert(notifications).values({
+                                id: randomUUID(),
+                                type: 'SYSTEM',
+                                message: `⚠️ MISSING ASSET: The file for "${ui.title}" is missing from Google Drive (ID: ${ui.google_file_id}). A user attempted to download it.`,
+                                userId: admin.user_id,
+                                uiId: id,
+                                isRead: false
+                            });
+                        });
+                        await Promise.all(notificationPromises);
+                    }
+                } catch (notifyErr) {
+                    console.error("Failed to create admin notifications:", notifyErr);
+                }
+
+                // 2. Respond to the user with a professional message
+                return res.status(404).json({
+                    status: false,
+                    message: "This file is currently unavailable or being moved for maintenance. Our administrators have been notified and it will be restored shortly. Please try again later."
+                });
             }
-        });
+            throw driveError; // Re-throw other errors to be caught by outer catch
+        }
 
     } catch (error: any) {
         console.error("Download Error:", error);
-        res.status(500).json({ status: false, message: error?.message || "Google Drive integration failed or credentials missing. Check backend logs." });
+        res.status(500).json({ status: false, message: error?.message || "Internal server error during download. Please contact support if the issue persists." });
     }
 };
 
