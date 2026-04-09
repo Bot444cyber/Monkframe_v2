@@ -46,6 +46,18 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Global Color Remapping to #1200FF */
+  --color-blue-50: color-mix(in srgb, #1200FF 5%, white);
+  --color-blue-100: color-mix(in srgb, #1200FF 10%, white);
+  --color-blue-200: color-mix(in srgb, #1200FF 20%, white);
+  --color-blue-300: color-mix(in srgb, #1200FF 40%, white);
+  --color-blue-400: color-mix(in srgb, #1200FF 60%, white);
+  --color-blue-500: #1200FF;
+  --color-blue-600: #1200FF;
+  --color-blue-700: color-mix(in srgb, #1200FF 80%, black);
+  --color-blue-800: color-mix(in srgb, #1200FF 90%, black);
+  --color-blue-900: color-mix(in srgb, #1200FF 95%, black);
 }
 
 body {
@@ -88,8 +100,7 @@ body {
 
 /* Selection */
 ::selection {
-  background-color: #3b82f6;
-  /* blue-500 */
+  background-color: #1200FF;
   color: #ffffff;
 }
 
@@ -123,8 +134,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #3b82f6;
-  /* blue-500 */
+  background-color: #1200FF;
 }
 
 /* For Firefox */
@@ -151,23 +161,23 @@ body {
   --card-foreground: #000000;
   --popover: #ffffff;
   --popover-foreground: #000000;
-  --primary: #2563eb;
+  --primary: #1200FF;
   --primary-foreground: #ffffff;
-  --secondary: #f8faff;
-  --secondary-foreground: #1e3a8a;
+  --secondary: color-mix(in srgb, #1200FF 4%, white);
+  --secondary-foreground: #1200FF;
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
-  --accent: #eff6ff;
-  --accent-foreground: #1e40af;
+  --accent: color-mix(in srgb, #1200FF 8%, white);
+  --accent-foreground: #1200FF;
   --destructive: #ef4444;
   --border: rgba(0, 0, 0, 0.08);
   --input: rgba(0, 0, 0, 0.08);
-  --ring: #3b82f6;
+  --ring: #1200FF;
   --radius: 0.625rem;
 
   /* Decorative Shapes - Blue tinted */
-  --shape-1: #eff6ff;
-  --shape-2: #dbeafe;
+  --shape-1: color-mix(in srgb, #1200FF 5%, white);
+  --shape-2: color-mix(in srgb, #1200FF 10%, white);
   --shape-3: #bfdbfe;
   --shape-4: #93c5fd;
 }
