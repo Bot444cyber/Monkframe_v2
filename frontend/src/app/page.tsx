@@ -164,11 +164,11 @@ const SimpleDropdown = ({ items, onClose }: { items: string[]; onClose: () => vo
 );
 
 // ─── Search Dropdown ──────────────────────────────────────────────────────────
-const searchTabs = [
-  { label: "Everything", count: 168, sort: "", filter: "" },
-  { label: "Trending", count: 42, sort: "trending", filter: "" },
-  { label: "New Arrival", count: 12, sort: "newest", filter: "" },
-  { label: "PSD Files", count: 138, sort: "", filter: "PSD" },
+const SEARCH_TABS = [
+  { label: "Everything", sort: "", filter: "" },
+  { label: "Trending", sort: "trending", filter: "" },
+  { label: "New Arrival", sort: "newest", filter: "" },
+  { label: "PSD Files", sort: "", filter: "PSD" },
 ];
 
 const SearchDropdown = ({
@@ -184,27 +184,52 @@ const SearchDropdown = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<any[]>([]);
+  const [tabCounts, setTabCounts] = useState<Record<string, number | null>>({
+    Everything: null, Trending: null, 'New Arrival': null, 'PSD Files': null,
+  });
 
+  // Fetch real tab counts once on mount
+  useEffect(() => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
+    const fetchCounts = async () => {
+      try {
+        const [allRes, trendRes, newRes, psdRes] = await Promise.all([
+          fetch(`${apiUrl}/api/uis?limit=1`),
+          fetch(`${apiUrl}/api/uis?limit=1&sort=trending`),
+          fetch(`${apiUrl}/api/uis?limit=1&sort=newest`),
+          fetch(`${apiUrl}/api/uis?limit=1&search=PSD`),
+        ]);
+        const [all, trend, newest, psd] = await Promise.all([
+          allRes.json(), trendRes.json(), newRes.json(), psdRes.json(),
+        ]);
+        setTabCounts({
+          Everything: all.meta?.total ?? 0,
+          Trending: trend.meta?.total ?? 0,
+          'New Arrival': newest.meta?.total ?? 0,
+          'PSD Files': psd.meta?.total ?? 0,
+        });
+      } catch {/* silent */ }
+    };
+    fetchCounts();
+  }, []);
+
+  // Fetch results whenever query or active tab changes
   useEffect(() => {
     let active = true;
     const fetchResults = async () => {
       setLoading(true);
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
-        const tabConfig = searchTabs.find(t => t.label === activeTab);
+        const tabConfig = SEARCH_TABS.find(t => t.label === activeTab);
 
         let url = `${apiUrl}/api/uis?limit=5`;
 
-        const terms = [];
+        const terms: string[] = [];
         if (query) terms.push(query);
-        if (tabConfig?.filter === "PSD") terms.push("PSD");
+        if (tabConfig?.filter) terms.push(tabConfig.filter);
 
-        if (terms.length > 0) {
-          url += `&search=${encodeURIComponent(terms.join(' '))}`;
-        }
-        if (tabConfig?.sort) {
-          url += `&sort=${tabConfig.sort}`;
-        }
+        if (terms.length > 0) url += `&search=${encodeURIComponent(terms.join(' '))}`;
+        if (tabConfig?.sort) url += `&sort=${tabConfig.sort}`;
 
         const res = await fetch(url);
         const data = await res.json();
@@ -213,7 +238,7 @@ const SearchDropdown = ({
             id: ui.id,
             title: ui.title,
             imageSrc: ui.imageSrc,
-            overview: ui.overview || `High-quality ${ui.category || 'asset'} mockup.`
+            overview: ui.overview || `High-quality ${ui.category || 'asset'} mockup.`,
           })));
         }
       } catch (err) {
@@ -222,12 +247,8 @@ const SearchDropdown = ({
         if (active) setLoading(false);
       }
     };
-
     const timeout = setTimeout(fetchResults, 300);
-    return () => {
-      active = false;
-      clearTimeout(timeout);
-    };
+    return () => { active = false; clearTimeout(timeout); };
   }, [query, activeTab]);
 
   return (
@@ -240,33 +261,40 @@ const SearchDropdown = ({
     >
       {/* Filter tabs */}
       <div className="flex items-center gap-2 px-4 pt-2 pb-3 overflow-x-auto no-scrollbar border-b border-gray-50/50">
-        {searchTabs.map((tab) => (
-          <button
-            key={tab.label}
-            onClick={(e) => { e.preventDefault(); setActiveTab(tab.label); }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-bold transition-all whitespace-nowrap shrink-0 ${activeTab === tab.label
-                ? 'bg-[#0f172a] text-white'
-                : 'bg-transparent text-gray-500 hover:text-gray-800 hover:bg-gray-50'
-              }`}
-          >
-            {tab.label}
-            <span className={`text-[12px] font-medium ${activeTab === tab.label ? 'text-gray-300' : 'text-gray-400'}`}>
-              {tab.count}
-            </span>
-          </button>
-        ))}
+        {SEARCH_TABS.map((tab) => {
+          const count = tabCounts[tab.label];
+          const isActive = activeTab === tab.label;
+          return (
+            <button
+              key={tab.label}
+              onClick={(e) => { e.preventDefault(); setActiveTab(tab.label); }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-bold transition-all whitespace-nowrap shrink-0 ${isActive
+                  ? 'bg-[#0f172a] text-white'
+                  : 'bg-transparent text-gray-500 hover:text-gray-800 hover:bg-gray-50'
+                }`}
+            >
+              {tab.label}
+              <span className={`text-[12px] font-medium ${isActive ? 'text-gray-300' : 'text-gray-400'
+                }`}>
+                {count === null
+                  ? <span className="inline-block w-4 h-2.5 bg-gray-200 animate-pulse rounded" />
+                  : count
+                }
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Results */}
       <div className="py-2 min-h-[100px]">
         {loading ? (
-          // Skeleton Loading
           [...Array(3)].map((_, i) => (
             <div key={i} className="w-full flex items-center gap-4 px-4 py-3 animate-pulse">
-              <div className="w-12 h-12 rounded-xl bg-gray-100 shrink-0"></div>
+              <div className="w-12 h-12 rounded-xl bg-gray-100 shrink-0" />
               <div className="flex-1 flex flex-col gap-2">
-                <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-                <div className="h-3 bg-gray-100 rounded w-2/3"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/3" />
+                <div className="h-3 bg-gray-100 rounded w-2/3" />
               </div>
             </div>
           ))
@@ -278,17 +306,18 @@ const SearchDropdown = ({
               className="w-full flex items-center gap-4 px-4 py-3 hover:bg-gray-50 transition-colors text-left group"
             >
               <div className="w-12 h-12 rounded-xl bg-[#f8fafc] flex items-center justify-center overflow-hidden shrink-0 group-hover:shadow-sm transition-all p-1">
-                {item.imageSrc ? (
-                  <img src={item.imageSrc} alt="" className="w-full h-full object-cover rounded-lg" />
-                ) : (
-                  <span className="text-xl">📦</span>
-                )}
+                {item.imageSrc
+                  ? <img src={item.imageSrc} alt="" className="w-full h-full object-cover rounded-lg" />
+                  : <span className="text-xl">📦</span>
+                }
               </div>
               <div className="min-w-0">
                 <p className="text-[15px] font-bold text-[#0f172a] group-hover:text-blue-600 transition-colors truncate leading-tight">
                   {item.title}
                 </p>
-                <p className="text-[13px] font-medium text-gray-400 truncate mt-0.5 leading-tight">{item.overview.replace(/[*_~`#><=\[\]\(\)]/g, ' ')}</p>
+                <p className="text-[13px] font-medium text-gray-400 truncate mt-0.5 leading-tight">
+                  {item.overview.replace(/[*_~`#><=[\]\(\)]/g, ' ')}
+                </p>
               </div>
             </button>
           ))
