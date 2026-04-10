@@ -13,42 +13,37 @@ import { ChevronDown, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-const DynamicMegaMenu = ({ category, onClose }: { category: string; onClose: () => void }) => {
+// ─── Mega-menu ────────────────────────────────────────────────────────────────
+const DynamicMegaMenu = React.memo(({ category, onClose }: { category: string; onClose: () => void }) => {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let active = true;
     const fetchMegaMenuData = async () => {
       try {
         setLoading(true);
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
         const res = await fetch(`${apiUrl}/api/uis?category=${encodeURIComponent(category)}&limit=7`);
         const data = await res.json();
-        if (data.status) {
+        if (data.status && active) {
           setItems(data.data.map((ui: any) => {
             const rawDesc = ui.overview || 'High-fidelity mockups for your next big project.';
             let plainDesc = rawDesc.replace(/[*_~`#><=\[\]\(\)]/g, ' ').replace(/\s+/g, ' ').trim();
             if (plainDesc.length > 95) plainDesc = plainDesc.substring(0, 95) + '...';
-
             const rawTitle = ui.title || 'Untitled';
             const shortTitle = rawTitle.length > 45 ? rawTitle.substring(0, 45) + '...' : rawTitle;
-
-            return {
-              id: ui.id,
-              title: shortTitle,
-              imageSrc: ui.imageSrc,
-              description: plainDesc,
-            };
+            return { id: ui.id, title: shortTitle, imageSrc: ui.imageSrc, description: plainDesc };
           }));
         }
       } catch (err) {
         console.error("Failed to fetch mega menu data:", err);
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     };
     fetchMegaMenuData();
+    return () => { active = false; };
   }, [category]);
 
   const trendingItem = items[0];
@@ -56,38 +51,35 @@ const DynamicMegaMenu = ({ category, onClose }: { category: string; onClose: () 
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 8 }}
-      transition={{ duration: 0.18 }}
+      exit={{ opacity: 0, y: 6 }}
+      transition={{ duration: 0.14, ease: 'easeOut' }}
       className="mt-2 w-[92vw] max-w-[720px] bg-white border border-gray-100 shadow-2xl rounded-2xl overflow-hidden h-[300px] flex"
     >
       {loading ? (
         <div className="flex flex-col sm:flex-row w-full h-full animate-pulse bg-white">
-          <div className="sm:w-64 bg-gray-200 shrink-0 h-full relative">
+          <div className="sm:w-64 bg-gray-100 shrink-0 h-full relative">
             <div className="absolute bottom-6 left-6 right-6">
-              <div className="w-16 h-4 bg-gray-300 rounded mb-4"></div>
-              <div className="w-full h-6 bg-gray-300 rounded mb-2"></div>
-              <div className="w-3/4 h-6 bg-gray-300 rounded mb-6"></div>
-              <div className="w-full h-3 bg-gray-300 rounded mb-2"></div>
-              <div className="w-5/6 h-3 bg-gray-300 rounded"></div>
+              <div className="w-16 h-4 bg-gray-200 rounded mb-4" />
+              <div className="w-full h-6 bg-gray-200 rounded mb-2" />
+              <div className="w-3/4 h-6 bg-gray-200 rounded mb-6" />
+              <div className="w-full h-3 bg-gray-200 rounded mb-2" />
+              <div className="w-5/6 h-3 bg-gray-200 rounded" />
             </div>
           </div>
           <div className="flex-1 p-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 content-start bg-gray-50/50">
-            <div className="col-span-full mb-1">
-              <div className="w-24 h-3 bg-gray-300 rounded"></div>
-            </div>
+            <div className="col-span-full mb-1"><div className="w-24 h-3 bg-gray-200 rounded" /></div>
             {[...Array(6)].map((_, i) => (
               <div key={i} className="flex flex-col gap-1.5">
-                <div className="w-3/4 h-4 bg-gray-300 rounded"></div>
-                <div className="w-1/2 h-3 bg-gray-200 rounded"></div>
+                <div className="w-3/4 h-4 bg-gray-200 rounded" />
+                <div className="w-1/2 h-3 bg-gray-100 rounded" />
               </div>
             ))}
           </div>
         </div>
       ) : items.length > 0 ? (
         <div className="flex flex-col sm:flex-row w-full h-full">
-          {/* Trending card */}
           <Link href={`/product/v1/${trendingItem.id}`} onClick={onClose} className="sm:w-64 bg-blue-600 flex flex-col justify-between shrink-0 relative overflow-hidden group">
             {trendingItem.imageSrc && (
               <img src={trendingItem.imageSrc} alt={trendingItem.title} className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:scale-105 transition-transform duration-700" />
@@ -103,8 +95,6 @@ const DynamicMegaMenu = ({ category, onClose }: { category: string; onClose: () 
               </div>
             </div>
           </Link>
-
-          {/* Columns */}
           <div className="flex-1 p-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 content-start bg-gray-50/50">
             <div className="col-span-full mb-1">
               <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest">Latest Uploads</p>
@@ -113,9 +103,7 @@ const DynamicMegaMenu = ({ category, onClose }: { category: string; onClose: () 
               otherItems.map((item, ii) => (
                 <div key={ii} className="flex flex-col gap-1">
                   <Link href={`/product/v1/${item.id}`} onClick={onClose} className="group block">
-                    <h4 className="text-[13px] font-bold text-gray-800 group-hover:text-blue-600 transition-colors truncate">
-                      {item.title}
-                    </h4>
+                    <h4 className="text-[13px] font-bold text-gray-800 group-hover:text-blue-600 transition-colors truncate">{item.title}</h4>
                     <p className="text-[11px] text-gray-500 truncate mt-0.5">View details</p>
                   </Link>
                 </div>
@@ -139,29 +127,26 @@ const DynamicMegaMenu = ({ category, onClose }: { category: string; onClose: () 
       )}
     </motion.div>
   );
-};
+});
+DynamicMegaMenu.displayName = 'DynamicMegaMenu';
 
 // ─── Simple list dropdown ─────────────────────────────────────────────────────
-const SimpleDropdown = ({ items, onClose }: { items: string[]; onClose: () => void }) => (
+const SimpleDropdown = React.memo(({ items, onClose }: { items: string[]; onClose: () => void }) => (
   <motion.div
-    initial={{ opacity: 0, y: 8 }}
+    initial={{ opacity: 0, y: 6 }}
     animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: 8 }}
-    transition={{ duration: 0.18 }}
+    exit={{ opacity: 0, y: 6 }}
+    transition={{ duration: 0.14, ease: 'easeOut' }}
     className="mt-2 w-52 bg-white border border-gray-100 shadow-xl rounded-xl py-2"
   >
     {items.map((item, i) => (
-      <a
-        key={i}
-        href="#"
-        onClick={onClose}
-        className="block px-4 py-2.5 text-[14px] text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors"
-      >
+      <a key={i} href="#" onClick={onClose} className="block px-4 py-2.5 text-[14px] text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
         {item}
       </a>
     ))}
   </motion.div>
-);
+));
+SimpleDropdown.displayName = 'SimpleDropdown';
 
 // ─── Search Dropdown ──────────────────────────────────────────────────────────
 const SEARCH_TABS = [
@@ -171,7 +156,36 @@ const SEARCH_TABS = [
   { label: "PSD Files", sort: "", filter: "PSD" },
 ];
 
-const SearchDropdown = ({
+// Tab counts are fetched once globally and cached — avoids re-fetch on every focus
+let _cachedTabCounts: Record<string, number | null> | null = null;
+let _tabCountsPromise: Promise<void> | null = null;
+
+function fetchTabCountsOnce(apiUrl: string): Promise<void> {
+  if (_cachedTabCounts !== null) return Promise.resolve();
+  if (_tabCountsPromise) return _tabCountsPromise;
+  _tabCountsPromise = (async () => {
+    try {
+      const [allRes, trendRes, newRes, psdRes] = await Promise.all([
+        fetch(`${apiUrl}/api/uis?limit=1`),
+        fetch(`${apiUrl}/api/uis?limit=1&sort=trending`),
+        fetch(`${apiUrl}/api/uis?limit=1&sort=newest`),
+        fetch(`${apiUrl}/api/uis?limit=1&search=PSD`),
+      ]);
+      const [all, trend, newest, psd] = await Promise.all([
+        allRes.json(), trendRes.json(), newRes.json(), psdRes.json(),
+      ]);
+      _cachedTabCounts = {
+        Everything: all.meta?.total ?? 0,
+        Trending: trend.meta?.total ?? 0,
+        'New Arrival': newest.meta?.total ?? 0,
+        'PSD Files': psd.meta?.total ?? 0,
+      };
+    } catch { /* silent */ }
+  })();
+  return _tabCountsPromise;
+}
+
+const SearchDropdown = React.memo(({
   query,
   activeTab,
   setActiveTab,
@@ -184,36 +198,23 @@ const SearchDropdown = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<any[]>([]);
-  const [tabCounts, setTabCounts] = useState<Record<string, number | null>>({
-    Everything: null, Trending: null, 'New Arrival': null, 'PSD Files': null,
-  });
+  const [tabCounts, setTabCounts] = useState<Record<string, number | null>>(
+    _cachedTabCounts ?? { Everything: null, Trending: null, 'New Arrival': null, 'PSD Files': null }
+  );
 
-  // Fetch real tab counts once on mount
+  // Fetch tab counts once, reuse cached value
   useEffect(() => {
+    if (_cachedTabCounts) {
+      setTabCounts(_cachedTabCounts);
+      return;
+    }
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
-    const fetchCounts = async () => {
-      try {
-        const [allRes, trendRes, newRes, psdRes] = await Promise.all([
-          fetch(`${apiUrl}/api/uis?limit=1`),
-          fetch(`${apiUrl}/api/uis?limit=1&sort=trending`),
-          fetch(`${apiUrl}/api/uis?limit=1&sort=newest`),
-          fetch(`${apiUrl}/api/uis?limit=1&search=PSD`),
-        ]);
-        const [all, trend, newest, psd] = await Promise.all([
-          allRes.json(), trendRes.json(), newRes.json(), psdRes.json(),
-        ]);
-        setTabCounts({
-          Everything: all.meta?.total ?? 0,
-          Trending: trend.meta?.total ?? 0,
-          'New Arrival': newest.meta?.total ?? 0,
-          'PSD Files': psd.meta?.total ?? 0,
-        });
-      } catch {/* silent */ }
-    };
-    fetchCounts();
+    fetchTabCountsOnce(apiUrl).then(() => {
+      if (_cachedTabCounts) setTabCounts(_cachedTabCounts);
+    });
   }, []);
 
-  // Fetch results whenever query or active tab changes
+  // Debounced fetch for search results
   useEffect(() => {
     let active = true;
     const fetchResults = async () => {
@@ -221,16 +222,12 @@ const SearchDropdown = ({
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
         const tabConfig = SEARCH_TABS.find(t => t.label === activeTab);
-
         let url = `${apiUrl}/api/uis?limit=5`;
-
         const terms: string[] = [];
         if (query) terms.push(query);
         if (tabConfig?.filter) terms.push(tabConfig.filter);
-
         if (terms.length > 0) url += `&search=${encodeURIComponent(terms.join(' '))}`;
         if (tabConfig?.sort) url += `&sort=${tabConfig.sort}`;
-
         const res = await fetch(url);
         const data = await res.json();
         if (data.status && active) {
@@ -247,16 +244,16 @@ const SearchDropdown = ({
         if (active) setLoading(false);
       }
     };
-    const timeout = setTimeout(fetchResults, 300);
+    const timeout = setTimeout(fetchResults, 250);
     return () => { active = false; clearTimeout(timeout); };
   }, [query, activeTab]);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 8 }}
-      transition={{ duration: 0.18 }}
+      exit={{ opacity: 0, y: 6 }}
+      transition={{ duration: 0.14, ease: 'easeOut' }}
       className="absolute top-full left-0 right-0 mt-3 bg-white border border-gray-100 shadow-2xl rounded-2xl overflow-hidden z-50 py-2"
     >
       {/* Filter tabs */}
@@ -269,13 +266,12 @@ const SearchDropdown = ({
               key={tab.label}
               onClick={(e) => { e.preventDefault(); setActiveTab(tab.label); }}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-bold transition-all whitespace-nowrap shrink-0 ${isActive
-                  ? 'bg-[#0f172a] text-white'
-                  : 'bg-transparent text-gray-500 hover:text-gray-800 hover:bg-gray-50'
-                }`}
+                ? 'bg-[#0f172a] text-white'
+                : 'bg-transparent text-gray-500 hover:text-gray-800 hover:bg-gray-50'
+              }`}
             >
               {tab.label}
-              <span className={`text-[12px] font-medium ${isActive ? 'text-gray-300' : 'text-gray-400'
-                }`}>
+              <span className={`text-[12px] font-medium ${isActive ? 'text-gray-300' : 'text-gray-400'}`}>
                 {count === null
                   ? <span className="inline-block w-4 h-2.5 bg-gray-200 animate-pulse rounded" />
                   : count
@@ -316,7 +312,7 @@ const SearchDropdown = ({
                   {item.title}
                 </p>
                 <p className="text-[13px] font-medium text-gray-400 truncate mt-0.5 leading-tight">
-                  {item.overview.replace(/[*_~`#><=[\]\(\)]/g, ' ')}
+                  {item.overview.replace(/[*_~`#><=[\]()]/g, ' ')}
                 </p>
               </div>
             </button>
@@ -329,32 +325,29 @@ const SearchDropdown = ({
       </div>
     </motion.div>
   );
-};
+});
+SearchDropdown.displayName = 'SearchDropdown';
 
-// ─── Mega-menu data ───────────────────────────────────────────────────────────
 // ─── Dropdown Mappings ────────────────────────────────────────────────────────
-
 const simpleDropdowns: Record<string, string[]> = {};
-
 const navItems = ["Flyer", "Brochure", "Business Card", "Outdoor", "Book", "Stationery", "Packaging", "Poster", "More", "All"];
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 function HomeContent() {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [searchTab, setSearchTab] = useState("Everything");
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  // pixel offset of the active nav item, used to position the dropdown outside the overflow container
   const [dropdownLeft, setDropdownLeft] = useState(0);
 
   const searchWrapperRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const dropdownTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navSectionRef = useRef<HTMLDivElement>(null);
-  // one ref per nav item, keyed by label
   const navItemRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const [page, setPage] = useState(1);
@@ -364,6 +357,12 @@ function HomeContent() {
   const router = useRouter();
   const { checkSession } = useAuth();
   const hasProcessedToken = useRef(false);
+
+  // Debounce the search query for product grid fetching only
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery), 350);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
 
   React.useEffect(() => {
     const token = searchParams?.get('token');
@@ -379,10 +378,7 @@ function HomeContent() {
     const categoryParam = searchParams?.get('category');
     if (categoryParam) {
       const match = navItems.find((n) => n.toLowerCase() === categoryParam.toLowerCase());
-      if (match) {
-        setSelectedCategory(match);
-        setPage(1);
-      }
+      if (match) { setSelectedCategory(match); setPage(1); }
     } else {
       setSelectedCategory("All");
       setPage(1);
@@ -400,19 +396,20 @@ function HomeContent() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const fetchProducts = async () => {
+  // Fetch products — only re-runs when page, category, or DEBOUNCED search changes
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
       const token = localStorage.getItem('auth_token');
-      const headers: any = {};
+      const headers: Record<string, string> = {};
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
       let url = `${apiUrl}/api/uis?page=${page}&limit=12`;
       if (selectedCategory && selectedCategory !== 'All') url += `&category=${encodeURIComponent(selectedCategory)}`;
-      if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
+      if (debouncedSearch) url += `&search=${encodeURIComponent(debouncedSearch)}`;
 
-      const res = await fetch(url, { credentials: 'include', cache: 'no-store', headers });
+      const res = await fetch(url, { credentials: 'include', headers });
       const data = await res.json();
 
       if (data.status) {
@@ -432,15 +429,14 @@ function HomeContent() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, selectedCategory, debouncedSearch]);
 
-  React.useEffect(() => {
-    const t = setTimeout(fetchProducts, 300);
+  useEffect(() => {
+    fetchProducts();
+    // Refresh every 5 minutes silently
     const i = setInterval(fetchProducts, 300000);
-    return () => { clearTimeout(t); clearInterval(i); };
-  }, [page, selectedCategory, searchQuery]);
-
-  const filteredProducts = useMemo(() => products, [products]);
+    return () => clearInterval(i);
+  }, [fetchProducts]);
 
   const handleNavEnter = useCallback((item: string) => {
     if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
@@ -453,7 +449,6 @@ function HomeContent() {
         const isMega = item !== "All" && !simpleDropdowns[item];
         const menuWidth = isMega ? Math.min(720, window.innerWidth * 0.92) : 176;
         const rawCentre = eRect.left - sRect.left + eRect.width / 2;
-        // Clamp so the left edge is ≥ 0 and right edge ≤ section width
         const halfMenu = menuWidth / 2;
         const clamped = Math.max(halfMenu, Math.min(rawCentre, sRect.width - halfMenu));
         setDropdownLeft(clamped);
@@ -461,12 +456,27 @@ function HomeContent() {
       setActiveDropdown(item);
     }
   }, []);
+
   const handleNavLeave = useCallback(() => {
     dropdownTimeoutRef.current = setTimeout(() => setActiveDropdown(null), 120);
   }, []);
+
   const keepOpen = useCallback(() => {
     if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
   }, []);
+
+  const handleSearchSelect = useCallback((title: string, id?: string) => {
+    if (id) {
+      router.push(`/product/v1/${id}`);
+    } else {
+      setSearchQuery(title);
+    }
+    setIsSearchFocused(false);
+  }, [router]);
+
+  const handleSearchFocus = useCallback(() => setIsSearchFocused(true), []);
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value), []);
+  const handleSearchClear = useCallback(() => { setSearchQuery(""); searchInputRef.current?.focus(); }, []);
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900 flex flex-col">
@@ -475,7 +485,7 @@ function HomeContent() {
 
         {/* ── Hero ── */}
         <section className="max-w-4xl mx-auto px-4 sm:px-6 pt-14 sm:pt-20 pb-8 sm:pb-10 text-center">
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <div>
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-tight text-gray-900">
               Design Better With
             </h1>
@@ -485,31 +495,28 @@ function HomeContent() {
             <p className="mt-4 sm:mt-5 text-gray-400 text-sm sm:text-base leading-relaxed max-w-xs sm:max-w-md mx-auto">
               Access Thousands Of High-Fidelity, Customizable Templates To Showcase Your Next Big Project. Always Free.
             </p>
-          </motion.div>
+          </div>
 
           {/* ── Search Bar ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+          <div
             className="mt-8 sm:mt-10 max-w-xl mx-auto relative"
             ref={searchWrapperRef}
           >
-            <div className={`flex items-center gap-2 sm:gap-3 bg-white border rounded-full px-4 sm:px-5 py-2.5 sm:py-3 shadow-sm transition-all duration-200 ${isSearchFocused ? 'border-blue-600 shadow-blue-100 shadow-md' : 'border-gray-200'
-              }`}>
+            <div className={`flex items-center gap-2 sm:gap-3 bg-white border rounded-full px-4 sm:px-5 py-2.5 sm:py-3 shadow-sm transition-all duration-150 ${isSearchFocused ? 'border-blue-600 shadow-blue-100 shadow-md' : 'border-gray-200'
+            }`}>
               <Search className="w-4 h-4 text-gray-400 shrink-0" />
               <input
                 ref={searchInputRef}
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsSearchFocused(true)}
+                onChange={handleSearchChange}
+                onFocus={handleSearchFocus}
                 type="text"
                 placeholder="Search mockups, files, bundles..."
                 className="flex-1 bg-transparent outline-none text-gray-700 placeholder-gray-400 text-sm min-w-0"
               />
               {searchQuery ? (
                 <button
-                  onClick={() => { setSearchQuery(""); searchInputRef.current?.focus(); }}
+                  onClick={handleSearchClear}
                   className="shrink-0 text-[11px] font-semibold text-gray-500 hover:text-gray-800 border border-gray-200 hover:border-gray-300 px-2.5 sm:px-3 py-1 rounded-full transition-colors"
                 >
                   Clear
@@ -523,18 +530,11 @@ function HomeContent() {
                   query={searchQuery}
                   activeTab={searchTab}
                   setActiveTab={setSearchTab}
-                  onSelect={(title, id) => {
-                    if (id) {
-                      router.push(`/product/v1/${id}`);
-                    } else {
-                      setSearchQuery(title);
-                    }
-                    setIsSearchFocused(false);
-                  }}
+                  onSelect={handleSearchSelect}
                 />
               )}
             </AnimatePresence>
-          </motion.div>
+          </div>
         </section>
 
         {/* ── Sub-nav / Filter ── */}
@@ -549,10 +549,7 @@ function HomeContent() {
             </p>
           </div>
 
-          {/* relative wrapper — dropdowns are rendered here, OUTSIDE the overflow-x div */}
           <div className="border-t border-gray-100 pt-3 sm:pt-4 relative" ref={navSectionRef}>
-
-            {/* ▸ Wrapping nav — items flow to the next line on mobile */}
             <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 sm:gap-x-5 text-[12px] sm:text-[13px] font-bold text-gray-500 uppercase tracking-widest pb-1">
               {navItems.map((item) => {
                 const isAll = item === "All";
@@ -580,7 +577,7 @@ function HomeContent() {
                         ? `px-3 sm:px-4 rounded-full text-[12px] sm:text-[13px] font-bold uppercase tracking-widest ${isActive ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-blue-600 hover:text-white'
                         }`
                         : `hover:text-blue-600 ${isActive ? 'text-blue-600' : ''}`
-                        }`}
+                      }`}
                     >
                       {item}
                       {!isAll && hasDropdown && <ChevronDown className="w-2.5 h-2.5 sm:w-3 sm:h-3" />}
@@ -590,11 +587,8 @@ function HomeContent() {
               })}
             </nav>
 
-            {/* ▸ Dropdown portal — rendered as a sibling of the scroll div so
-                  overflow-x:auto cannot clip it.  Left offset is measured from
-                  the hovered item's bounding rect (set in handleNavEnter). */}
             <AnimatePresence>
-              {activeDropdown && (!["All"].includes(activeDropdown) || simpleDropdowns[activeDropdown]) && (
+              {activeDropdown && (!(["All"].includes(activeDropdown)) || simpleDropdowns[activeDropdown]) && (
                 <div
                   className="absolute top-full z-50 pt-2"
                   style={{ left: dropdownLeft, transform: 'translateX(-50%)' }}
@@ -626,19 +620,11 @@ function HomeContent() {
                 <ProductCardSkeleton key={i} />
               ))}
             </div>
-          ) : filteredProducts.length > 0 ? (
+          ) : products.length > 0 ? (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-7 mb-10 sm:mb-14">
-                {filteredProducts.map((product, idx) => (
-                  <motion.div
-                    key={product.id}
-                    initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.04 }}
-                  >
-                    <ProductCard product={product} />
-                  </motion.div>
+                {products.map((product) => (
+                  <ProductCard key={product.id} product={product} />
                 ))}
               </div>
               <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
