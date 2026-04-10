@@ -165,16 +165,10 @@ const SimpleDropdown = ({ items, onClose }: { items: string[]; onClose: () => vo
 
 // ─── Search Dropdown ──────────────────────────────────────────────────────────
 const searchTabs = [
-  { label: "Everything", count: 168 },
-  { label: "Trending", count: 42 },
-  { label: "New Arrival", count: 12 },
-  { label: "PSD Files", count: 138 },
-];
-
-const suggestedItems = [
-  { icon: "📦", title: "Ceramic Coffee Mug", desc: "Packaging kit with 5 dynamic angles." },
-  { icon: "📦", title: "Premium Cardboard Box", desc: "Packaging kit with 5 dynamic angles." },
-  { icon: "🪧", title: "Billboard & Urban Signs", desc: "Outdoor advertising bundle set in daylight." },
+  { label: "Everything", count: 168, sort: "", filter: "" },
+  { label: "Trending", count: 42, sort: "trending", filter: "" },
+  { label: "New Arrival", count: 12, sort: "newest", filter: "" },
+  { label: "PSD Files", count: 138, sort: "", filter: "PSD" },
 ];
 
 const SearchDropdown = ({
@@ -186,58 +180,127 @@ const SearchDropdown = ({
   query: string;
   activeTab: string;
   setActiveTab: (t: string) => void;
-  onSelect: (title: string) => void;
-}) => (
-  <motion.div
-    initial={{ opacity: 0, y: 8 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: 8 }}
-    transition={{ duration: 0.18 }}
-    className="absolute top-full left-0 right-0 mt-3 bg-white border border-gray-100 shadow-2xl rounded-2xl overflow-hidden z-50"
-  >
-    {/* Filter tabs — scrollable on mobile */}
-    <div className="flex items-center gap-1 px-3 sm:px-4 pt-3 pb-2 border-b border-gray-100 overflow-x-auto no-scrollbar">
-      {searchTabs.map((tab) => (
-        <button
-          key={tab.label}
-          onClick={() => setActiveTab(tab.label)}
-          className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-[11px] font-semibold transition-all whitespace-nowrap shrink-0 ${activeTab === tab.label
-            ? 'bg-gray-900 text-white'
-            : 'text-gray-500 hover:bg-gray-100 hover:text-gray-800'
-            }`}
-        >
-          {tab.label}
-          <span className={`text-[10px] ${activeTab === tab.label ? 'text-gray-300' : 'text-gray-400'}`}>
-            {tab.count}
-          </span>
-        </button>
-      ))}
-    </div>
+  onSelect: (title: string, id?: string) => void;
+}) => {
+  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState<any[]>([]);
 
-    {/* Suggested results */}
-    <div className="py-2">
-      {suggestedItems
-        .filter((s) => !query || s.title.toLowerCase().includes(query.toLowerCase()))
-        .map((item, i) => (
+  useEffect(() => {
+    let active = true;
+    const fetchResults = async () => {
+      setLoading(true);
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
+        const tabConfig = searchTabs.find(t => t.label === activeTab);
+
+        let url = `${apiUrl}/api/uis?limit=5`;
+
+        const terms = [];
+        if (query) terms.push(query);
+        if (tabConfig?.filter === "PSD") terms.push("PSD");
+
+        if (terms.length > 0) {
+          url += `&search=${encodeURIComponent(terms.join(' '))}`;
+        }
+        if (tabConfig?.sort) {
+          url += `&sort=${tabConfig.sort}`;
+        }
+
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.status && active) {
+          setResults(data.data.map((ui: any) => ({
+            id: ui.id,
+            title: ui.title,
+            imageSrc: ui.imageSrc,
+            overview: ui.overview || `High-quality ${ui.category || 'asset'} mockup.`
+          })));
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    const timeout = setTimeout(fetchResults, 300);
+    return () => {
+      active = false;
+      clearTimeout(timeout);
+    };
+  }, [query, activeTab]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 8 }}
+      transition={{ duration: 0.18 }}
+      className="absolute top-full left-0 right-0 mt-3 bg-white border border-gray-100 shadow-2xl rounded-2xl overflow-hidden z-50 py-2"
+    >
+      {/* Filter tabs */}
+      <div className="flex items-center gap-2 px-4 pt-2 pb-3 overflow-x-auto no-scrollbar border-b border-gray-50/50">
+        {searchTabs.map((tab) => (
           <button
-            key={i}
-            onClick={() => onSelect(item.title)}
-            className="w-full flex items-center gap-3 px-3 sm:px-4 py-2.5 hover:bg-gray-50 transition-colors text-left group"
+            key={tab.label}
+            onClick={(e) => { e.preventDefault(); setActiveTab(tab.label); }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-bold transition-all whitespace-nowrap shrink-0 ${activeTab === tab.label
+                ? 'bg-[#0f172a] text-white'
+                : 'bg-transparent text-gray-500 hover:text-gray-800 hover:bg-gray-50'
+              }`}
           >
-            <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-base shrink-0 group-hover:bg-blue-50">
-              {item.icon}
-            </div>
-            <div className="min-w-0">
-              <p className="text-[13px] font-semibold text-gray-800 group-hover:text-blue-600 transition-colors truncate">
-                {item.title}
-              </p>
-              <p className="text-[11px] text-gray-400 truncate">{item.desc}</p>
-            </div>
+            {tab.label}
+            <span className={`text-[12px] font-medium ${activeTab === tab.label ? 'text-gray-300' : 'text-gray-400'}`}>
+              {tab.count}
+            </span>
           </button>
         ))}
-    </div>
-  </motion.div>
-);
+      </div>
+
+      {/* Results */}
+      <div className="py-2 min-h-[100px]">
+        {loading ? (
+          // Skeleton Loading
+          [...Array(3)].map((_, i) => (
+            <div key={i} className="w-full flex items-center gap-4 px-4 py-3 animate-pulse">
+              <div className="w-12 h-12 rounded-xl bg-gray-100 shrink-0"></div>
+              <div className="flex-1 flex flex-col gap-2">
+                <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+                <div className="h-3 bg-gray-100 rounded w-2/3"></div>
+              </div>
+            </div>
+          ))
+        ) : results.length > 0 ? (
+          results.map((item, i) => (
+            <button
+              key={i}
+              onClick={(e) => { e.preventDefault(); onSelect(item.title, item.id); }}
+              className="w-full flex items-center gap-4 px-4 py-3 hover:bg-gray-50 transition-colors text-left group"
+            >
+              <div className="w-12 h-12 rounded-xl bg-[#f8fafc] flex items-center justify-center overflow-hidden shrink-0 group-hover:shadow-sm transition-all p-1">
+                {item.imageSrc ? (
+                  <img src={item.imageSrc} alt="" className="w-full h-full object-cover rounded-lg" />
+                ) : (
+                  <span className="text-xl">📦</span>
+                )}
+              </div>
+              <div className="min-w-0">
+                <p className="text-[15px] font-bold text-[#0f172a] group-hover:text-blue-600 transition-colors truncate leading-tight">
+                  {item.title}
+                </p>
+                <p className="text-[13px] font-medium text-gray-400 truncate mt-0.5 leading-tight">{item.overview.replace(/[*_~`#><=\[\]\(\)]/g, ' ')}</p>
+              </div>
+            </button>
+          ))
+        ) : (
+          <div className="py-6 text-center text-gray-400 text-sm font-medium">
+            No results found {query ? `for "${query}"` : 'for this tab'}
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+};
 
 // ─── Mega-menu data ───────────────────────────────────────────────────────────
 // ─── Dropdown Mappings ────────────────────────────────────────────────────────
@@ -431,7 +494,14 @@ function HomeContent() {
                   query={searchQuery}
                   activeTab={searchTab}
                   setActiveTab={setSearchTab}
-                  onSelect={(title) => { setSearchQuery(title); setIsSearchFocused(false); }}
+                  onSelect={(title, id) => {
+                    if (id) {
+                      router.push(`/product/v1/${id}`);
+                    } else {
+                      setSearchQuery(title);
+                    }
+                    setIsSearchFocused(false);
+                  }}
                 />
               )}
             </AnimatePresence>
