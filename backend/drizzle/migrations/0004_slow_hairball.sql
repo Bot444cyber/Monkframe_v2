@@ -1,0 +1,4 @@
+ALTER TABLE `uis` MODIFY COLUMN `price` varchar(50) NOT NULL DEFAULT 'Free';
+ALTER TABLE `uis` MODIFY COLUMN `author` varchar(255) NOT NULL DEFAULT '';
+ALTER TABLE `uis` MODIFY COLUMN `imageSrc` text NOT NULL DEFAULT ('');
+ALTER TABLE `notifications` ADD `status` enum('PENDING','FIXED','DISMISSED') DEFAULT 'PENDING' NOT NULL;

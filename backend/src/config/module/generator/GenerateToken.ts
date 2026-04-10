@@ -17,9 +17,9 @@ function GenerateToken(payload: TokenPayload): string {
   }
 
   const Token = jwt.sign(payload, process.env.JWT_SECRET as jwt.Secret, {
-    expiresIn: '12h',
+    expiresIn: '24h',
     algorithm: 'HS256',
-    issuer: 'Ticket-Management-System',
+    issuer: 'Mockupidea',
     audience: 'client-app'
   } as jwt.SignOptions);
 

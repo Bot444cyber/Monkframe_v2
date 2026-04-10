@@ -29,6 +29,13 @@
       "when": 1775160201941,
       "tag": "0003_perpetual_energizer",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1775812647839,
+      "tag": "0004_slow_hairball",
+      "breakpoints": true
     }
   ]
 }
