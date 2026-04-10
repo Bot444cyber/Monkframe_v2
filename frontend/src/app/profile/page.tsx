@@ -74,7 +74,7 @@ export default function ProfilePage() {
                 if (token) headers['Authorization'] = `Bearer ${token}`;
 
                 const res = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/auth/profile?wishlistPage=${wPage}&wishlistLimit=6&paymentsPage=${pPage}&paymentsLimit=5`,
+                    `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000'}/api/auth/profile?wishlistPage=${wPage}&wishlistLimit=6&paymentsPage=${pPage}&paymentsLimit=5`,
                     { headers }
                 );
                 const data = await res.json();

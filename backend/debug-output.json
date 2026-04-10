@@ -1,0 +1,73 @@
+[
+  {
+    "user_id": 2,
+    "full_name": "Abdul rehman",
+    "email": "ar3034098@gmail.com",
+    "password_hash": "$2b$10$HdUX0g6FaMKOeN1oLxTq6uDwT5Cy2oAdRCSE8/y.P9YkhAyvg2oea",
+    "google_id": "102126549577076518899",
+    "role": "ADMIN",
+    "status": "ACTIVE",
+    "created_at": "2026-04-01T20:35:18.000Z",
+    "updated_at": "2026-04-10T19:36:15.000Z",
+    "last_active_at": "2026-04-10T19:36:15.000Z"
+  },
+  {
+    "user_id": 7,
+    "full_name": "Abdul Manan",
+    "email": "hananmanan1655@gmail.com",
+    "password_hash": "",
+    "google_id": "110612939202520241155",
+    "role": "ADMIN",
+    "status": "ACTIVE",
+    "created_at": "2026-04-10T08:52:27.000Z",
+    "updated_at": "2026-04-10T19:47:33.000Z",
+    "last_active_at": "2026-04-10T19:47:33.000Z"
+  },
+  {
+    "user_id": 8,
+    "full_name": "Muhammad Umair ",
+    "email": "umii1821@gmail.com",
+    "password_hash": "$2b$10$xjnmBUoNswI69L/mt0BEPuTAcjo/X8xfxysgTPdIPMUVDslolGMfy",
+    "google_id": null,
+    "role": "ADMIN",
+    "status": "ACTIVE",
+    "created_at": "2026-04-10T08:55:00.000Z",
+    "updated_at": "2026-04-10T12:07:51.000Z",
+    "last_active_at": "2026-04-10T12:07:51.000Z"
+  }
+]
+
+WISHLISTS TABLE DUMP:
+
+[
+  {
+    "id": "277187bb-f7c5-418e-9c4a-1a16ec90b5df",
+    "user_id": 2,
+    "ui_id": "a0937ca8-5aab-4dd9-8254-7d673185efbb",
+    "created_at": "2026-04-10T19:36:25.000Z"
+  },
+  {
+    "id": "e6a0d234-74fc-4902-8bc1-f533d0d1fc2b",
+    "user_id": 9,
+    "ui_id": "fe9d43e1-c7b1-4f3e-b97f-48e6f8e8c9b4",
+    "created_at": "2026-04-10T19:34:06.000Z"
+  }
+]
+
+Rows for user 2 (ADMIN): 1
+
+[
+  {
+    "wishlist_id": "277187bb-f7c5-418e-9c4a-1a16ec90b5df",
+    "ui_id": "a0937ca8-5aab-4dd9-8254-7d673185efbb",
+    "creator_name": "Abdul Manan"
+  }
+]
+
+Rows for user 7 (ADMIN): 0
+
+[]
+
+Rows for user 8 (ADMIN): 0
+
+[]

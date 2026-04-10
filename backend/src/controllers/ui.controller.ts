@@ -542,7 +542,13 @@ export const deleteUI = async (req: Request, res: Response) => {
             }
         }
 
-        // 5. Delete from DB
+        // 5. Delete associated records to prevent orphaned entries
+        await db.delete(wishlists).where(eq(wishlists.ui_id, id));
+        await db.delete(likes).where(eq(likes.ui_id, id));
+        await db.delete(commentsTable).where(eq(commentsTable.ui_id, id));
+        await db.delete(notifications).where(eq(notifications.uiId, id));
+
+        // 6. Delete from DB
         await db.delete(uis).where(eq(uis.id, id));
 
         res.json({ status: true, message: "UI and associated Drive files deleted successfully" });

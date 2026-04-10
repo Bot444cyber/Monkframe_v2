@@ -179,14 +179,20 @@ export const getUserProfile = async (req: Request, res: Response) => {
         }
 
         // Get counts
-        const [[wishlistCount], [paymentCount]] = await Promise.all([
-            db.select({ value: count() }).from(wishlistsTable).where(eq(wishlistsTable.user_id, userId)),
+        const [wishlistCountResult] = await db
+            .select({ value: count() })
+            .from(wishlistsTable)
+            .innerJoin(uis, eq(uis.id, wishlistsTable.ui_id))
+            .where(eq(wishlistsTable.user_id, userId));
+
+        const [[paymentCount]] = await Promise.all([
             db.select({ value: count() }).from(paymentsTable).where(eq(paymentsTable.userId, userId))
         ]);
-        const countWishlists = wishlistCount.value;
+
+        const countWishlists = wishlistCountResult.value;
         const countPayments = paymentCount.value;
 
-        // Fetch wishlist items with UI details via leftJoin
+        // Fetch wishlist items with UI details via innerJoin to exclude orphans
         const wishlistRows = await db
             .select({
                 wishlist_id: wishlistsTable.id,
@@ -206,7 +212,7 @@ export const getUserProfile = async (req: Request, res: Response) => {
                 creator_name: users.full_name,
             })
             .from(wishlistsTable)
-            .leftJoin(uis, eq(uis.id, wishlistsTable.ui_id))
+            .innerJoin(uis, eq(uis.id, wishlistsTable.ui_id))
             .leftJoin(users, eq(users.user_id, uis.creatorId))
             .where(eq(wishlistsTable.user_id, userId))
             .orderBy(desc(wishlistsTable.created_at))
