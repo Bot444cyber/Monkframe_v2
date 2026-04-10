@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ProductPageSkeleton from "@/components/ProductPageSkeleton";
 import ProductGallery from "@/components/product/ProductGallery";
 import ProductInfo from "@/components/product/ProductInfo";
 import { useParams } from "next/navigation";
@@ -127,14 +128,7 @@ export default function ProductDetailsPage() {
     }, [product?.purchased]);
 
     if (isLoading) {
-        return (
-            <div className="min-h-screen bg-white text-gray-900 flex items-center justify-center">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="h-10 w-10 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                    <p className="text-gray-400 animate-pulse">Loading details...</p>
-                </div>
-            </div>
-        );
+        return <ProductPageSkeleton />;
     }
 
     if (!product) {
@@ -172,13 +166,13 @@ export default function ProductDetailsPage() {
                             />
 
                             {/* Free Download Box */}
-                            <div className="w-full bg-[#f8f9fa] border border-gray-100 p-6 flex flex-col items-center justify-center text-center gap-6">
+                            <div className="w-full bg-white border border-gray-100 rounded-[2rem] p-8 flex flex-col items-center justify-center text-center gap-6 shadow-sm">
                                 <div className="max-w-md">
-                                    <p className="text-[13px] text-gray-600 leading-relaxed mb-6">
-                                        This UI asset is completely free to download. Feel free to use it in any of your client or personal projects without restrictions.
+                                    <p className="text-[14px] text-gray-500 leading-relaxed mb-8">
+                                        This premium UI asset is available for free. Download and use it in your personal or commercial projects.
                                     </p>
                                     <div className="flex flex-col gap-3 w-full">
-                                        <button onClick={handleDownload} className="w-full py-4 px-6 bg-blue-600 border border-transparent text-white text-sm font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-colors flex justify-center items-center gap-2 rounded-xl">
+                                        <button onClick={handleDownload} className="w-full py-4.5 px-8 bg-blue-600 text-white text-[12px] font-black uppercase tracking-[0.1em] shadow-xl shadow-blue-500/20 hover:bg-blue-700 hover:scale-[1.02] active:scale-[0.98] transition-all flex justify-center items-center gap-3 rounded-2xl">
                                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                             </svg>

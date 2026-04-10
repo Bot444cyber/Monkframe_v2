@@ -7,6 +7,25 @@ interface ProductInfoProps {
 }
 
 export default function ProductInfo({ product, isWished, onToggleWishlist }: ProductInfoProps) {
+    // Reusable Markdown Parser
+    const parseMarkdown = (text: string, isBlock = false) => {
+        if (!text) return "";
+        let parsed = text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\*\*(.*?)\*\*/g, '<b class="font-black">$1</b>')
+            .replace(/__(.*?)__/g, '<u class="decoration-blue-600/30 decoration-2 underline-offset-4">$1</u>')
+            .replace(/\*(.*?)\*/g, '<i class="italic opacity-90">$1</i>');
+
+        if (isBlock) {
+            parsed = parsed
+                .replace(/^### (.*$)/gm, '<h3 class="text-lg font-black text-gray-900 mt-8 mb-4 uppercase tracking-wider block">$1</h3>')
+                .replace(/^- (.*$)/gm, '<div class="flex items-start gap-3 my-2 pl-2"><span class="text-blue-600 font-bold text-lg leading-none mt-0.5">•</span><span class="flex-1">$1</span></div>');
+        }
+        return parsed;
+    };
+
     let tagsToRender: string[] = [];
     if (product?.tags) {
         if (Array.isArray(product.tags)) {
@@ -26,7 +45,22 @@ export default function ProductInfo({ product, isWished, onToggleWishlist }: Pro
     }
 
     const category = product?.category || "UI Resource";
-    const additionalInfo = product?.additionalInfo;
+    const additionalInfoRaw = product?.additionalInfo || "";
+    let additionalInfoItems: string[] = [];
+    if (typeof additionalInfoRaw === 'string') {
+        try {
+            const parsed = JSON.parse(additionalInfoRaw);
+            additionalInfoItems = Array.isArray(parsed) ? parsed : [additionalInfoRaw];
+        } catch {
+            // Fallback to comma splitting for legacy data
+            additionalInfoItems = additionalInfoRaw.split(',').map(item => item.trim()).filter(Boolean);
+        }
+    } else if (Array.isArray(additionalInfoRaw)) {
+        additionalInfoItems = additionalInfoRaw;
+    }
+
+    // Combine highlights and additional info items for a comprehensive list
+    const allInfoItems = [...new Set([...highlights, ...additionalInfoItems])];
 
     return (
         <div className="w-full flex flex-col gap-10 relative">
@@ -34,16 +68,16 @@ export default function ProductInfo({ product, isWished, onToggleWishlist }: Pro
             <div className="flex flex-col gap-6">
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                        <span className="px-3 py-1 bg-blue-600/10 border border-blue-600/20 text-blue-600 text-[10px] font-black uppercase tracking-[0.2em] rounded-full">
-                            {category}
-                        </span>
-                        <div className="hidden sm:block h-px w-12 bg-gray-100" />
+                        <span
+                            className="px-4 py-1.5 bg-blue-600/5 border border-blue-600/10 text-blue-600 text-[11px] font-black uppercase tracking-[0.2em] rounded-full"
+                            dangerouslySetInnerHTML={{ __html: parseMarkdown(category) }}
+                        />
                     </div>
 
                     {onToggleWishlist && (
                         <button
                             onClick={onToggleWishlist}
-                            className={`group flex items-center gap-2.5 px-5 py-2.5 rounded-full border transition-all duration-300 text-[11px] font-black uppercase tracking-[0.15em] shrink-0 ${isWished
+                            className={`group flex items-center gap-2.5 px-6 py-3 rounded-full border transition-all duration-300 text-[11px] font-black uppercase tracking-[0.15em] shrink-0 ${isWished
                                 ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-600/20'
                                 : 'bg-white border-gray-100 text-gray-400 hover:text-blue-600 hover:border-blue-200 shadow-sm'}`}
                         >
@@ -55,49 +89,45 @@ export default function ProductInfo({ product, isWished, onToggleWishlist }: Pro
                     )}
                 </div>
 
-                <h1 className="text-4xl lg:text-5xl font-black text-gray-900 tracking-tight leading-tight uppercase break-words overflow-hidden">
-                    {product?.title || "Premium Mockup Kit"}
-                </h1>
+                <h1
+                    className="text-4xl lg:text-5xl font-black text-gray-900 tracking-tight leading-tight uppercase wrap-break-word overflow-hidden"
+                    dangerouslySetInnerHTML={{ __html: parseMarkdown(product?.title || "Premium Mockup Kit") }}
+                />
             </div>
 
             {/* Description / Overview */}
             <div className="relative">
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-600/20 rounded-full" />
-                <div className="pl-6 text-gray-600 leading-relaxed text-[16px] font-medium selection:bg-blue-500/30 break-words">
-                    <p className="whitespace-pre-wrap italic opacity-90">
-                        {product?.overview || product?.description || "This premium quality UI kit is carefully crafted and organized. Highly useful for any professional design work, featuring a modern aesthetic and scalable components."}
-                    </p>
-                </div>
+                <div
+                    className="pl-0 text-gray-600 leading-relaxed text-[16px] font-medium selection:bg-blue-500/30 wrap-break-word whitespace-pre-wrap opacity-90"
+                    dangerouslySetInnerHTML={{
+                        __html: parseMarkdown(product?.overview || product?.description || "This premium quality UI kit is carefully crafted and organized. Highly useful for any professional design work, featuring a modern aesthetic and scalable components.", true)
+                    }}
+                />
             </div>
 
-            {/* Additional Information Section */}
-            {additionalInfo && (
-                <div className="flex flex-col gap-6 p-8 sm:p-10 rounded-[2.5rem] bg-secondary border border-border shadow-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 blur-3xl rounded-full -mr-10 -mt-10 group-hover:bg-blue-600/10 transition-transform duration-1000" />
+            {/* Additional Information Section (Large Pill Design) */}
+            {allInfoItems.length > 0 && (
+                <div className="flex flex-col gap-4 pt-4">
+                    <h3 className="text-xl font-black text-gray-900">Additional info:</h3>
 
-                    <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 flex items-center justify-center bg-background rounded-2xl border border-border text-blue-600 shadow-sm group-hover:scale-110 transition-all">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
-                            </svg>
-                        </div>
-                        <h3 className="text-xs font-black text-foreground uppercase tracking-[0.25em]">Technical Details</h3>
-                    </div>
-
-                    <div className="relative pl-0.5">
-                        <p className="text-sm text-muted-foreground leading-relaxed font-semibold break-words">
-                            {additionalInfo}
-                        </p>
+                    <div className="flex flex-col gap-4">
+                        {allInfoItems.map((item: string, idx: number) => (
+                            <div
+                                key={idx}
+                                className="w-fit px-8 py-6 rounded-[2rem] border border-gray-100 bg-white text-gray-700 text-[12px] font-black uppercase tracking-widest leading-relaxed shadow-[0_10px_40px_-10px_rgba(0,0,0,0.06)] hover:shadow-[0_15px_50px_-12px_rgba(0,0,0,0.1)] transition-all cursor-default"
+                                dangerouslySetInnerHTML={{ __html: parseMarkdown(item) }}
+                            />
+                        ))}
                     </div>
                 </div>
             )}
 
-            {/* Tags (optional secondary) */}
-            {tagsToRender.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-4">
+            {/* Tags (optional secondary) - More subtle */}
+            {tagsToRender.length > 0 && !allInfoItems.some(i => tagsToRender.includes(i)) && (
+                <div className="flex flex-wrap gap-2 mt-6">
                     {tagsToRender.map((tag: string, idx: number) => (
-                        <span key={idx} className="px-4 py-2 rounded-xl border border-gray-100 bg-white text-gray-500 text-[11px] font-bold uppercase tracking-wider hover:border-blue-600/50 hover:text-blue-600 hover:bg-blue-50/30 transition-all cursor-default shadow-sm">
-                            {tag}
+                        <span key={idx} className="px-4 py-2 rounded-xl border border-gray-50 bg-gray-50/30 text-gray-400 text-[10px] font-black uppercase tracking-widest cursor-default">
+                            #{tag}
                         </span>
                     ))}
                 </div>

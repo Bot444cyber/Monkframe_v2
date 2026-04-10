@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Pagination from '@/components/Pagination';
 import toast from 'react-hot-toast';
 import { Trash2, Shield, User as UserIcon, Mail, Globe, Clock, DollarSign, ShoppingBag } from 'lucide-react';
+import DashboardTableSkeleton from './DashboardTableSkeleton';
 
 interface User {
     user_id: number;
@@ -22,6 +23,7 @@ interface UsersSectionProps {
     usersTotalPages: number;
     setUsersPage: (page: number) => void;
     onRefresh: () => void;
+    isLoading?: boolean;
 }
 
 const UsersSection: React.FC<UsersSectionProps> = ({
@@ -29,7 +31,8 @@ const UsersSection: React.FC<UsersSectionProps> = ({
     usersPage,
     usersTotalPages,
     setUsersPage,
-    onRefresh
+    onRefresh,
+    isLoading
 }) => {
     const [updatingId, setUpdatingId] = useState<number | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
@@ -128,104 +131,118 @@ const UsersSection: React.FC<UsersSectionProps> = ({
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
-                        {users.map((user, idx) => (
-                            <tr key={user.user_id ?? idx} className="hover:bg-secondary/30 transition-all group">
-                                <td className="px-8 py-6">
-                                    <div className="flex items-center gap-4">
-                                        <div className="relative shrink-0">
-                                            <div className="h-10 w-10 rounded-xl bg-secondary border border-border flex items-center justify-center text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-all duration-300">
-                                                <UserIcon size={18} />
-                                            </div>
-                                            {(() => {
-                                                const lastActive = user.last_active_at ? new Date(user.last_active_at).getTime() : 0;
-                                                const isOnline = Date.now() - lastActive < 300000;
-                                                if (isOnline) {
-                                                    return (
-                                                        <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-background border-2 border-background">
-                                                            <div className="h-2 w-2 rounded-full bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)] animate-pulse"></div>
-                                                        </div>
-                                                    );
-                                                }
-                                                return null;
-                                            })()}
-                                        </div>
-                                        <div className="flex flex-col min-w-0">
-                                            <p className="font-bold text-foreground text-sm truncate max-w-[180px]">
-                                                {user.full_name && user.full_name !== 'Unknown' ? user.full_name : user.email.split('@')[0]}
-                                            </p>
-                                            <div className="flex items-center gap-2">
-                                                <p className="text-[10px] font-bold text-muted-foreground/60 truncate max-w-[150px]">{user.email}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td className="px-8 py-6">
-                                    <div className="relative inline-block">
-                                        <select
-                                            value={user.role}
-                                            onChange={(e) => handleRoleChange(user.user_id, e.target.value)}
-                                            disabled={updatingId === user.user_id}
-                                            className={`text-[9px] font-extrabold uppercase tracking-[0.2em] px-4 py-2 rounded-xl border bg-background/50 backdrop-blur-sm outline-none cursor-pointer transition-all hover:border-primary/40 disabled:opacity-50 disabled:cursor-not-allowed appearance-none pr-8 ${user.role === 'ADMIN'
-                                                ? 'text-purple-400 border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.1)]'
-                                                : user.role === 'EDITOR'
-                                                    ? 'text-blue-500 border-blue-500/20 shadow-[0_0_15px_rgba(37,99,235,0.05)]'
-                                                    : 'text-muted-foreground border-border shadow-sm'
-                                                }`}
-                                        >
-                                            <option value="CUSTOMER">CUSTOMER</option>
-                                            <option value="EDITOR">EDITOR</option>
-                                            <option value="ADMIN">ADMIN</option>
-                                        </select>
-                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground/40">
-                                            <Shield size={10} />
-                                        </div>
-                                    </div>
-                                </td>
-                                <td className="px-8 py-6">
-                                    <div className="flex items-center gap-2">
-                                        {user.google_id ? (
-                                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600/5 border border-blue-600/10 text-blue-600">
-                                                <Globe size={12} />
-                                                <span className="text-[9px] font-bold uppercase tracking-widest">Google</span>
-                                            </div>
-                                        ) : (
-                                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary border border-border text-muted-foreground">
-                                                <Mail size={12} />
-                                                <span className="text-[9px] font-bold uppercase tracking-widest">Email</span>
-                                            </div>
-                                        )}
-                                    </div>
-                                </td>
-                                <td className="px-8 py-6">
-                                    <div className="flex items-center gap-2 text-muted-foreground">
-                                        <Clock size={12} className="opacity-50" />
-                                        <span className="text-[10px] font-bold uppercase tracking-widest tabular-nums">
-                                            {user.created_at ? new Date(user.created_at).toLocaleDateString('en-US', {
-                                                month: 'short',
-                                                day: 'numeric',
-                                                year: 'numeric'
-                                            }) : 'N/A'}
-                                        </span>
-                                    </div>
-                                </td>
-                                <td className="px-8 py-6 text-right">
-                                    <div className="flex items-center justify-end gap-2">
-                                        <span className="text-xs font-bold text-foreground tabular-nums">{user.purchases || 0}</span>
-                                        <ShoppingBag size={12} className="text-muted-foreground/40" />
-                                    </div>
-                                </td>
-                                <td className="px-8 py-6 text-right">
-                                    <button
-                                        onClick={() => handleDeleteUser(user.user_id, user.email)}
-                                        disabled={deletingId === user.user_id}
-                                        className="p-3 text-muted-foreground/40 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all duration-300 disabled:opacity-30 group/del"
-                                        title="Delete User"
-                                    >
-                                        <Trash2 size={18} className="group-hover/del:scale-110 transition-transform" />
-                                    </button>
+                        {isLoading ? (
+                            <tr>
+                                <td colSpan={6} className="p-6">
+                                    <DashboardTableSkeleton columns={6} rows={5} />
                                 </td>
                             </tr>
-                        ))}
+                        ) : users.length > 0 ? (
+                            users.map((user, idx) => (
+                                <tr key={user.user_id ?? idx} className="hover:bg-secondary/30 transition-all group">
+                                    <td className="px-8 py-6">
+                                        <div className="flex items-center gap-4">
+                                            <div className="relative shrink-0">
+                                                <div className="h-10 w-10 rounded-xl bg-secondary border border-border flex items-center justify-center text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-all duration-300">
+                                                    <UserIcon size={18} />
+                                                </div>
+                                                {(() => {
+                                                    const lastActive = user.last_active_at ? new Date(user.last_active_at).getTime() : 0;
+                                                    const isOnline = Date.now() - lastActive < 300000;
+                                                    if (isOnline) {
+                                                        return (
+                                                            <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-background border-2 border-background">
+                                                                <div className="h-2 w-2 rounded-full bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)] animate-pulse"></div>
+                                                            </div>
+                                                        );
+                                                    }
+                                                    return null;
+                                                })()}
+                                            </div>
+                                            <div className="flex flex-col min-w-0">
+                                                <p className="font-bold text-foreground text-sm truncate max-w-[180px]">
+                                                    {user.full_name && user.full_name !== 'Unknown' ? user.full_name : user.email.split('@')[0]}
+                                                </p>
+                                                <div className="flex items-center gap-2">
+                                                    <p className="text-[10px] font-bold text-muted-foreground/60 truncate max-w-[150px]">{user.email}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-6">
+                                        <div className="relative inline-block">
+                                            <select
+                                                value={user.role}
+                                                onChange={(e) => handleRoleChange(user.user_id, e.target.value)}
+                                                disabled={updatingId === user.user_id}
+                                                className={`text-[9px] font-extrabold uppercase tracking-[0.2em] px-4 py-2 rounded-xl border bg-background/50 backdrop-blur-sm outline-none cursor-pointer transition-all hover:border-primary/40 disabled:opacity-50 disabled:cursor-not-allowed appearance-none pr-8 ${user.role === 'ADMIN'
+                                                    ? 'text-purple-400 border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.1)]'
+                                                    : user.role === 'EDITOR'
+                                                        ? 'text-blue-500 border-blue-500/20 shadow-[0_0_15px_rgba(37,99,235,0.05)]'
+                                                        : 'text-muted-foreground border-border shadow-sm'
+                                                    }`}
+                                            >
+                                                <option value="CUSTOMER">CUSTOMER</option>
+                                                <option value="EDITOR">EDITOR</option>
+                                                <option value="ADMIN">ADMIN</option>
+                                            </select>
+                                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground/40">
+                                                <Shield size={10} />
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-6">
+                                        <div className="flex items-center gap-2">
+                                            {user.google_id ? (
+                                                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600/5 border border-blue-600/10 text-blue-600">
+                                                    <Globe size={12} />
+                                                    <span className="text-[9px] font-bold uppercase tracking-widest">Google</span>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary border border-border text-muted-foreground">
+                                                    <Mail size={12} />
+                                                    <span className="text-[9px] font-bold uppercase tracking-widest">Email</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-6">
+                                        <div className="flex items-center gap-2 text-muted-foreground">
+                                            <Clock size={12} className="opacity-50" />
+                                            <span className="text-[10px] font-bold uppercase tracking-widest tabular-nums">
+                                                {user.created_at ? new Date(user.created_at).toLocaleDateString('en-US', {
+                                                    month: 'short',
+                                                    day: 'numeric',
+                                                    year: 'numeric'
+                                                }) : 'N/A'}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-6 text-right">
+                                        <div className="flex items-center justify-end gap-2">
+                                            <span className="text-xs font-bold text-foreground tabular-nums">{user.purchases || 0}</span>
+                                            <ShoppingBag size={12} className="text-muted-foreground/40" />
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-6 text-right">
+                                        <button
+                                            onClick={() => handleDeleteUser(user.user_id, user.email)}
+                                            disabled={deletingId === user.user_id}
+                                            className="p-3 text-muted-foreground/40 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all duration-300 disabled:opacity-30 group/del"
+                                            title="Delete User"
+                                        >
+                                            <Trash2 size={18} className="group-hover/del:scale-110 transition-transform" />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={6} className="px-8 py-16 text-center text-muted-foreground/60 text-xs font-medium uppercase tracking-widest">
+                                    No customers found
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
 

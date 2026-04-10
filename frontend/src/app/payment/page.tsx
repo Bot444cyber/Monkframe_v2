@@ -163,8 +163,11 @@ function PaymentContent() {
                         />
                     </Elements>
                 ) : (
-                    <div className="flex h-full items-center justify-center min-h-[300px]">
-                        <span className="loading loading-spinner text-blue-600">Loading payment...</span>
+                    <div className="flex h-full flex-col items-center justify-center min-h-[300px] gap-4 animate-pulse">
+                        <div className="w-12 h-12 rounded-xl bg-white border border-gray-100 flex items-center justify-center shadow-lg">
+                            <img src="/logo/M_SHAPE.svg" alt="Loading" className="w-6 h-6 object-contain" />
+                        </div>
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Loading Payment</span>
                     </div>
                 )}
             </div>
@@ -179,9 +182,11 @@ export default function PaymentPage() {
 
             <main className="flex-1 flex items-center justify-center p-6 py-24 relative z-10 animate-fade-in-up">
                 <Suspense fallback={
-                    <div className="flex flex-col items-center gap-4">
-                        <div className="h-10 w-10 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
-                        <p className="text-gray-500 font-medium animate-pulse">Loading checkout...</p>
+                    <div className="flex flex-col items-center gap-4 animate-pulse">
+                        <div className="w-12 h-12 rounded-xl bg-white border border-gray-100 flex items-center justify-center shadow-lg">
+                            <img src="/logo/M_SHAPE.svg" alt="Loading checkout" className="w-6 h-6 object-contain" />
+                        </div>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Loading checkout...</p>
                     </div>
                 }>
                     <PaymentContent />

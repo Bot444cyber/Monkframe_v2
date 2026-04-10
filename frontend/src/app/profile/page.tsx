@@ -8,6 +8,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import Pagination from '@/components/Pagination';
+import ProfilePageSkeleton from '@/components/ProfilePageSkeleton';
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 const Icons = {
@@ -108,14 +109,7 @@ export default function ProfilePage() {
     };
 
     if (authLoading || (!user && loading)) {
-        return (
-            <div className="min-h-screen bg-white flex items-center justify-center">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="w-8 h-8 rounded-full border-2 border-gray-100 border-t-blue-600 animate-spin" />
-                    <p className="text-gray-500 text-xs font-semibold uppercase tracking-widest">Loading</p>
-                </div>
-            </div>
-        );
+        return <ProfilePageSkeleton />;
     }
 
     const displayUser = profileData || user;

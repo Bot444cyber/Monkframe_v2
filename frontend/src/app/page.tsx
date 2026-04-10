@@ -2,6 +2,7 @@
 import React, { useState, useMemo, Suspense, useRef, useEffect, useCallback } from 'react';
 import Header from '@/components/Header';
 import ProductCard from '@/components/ProductCard';
+import ProductCardSkeleton from '@/components/ProductCardSkeleton';
 import Footer from '@/components/Footer';
 import { Product } from '@/components/ts/types';
 import Pagination from '@/components/Pagination';
@@ -10,57 +11,135 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { ChevronDown, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import Link from 'next/link';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-interface MegaMenuData {
-  trending: { title: string; description: string };
-  columns: { heading: string; items: string[] }[];
-}
+const DynamicMegaMenu = ({ category, onClose }: { category: string; onClose: () => void }) => {
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-// ─── Mega-menu dropdown ───────────────────────────────────────────────────────
-// NOTE: positioning (left / translateX) is handled by the parent wrapper in the
-// JSX — these classes only control size, shadow, and layout.
-const MegaMenu = ({ data, onClose }: { data: MegaMenuData; onClose: () => void }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 8 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: 8 }}
-    transition={{ duration: 0.18 }}
-    className="mt-2 w-[92vw] max-w-[720px] bg-white border border-gray-100 shadow-2xl rounded-2xl overflow-hidden"
-  >
-    <div className="flex flex-col sm:flex-row">
-      {/* Trending card */}
-      <div className="sm:w-52 bg-blue-600 p-6 flex flex-col justify-between shrink-0">
-        <div>
-          <span className="text-[11px] font-black text-blue-800 uppercase tracking-widest">Trending</span>
-          <h3 className="mt-2 text-[18px] font-black text-white leading-snug">{data.trending.title}</h3>
-          <p className="mt-2 text-[13px] text-blue-100 leading-relaxed hidden sm:block">{data.trending.description}</p>
-        </div>
-        <a href="#" onClick={onClose} className="mt-4 inline-flex items-center gap-1 text-[13px] font-bold text-white hover:underline">
-          Browse collection →
-        </a>
-      </div>
+  useEffect(() => {
+    const fetchMegaMenuData = async () => {
+      try {
+        setLoading(true);
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
+        const res = await fetch(`${apiUrl}/api/uis?category=${encodeURIComponent(category)}&limit=7`);
+        const data = await res.json();
+        if (data.status) {
+          setItems(data.data.map((ui: any) => {
+            const rawDesc = ui.overview || 'High-fidelity mockups for your next big project.';
+            let plainDesc = rawDesc.replace(/[*_~`#><=\[\]\(\)]/g, ' ').replace(/\s+/g, ' ').trim();
+            if (plainDesc.length > 95) plainDesc = plainDesc.substring(0, 95) + '...';
 
-      {/* Columns */}
-      <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 divide-x divide-gray-100">
-        {data.columns.map((col, ci) => (
-          <div key={ci} className="px-5 py-5">
-            <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3">{col.heading}</p>
-            <ul className="space-y-2.5">
-              {col.items.map((item, ii) => (
-                <li key={ii}>
-                  <a href="#" onClick={onClose} className="block text-[14px] text-gray-600 hover:text-blue-600 transition-colors">
-                    {item}
-                  </a>
-                </li>
-              ))}
-            </ul>
+            const rawTitle = ui.title || 'Untitled';
+            const shortTitle = rawTitle.length > 45 ? rawTitle.substring(0, 45) + '...' : rawTitle;
+
+            return {
+              id: ui.id,
+              title: shortTitle,
+              imageSrc: ui.imageSrc,
+              description: plainDesc,
+            };
+          }));
+        }
+      } catch (err) {
+        console.error("Failed to fetch mega menu data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMegaMenuData();
+  }, [category]);
+
+  const trendingItem = items[0];
+  const otherItems = items.slice(1);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 8 }}
+      transition={{ duration: 0.18 }}
+      className="mt-2 w-[92vw] max-w-[720px] bg-white border border-gray-100 shadow-2xl rounded-2xl overflow-hidden h-[300px] flex"
+    >
+      {loading ? (
+        <div className="flex flex-col sm:flex-row w-full h-full animate-pulse bg-white">
+          <div className="sm:w-64 bg-gray-200 shrink-0 h-full relative">
+            <div className="absolute bottom-6 left-6 right-6">
+              <div className="w-16 h-4 bg-gray-300 rounded mb-4"></div>
+              <div className="w-full h-6 bg-gray-300 rounded mb-2"></div>
+              <div className="w-3/4 h-6 bg-gray-300 rounded mb-6"></div>
+              <div className="w-full h-3 bg-gray-300 rounded mb-2"></div>
+              <div className="w-5/6 h-3 bg-gray-300 rounded"></div>
+            </div>
           </div>
-        ))}
-      </div>
-    </div>
-  </motion.div>
-);
+          <div className="flex-1 p-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 content-start bg-gray-50/50">
+            <div className="col-span-full mb-1">
+              <div className="w-24 h-3 bg-gray-300 rounded"></div>
+            </div>
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="flex flex-col gap-1.5">
+                <div className="w-3/4 h-4 bg-gray-300 rounded"></div>
+                <div className="w-1/2 h-3 bg-gray-200 rounded"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : items.length > 0 ? (
+        <div className="flex flex-col sm:flex-row w-full h-full">
+          {/* Trending card */}
+          <Link href={`/product/v1/${trendingItem.id}`} onClick={onClose} className="sm:w-64 bg-blue-600 flex flex-col justify-between shrink-0 relative overflow-hidden group">
+            {trendingItem.imageSrc && (
+              <img src={trendingItem.imageSrc} alt={trendingItem.title} className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:scale-105 transition-transform duration-700" />
+            )}
+            <div className="p-6 relative z-10 flex flex-col h-full bg-linear-to-t from-blue-900/40 to-transparent">
+              <div>
+                <span className="text-[11px] font-black text-blue-200 uppercase tracking-widest bg-blue-800/50 px-2 py-0.5 rounded backdrop-blur-sm">Trending</span>
+                <h3 className="mt-4 text-[18px] font-black text-white leading-snug group-hover:text-blue-100 transition-colors" title={trendingItem.title}>{trendingItem.title}</h3>
+                <p className="mt-2 text-[12px] text-blue-100/80 leading-relaxed hidden sm:block">{trendingItem.description}</p>
+              </div>
+              <div className="mt-6 inline-flex items-center gap-1 text-[13px] font-bold text-white group-hover:translate-x-1 transition-transform">
+                Browse item →
+              </div>
+            </div>
+          </Link>
+
+          {/* Columns */}
+          <div className="flex-1 p-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 content-start bg-gray-50/50">
+            <div className="col-span-full mb-1">
+              <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest">Latest Uploads</p>
+            </div>
+            {otherItems.length > 0 ? (
+              otherItems.map((item, ii) => (
+                <div key={ii} className="flex flex-col gap-1">
+                  <Link href={`/product/v1/${item.id}`} onClick={onClose} className="group block">
+                    <h4 className="text-[13px] font-bold text-gray-800 group-hover:text-blue-600 transition-colors truncate">
+                      {item.title}
+                    </h4>
+                    <p className="text-[11px] text-gray-500 truncate mt-0.5">View details</p>
+                  </Link>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full flex flex-col items-center justify-center py-8 text-center bg-white rounded-xl border border-dashed border-gray-200">
+                <p className="text-[12px] font-bold text-gray-400">More coming soon</p>
+                <p className="text-[11px] text-gray-400 mt-1">We're adding new mockups.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-col justify-center items-center w-full h-full bg-gray-50/50">
+          <div className="w-12 h-12 bg-white rounded-xl border border-gray-100 shadow-sm flex items-center justify-center mb-4">
+            <Search className="w-5 h-5 text-gray-300" />
+          </div>
+          <p className="text-[13px] font-bold text-gray-800">No mockups available</p>
+          <p className="text-[11px] text-gray-400 mt-1">We're actively updating our {category} collection.</p>
+        </div>
+      )}
+    </motion.div>
+  );
+};
 
 // ─── Simple list dropdown ─────────────────────────────────────────────────────
 const SimpleDropdown = ({ items, onClose }: { items: string[]; onClose: () => void }) => (
@@ -161,80 +240,7 @@ const SearchDropdown = ({
 );
 
 // ─── Mega-menu data ───────────────────────────────────────────────────────────
-const megaMenuData: Record<string, MegaMenuData> = {
-  Flyer: {
-    trending: { title: "A4 Editorial Brochures", description: "Explore our most popular high-fidelity flyer mockups, featuring fully adjustable shadows and lighting." },
-    columns: [
-      { heading: "Standard & DL", items: ["Single Sided", "Bi-Fold", "Tri-Fold", "Quiet-Fold", "DL Single", "DL Folded"] },
-      { heading: "US Formats", items: ["US Letter Single", "US Letter Bi-Fold", "Half Letter", "Legal Size", "Legal Folded"] },
-      { heading: "Square & Specialty", items: ["Square Single", "Square Bi-Fold", "Long Flyer", "Custom Die-Cut"] },
-    ],
-  },
-  Brochure: {
-    trending: { title: "Tri-Fold Premium Set", description: "Professional tri-fold brochure mockups with realistic paper textures and natural lighting." },
-    columns: [
-      { heading: "Classic Folds", items: ["Bi-Fold", "Tri-Fold", "Z-Fold", "Gate-Fold", "Accordion"] },
-      { heading: "Sizes", items: ["A4 Portrait", "A4 Landscape", "A5 Portrait", "US Letter", "Half Letter"] },
-      { heading: "Specialty", items: ["Saddle-Stitch", "Perfect Bound", "Spiral Bound", "Custom Size"] },
-    ],
-  },
-  "Business Card": {
-    trending: { title: "Rounded Edge Cards", description: "Luxury business card mockups with multi-card arrangements and premium surfaces." },
-    columns: [
-      { heading: "Shapes", items: ["Standard Rectangle", "Rounded Corner", "Square Format", "Vertical Format"] },
-      { heading: "Finishes", items: ["Matte", "Glossy", "Foil Stamp", "Embossed", "Spot UV"] },
-      { heading: "Arrangements", items: ["Single Card", "Stack View", "Fan Layout", "Pair View"] },
-    ],
-  },
-  Outdoor: {
-    trending: { title: "Urban Billboard Pack", description: "Large-format outdoor advertising mockups with real street & city environments." },
-    columns: [
-      { heading: "Billboards", items: ["Large Format", "Rooftop", "Highway", "Digital Billboard"] },
-      { heading: "Street Level", items: ["Bus Stop", "Subway Panel", "Shop Front", "A-Frame"] },
-      { heading: "Specialty", items: ["Flags & Banners", "Vehicle Wrap", "Window Decal", "Pole Sign"] },
-    ],
-  },
-  Packaging: {
-    trending: { title: "Luxury Box Collection", description: "Elegant product packaging mockups with customizable labels and premium finishes." },
-    columns: [
-      { heading: "Boxes", items: ["Tuck Top Box", "Mailer Box", "Gift Box", "Sleeve Box", "Display Box"] },
-      { heading: "Bags & Pouches", items: ["Stand-Up Pouch", "Paper Bag", "Zip Pouch", "Kraft Bag"] },
-      { heading: "Bottles & Jars", items: ["Glass Jar", "Spray Bottle", "Cosmetic Tube", "Tin Can"] },
-    ],
-  },
-  Book: {
-    trending: { title: "Editorial Book Covers", description: "Professional book and magazine mockups with realistic paper textures, spines, and natural lighting." },
-    columns: [
-      { heading: "Book Types", items: ["Hardcover", "Paperback", "Spiral Bound", "Ring Binder", "Journal"] },
-      { heading: "Specialty", items: ["Coffee Table Book", "Children's Book", "Comic Book", "Textbook"] },
-      { heading: "Magazines", items: ["A4 Magazine", "US Letter", "Digest Size", "Square Format"] },
-    ],
-  },
-  Stationery: {
-    trending: { title: "Premium Office Suite", description: "Complete stationery sets with letterheads, envelopes, and notepads for a consistent brand look." },
-    columns: [
-      { heading: "Essentials", items: ["Letterhead", "Envelope", "Notepad", "Folder", "Business Card"] },
-      { heading: "Desk Items", items: ["Pen & Pencil", "Sticky Notes", "Desk Pad", "Notebook"] },
-      { heading: "Specialty", items: ["Invitation Card", "Gift Card", "Flyer", "Brochure"] },
-    ],
-  },
-  Poster: {
-    trending: { title: "Urban Poster Pack", description: "Striking poster mockups for events, exhibitions, and street campaigns with realistic textures." },
-    columns: [
-      { heading: "Standard Sizes", items: ["A1 Poster", "A2 Poster", "A3 Poster", "A4 Poster", "US Letter"] },
-      { heading: "Event & Cinema", items: ["Cinema Poster", "Event Poster", "Concert Flyer", "Festival Banner"] },
-      { heading: "Specialty", items: ["Vintage Style", "Minimalist", "Double-Sided", "Framed Poster"] },
-    ],
-  },
-  More: {
-    trending: { title: "Digital UI Kit", description: "Comprehensive collection of device mockups, UI kits, and social media templates." },
-    columns: [
-      { heading: "Digital", items: ["Social Media", "Website Hero", "App Store", "Email Header"] },
-      { heading: "Devices", items: ["iPhone Mockup", "MacBook Scene", "iPad Layout", "Watch Face"] },
-      { heading: "Print Ready", items: ["Poster A1", "Magazine Cover", "T-Shirt Flat", "Tote Bag"] },
-    ],
-  },
-};
+// ─── Dropdown Mappings ────────────────────────────────────────────────────────
 
 const simpleDropdowns: Record<string, string[]> = {};
 
@@ -276,6 +282,20 @@ function HomeContent() {
       router.replace('/');
     }
   }, [searchParams, checkSession, router]);
+
+  React.useEffect(() => {
+    const categoryParam = searchParams?.get('category');
+    if (categoryParam) {
+      const match = navItems.find((n) => n.toLowerCase() === categoryParam.toLowerCase());
+      if (match) {
+        setSelectedCategory(match);
+        setPage(1);
+      }
+    } else {
+      setSelectedCategory("All");
+      setPage(1);
+    }
+  }, [searchParams]);
 
   // Close search dropdown on outside click
   useEffect(() => {
@@ -332,14 +352,14 @@ function HomeContent() {
 
   const handleNavEnter = useCallback((item: string) => {
     if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
-    if (megaMenuData[item] || simpleDropdowns[item]) {
+    if (item !== "All" || simpleDropdowns[item]) {
       const el = navItemRefs.current[item];
       const section = navSectionRef.current;
       if (el && section) {
         const eRect = el.getBoundingClientRect();
         const sRect = section.getBoundingClientRect();
-        const isMega = !!megaMenuData[item];
-        const menuWidth = isMega ? Math.min(640, window.innerWidth * 0.92) : 176; // 44 * 4 ≈ 176px
+        const isMega = item !== "All" && !simpleDropdowns[item];
+        const menuWidth = isMega ? Math.min(720, window.innerWidth * 0.92) : 176;
         const rawCentre = eRect.left - sRect.left + eRect.width / 2;
         // Clamp so the left edge is ≥ 0 and right edge ≤ section width
         const halfMenu = menuWidth / 2;
@@ -438,7 +458,7 @@ function HomeContent() {
               {navItems.map((item) => {
                 const isAll = item === "All";
                 const isActive = selectedCategory === item;
-                const hasDropdown = !!megaMenuData[item] || !!simpleDropdowns[item];
+                const hasDropdown = !isAll || !!simpleDropdowns[item];
 
                 return (
                   <div
@@ -448,7 +468,15 @@ function HomeContent() {
                     onMouseLeave={handleNavLeave}
                   >
                     <button
-                      onClick={() => { setSelectedCategory(item); setPage(1); }}
+                      onClick={() => {
+                        setSelectedCategory(item);
+                        setPage(1);
+                        if (item === "All") {
+                          router.push('/', { scroll: false });
+                        } else {
+                          router.push(`/?category=${encodeURIComponent(item)}`, { scroll: false });
+                        }
+                      }}
                       className={`flex items-center gap-1 py-1.5 transition-colors cursor-pointer ${isAll
                         ? `px-3 sm:px-4 rounded-full text-[12px] sm:text-[13px] font-bold uppercase tracking-widest ${isActive ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-blue-600 hover:text-white'
                         }`
@@ -467,16 +495,16 @@ function HomeContent() {
                   overflow-x:auto cannot clip it.  Left offset is measured from
                   the hovered item's bounding rect (set in handleNavEnter). */}
             <AnimatePresence>
-              {activeDropdown && (megaMenuData[activeDropdown] || simpleDropdowns[activeDropdown]) && (
+              {activeDropdown && (!["All"].includes(activeDropdown) || simpleDropdowns[activeDropdown]) && (
                 <div
-                  className="absolute top-full z-50"
+                  className="absolute top-full z-50 pt-2"
                   style={{ left: dropdownLeft, transform: 'translateX(-50%)' }}
                   onMouseEnter={keepOpen}
                   onMouseLeave={handleNavLeave}
                 >
-                  {megaMenuData[activeDropdown] ? (
-                    <MegaMenu
-                      data={megaMenuData[activeDropdown]}
+                  {!simpleDropdowns[activeDropdown] ? (
+                    <DynamicMegaMenu
+                      category={activeDropdown}
                       onClose={() => setActiveDropdown(null)}
                     />
                   ) : (
@@ -494,8 +522,10 @@ function HomeContent() {
         {/* ── Product Grid ── */}
         <section className="max-w-7xl mx-auto px-4 sm:px-8 pt-6 sm:pt-8 pb-16 sm:pb-20">
           {loading ? (
-            <div className="flex justify-center items-center py-16 sm:py-24">
-              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-600" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-7 mb-10 sm:mb-14">
+              {[...Array(6)].map((_, i) => (
+                <ProductCardSkeleton key={i} />
+              ))}
             </div>
           ) : filteredProducts.length > 0 ? (
             <>

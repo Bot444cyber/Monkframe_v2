@@ -167,8 +167,11 @@ export default function PaymentModal({ isOpen, onClose, product, onSuccess }: Pa
                                 />
                             </Elements>
                         ) : (
-                            <div className="flex h-full items-center justify-center">
-                                <span className="loading loading-spinner text-blue-600">Loading payment...</span>
+                            <div className="flex h-full flex-col items-center justify-center gap-4 animate-pulse">
+                                <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center shadow-lg">
+                                    <img src="/logo/M_SHAPE.svg" alt="Loading" className="w-6 h-6 object-contain" />
+                                </div>
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Loading Gateway</span>
                             </div>
                         )}
                     </div>

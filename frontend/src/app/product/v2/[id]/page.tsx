@@ -8,6 +8,7 @@ import { useParams } from "next/navigation";
 import { InteractionService } from "@/services/interaction.service";
 import ProductIncludes from "@/components/product/ProductIncludes";
 import { useAuth } from "@/context/AuthContext";
+import ProductPageSkeleton from "@/components/ProductPageSkeleton";
 import Link from 'next/link';
 
 export default function ProductArtifactPage() {
@@ -58,7 +59,7 @@ export default function ProductArtifactPage() {
         } catch (err) { toast.error("Acquisition failed", { id: toastId }); }
     };
 
-    if (isLoading) return <div className="min-h-screen bg-white flex items-center justify-center"><div className="h-10 w-10 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" /></div>;
+    if (isLoading) return <ProductPageSkeleton />;
     if (!product) return <div className="min-h-screen bg-white flex items-center justify-center">Artifact not found.</div>;
 
     const screenshots = product.screenshots || (product.imageSrc ? [product.imageSrc] : []);

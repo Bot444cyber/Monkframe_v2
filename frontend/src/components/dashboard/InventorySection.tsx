@@ -1,6 +1,7 @@
 import React from 'react';
 import Pagination from '@/components/Pagination';
 import { Product } from '@/components/ts/types';
+import DashboardTableSkeleton from './DashboardTableSkeleton';
 
 interface InventorySectionProps {
     isLoading: boolean;
@@ -39,7 +40,9 @@ const InventorySection: React.FC<InventorySectionProps> = ({
 
             {/* Loading / Table */}
             {isLoading ?
-                <div className="p-20 text-center text-muted-foreground font-medium animate-pulse">Accessing Database...</div>
+                <div className="p-6">
+                    <DashboardTableSkeleton columns={4} />
+                </div>
                 : (
                     <div className="overflow-x-auto animate-fade-in-up delay-200">
                         <table className="w-full text-left">
@@ -61,7 +64,12 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                                                 </div>
                                                 <div>
                                                     <span className="block font-medium text-foreground group-hover:text-primary transition-colors text-sm mb-0.5">{product.title}</span>
-                                                    <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">By {product.author}</span>
+                                                    <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider flex items-center gap-1.5 mt-1">
+                                                        <svg className="w-2.5 h-2.5 text-blue-600/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                        </svg>
+                                                        By {product.creator?.full_name || 'System Admin'}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </td>

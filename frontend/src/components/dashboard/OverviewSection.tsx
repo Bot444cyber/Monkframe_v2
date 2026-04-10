@@ -3,8 +3,10 @@ import React from 'react';
 import { OverviewData, TrendingUI } from './types';
 import TradingChart from './TradingChart';
 import { formatDistanceToNow } from 'date-fns';
+import OverviewSkeleton from './OverviewSkeleton';
 
 interface OverviewSectionProps {
+    isLoading?: boolean;
     overviewData: OverviewData;
     handleLike: (e: React.MouseEvent, uiId: string) => void;
     handleWishlist: (e: React.MouseEvent, uiId: string) => void;
@@ -31,8 +33,12 @@ const getColorStyles = (color: string) => {
     }
 };
 
-const OverviewSection: React.FC<OverviewSectionProps> = ({ overviewData, handleLike, handleWishlist, setOpenCommentsId }) => {
+const OverviewSection: React.FC<OverviewSectionProps> = ({ isLoading, overviewData, handleLike, handleWishlist, setOpenCommentsId }) => {
     const [chartTimeRange, setChartTimeRange] = React.useState('7D');
+
+    if (isLoading) {
+        return <OverviewSkeleton />;
+    }
 
     // safe access to data
     const payCompleted = overviewData?.paymentStatusDistribution?.completed || 0;

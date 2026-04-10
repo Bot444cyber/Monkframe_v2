@@ -63,69 +63,32 @@ export default function ProductIncludes({ product }: ProductIncludesProps) {
     }
 
     return (
-        <div className="flex flex-col gap-12 w-full pt-2">
+        <div className="flex flex-col gap-14 w-full pt-4">
             {/* Specs List */}
-            <ul className="flex flex-col gap-4">
-                {specs.map((spec, idx) => {
-                    const label = typeof spec === 'string' ? spec : (spec as any).label || 'Feature';
-                    return (
-                        <li key={idx} className="flex items-center gap-3 text-[14px] font-bold text-gray-700 tracking-wide">
-                            <div className="shrink-0 text-gray-400">
-                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <span>{label}</span>
-                        </li>
-                    );
-                })}
-            </ul>
+            <div className="flex flex-col gap-6">
+                <div className="flex items-center gap-4">
+                    <div className="h-px w-8 bg-gray-100" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Specifications</span>
+                </div>
+                <ul className="flex flex-col gap-5">
+                    {specs.map((spec, idx) => {
+                        const label = typeof spec === 'string' ? spec : (spec as any).label || 'Feature';
+                        return (
+                            <li key={idx} className="flex items-center gap-4 group cursor-default">
+                                <div className="shrink-0 h-10 w-10 flex items-center justify-center rounded-xl bg-blue-600/5 text-blue-600 border border-blue-600/10 group-hover:scale-110 transition-transform duration-300">
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </div>
+                                <span className="text-[13px] font-bold text-gray-700 tracking-tight leading-none">{label}</span>
+                            </li>
+                        );
+                    })}
+                </ul>
+            </div>
 
             {/* Newsletter Subscription */}
-            <div className="flex flex-col gap-5">
-                <h3 className="text-lg font-bold text-gray-900 tracking-tight">Stay in the loop</h3>
-                <p className="text-sm text-gray-600 leading-relaxed -mt-1">
-                    Download latest news, events, changes to this platform and more directly in your inbox.
-                </p>
-
-                {subscribed ? (
-                    <div className="p-4 rounded-xl bg-blue-50 border border-blue-100 text-blue-600 text-sm font-medium text-center">
-                        Thanks for subscribing!
-                    </div>
-                ) : (
-                    <form onSubmit={handleSubscribe} className="flex flex-col gap-3 mt-2">
-                        {errorMsg && (
-                            <p className="text-red-500 text-xs font-semibold">{errorMsg}</p>
-                        )}
-                        <input
-                            type="email"
-                            placeholder="email"
-                            required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            disabled={isSubmitting}
-                            className="w-full px-4 py-3.5 rounded-none border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-all shadow-sm placeholder:text-gray-400 disabled:opacity-50"
-                        />
-                        <button
-                            type="submit"
-                            disabled={isSubmitting}
-                            className="w-full py-3.5 rounded-none bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition-colors disabled:opacity-50 flex justify-center items-center gap-2"
-                        >
-                            {isSubmitting ? (
-                                <>
-                                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    Subscribing...
-                                </>
-                            ) : (
-                                "Subscribe"
-                            )}
-                        </button>
-                    </form>
-                )}
-            </div>
+            
         </div >
     );
 }

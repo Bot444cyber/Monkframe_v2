@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { googleDriveService } from '@/services/googleDrive.service';
 import toast from 'react-hot-toast';
+import DashboardTableSkeleton from './DashboardTableSkeleton';
 
 export default function DriveSection() {
     const [files, setFiles] = useState<any[]>([]);
@@ -271,194 +272,194 @@ export default function DriveSection() {
 
             {/* Main Table Container */}
             <div className="bg-card border border-border/50 rounded-[2rem] overflow-hidden shadow-2xl relative">
-                {isLoading && (
-                    <div className="absolute inset-0 bg-background/40 backdrop-blur-[2px] z-20 flex items-center justify-center">
-                        <div className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-card border border-border shadow-2xl">
-                            <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                            <span className="text-sm font-bold text-foreground">Syncing Drive...</span>
-                        </div>
+                {isLoading ? (
+                    <div className="p-6">
+                        <DashboardTableSkeleton columns={5} rows={4} />
                     </div>
-                )}
+                ) : (
+                    <>
 
-                <div className="overflow-x-auto min-h-[400px]">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="border-b border-border/50 bg-secondary/20">
-                                <th className="px-6 py-5 w-12 text-center">
-                                    <div className="flex items-center justify-center">
-                                        <input
-                                            type="checkbox"
-                                            checked={files.length > 0 && selectedIds.size === files.length}
-                                            onChange={toggleSelectAll}
-                                            className="w-4 h-4 rounded border-border/50 bg-background text-blue-600 focus:ring-blue-600/50 cursor-pointer"
-                                        />
-                                    </div>
-                                </th>
-                                <th className="px-6 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Asset Name</th>
-                                <th className="px-6 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Size</th>
-                                <th className="px-6 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Modified</th>
-                                <th className="px-6 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-border/20">
-                            {files.length === 0 && !isLoading ? (
-                                <tr>
-                                    <td colSpan={5} className="px-6 py-32 text-center">
-                                        <div className="flex flex-col items-center">
-                                            <div className="w-20 h-20 rounded-[2rem] bg-secondary/50 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
-                                                <svg className="w-10 h-10 text-muted-foreground/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                                </svg>
-                                            </div>
-                                            <h3 className="text-lg font-bold text-foreground">Drive Folder Empty</h3>
-                                            <p className="text-sm text-muted-foreground mt-1 max-w-[250px]">Upload your first asset to see it appear here in real-time.</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ) : (
-                                files.map((file) => (
-                                    <tr
-                                        key={file.id}
-                                        className={`group/row hover:bg-blue-600/[0.02] transition-colors duration-300 ${selectedIds.has(file.id) ? 'bg-blue-600/[0.03]' : ''}`}
-                                    >
-                                        <td className="px-6 py-4 w-12 text-center pointer-events-auto">
+                        <div className="overflow-x-auto min-h-[400px]">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="border-b border-border/50 bg-secondary/20">
+                                        <th className="px-6 py-5 w-12 text-center">
                                             <div className="flex items-center justify-center">
                                                 <input
                                                     type="checkbox"
-                                                    checked={selectedIds.has(file.id)}
-                                                    onChange={() => toggleSelect(file.id)}
+                                                    checked={files.length > 0 && selectedIds.size === files.length}
+                                                    onChange={toggleSelectAll}
                                                     className="w-4 h-4 rounded border-border/50 bg-background text-blue-600 focus:ring-blue-600/50 cursor-pointer"
                                                 />
                                             </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-xl bg-secondary/50 flex items-center justify-center group-hover/row:scale-110 transition-transform">
-                                                    {file.iconLink ? (
-                                                        <img src={file.iconLink} alt="" className="w-5 h-5 opacity-80" />
-                                                    ) : (
-                                                        <svg className="w-5 h-5 text-blue-600/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                        </th>
+                                        <th className="px-6 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Asset Name</th>
+                                        <th className="px-6 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Size</th>
+                                        <th className="px-6 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Modified</th>
+                                        <th className="px-6 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-border/20">
+                                    {files.length === 0 && !isLoading ? (
+                                        <tr>
+                                            <td colSpan={5} className="px-6 py-32 text-center">
+                                                <div className="flex flex-col items-center">
+                                                    <div className="w-20 h-20 rounded-[2rem] bg-secondary/50 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                                                        <svg className="w-10 h-10 text-muted-foreground/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                                         </svg>
-                                                    )}
+                                                    </div>
+                                                    <h3 className="text-lg font-bold text-foreground">Drive Folder Empty</h3>
+                                                    <p className="text-sm text-muted-foreground mt-1 max-w-[250px]">Upload your first asset to see it appear here in real-time.</p>
                                                 </div>
-
-                                                {editingFileId === file.id ? (
-                                                    <div className="flex items-center gap-2 flex-1 max-w-sm">
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        files.map((file) => (
+                                            <tr
+                                                key={file.id}
+                                                className={`group/row hover:bg-blue-600/[0.02] transition-colors duration-300 ${selectedIds.has(file.id) ? 'bg-blue-600/[0.03]' : ''}`}
+                                            >
+                                                <td className="px-6 py-4 w-12 text-center pointer-events-auto">
+                                                    <div className="flex items-center justify-center">
                                                         <input
-                                                            type="text"
-                                                            value={newName}
-                                                            onChange={(e) => setNewName(e.target.value)}
-                                                            className="bg-background border border-blue-600/30 rounded-lg px-3 py-1.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-600/20 w-full shadow-inner"
-                                                            autoFocus
-                                                            onKeyDown={(e) => {
-                                                                if (e.key === 'Enter') handleRename(file.id);
-                                                                if (e.key === 'Escape') setEditingFileId(null);
-                                                            }}
+                                                            type="checkbox"
+                                                            checked={selectedIds.has(file.id)}
+                                                            onChange={() => toggleSelect(file.id)}
+                                                            className="w-4 h-4 rounded border-border/50 bg-background text-blue-600 focus:ring-blue-600/50 cursor-pointer"
                                                         />
-                                                        <button
-                                                            onClick={() => handleRename(file.id)}
-                                                            className="p-1.5 text-emerald-500 hover:bg-emerald-500/10 rounded-lg transition-colors"
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-10 h-10 rounded-xl bg-secondary/50 flex items-center justify-center group-hover/row:scale-110 transition-transform">
+                                                            {file.iconLink ? (
+                                                                <img src={file.iconLink} alt="" className="w-5 h-5 opacity-80" />
+                                                            ) : (
+                                                                <svg className="w-5 h-5 text-blue-600/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                                                </svg>
+                                                            )}
+                                                        </div>
+
+                                                        {editingFileId === file.id ? (
+                                                            <div className="flex items-center gap-2 flex-1 max-w-sm">
+                                                                <input
+                                                                    type="text"
+                                                                    value={newName}
+                                                                    onChange={(e) => setNewName(e.target.value)}
+                                                                    className="bg-background border border-blue-600/30 rounded-lg px-3 py-1.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-600/20 w-full shadow-inner"
+                                                                    autoFocus
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === 'Enter') handleRename(file.id);
+                                                                        if (e.key === 'Escape') setEditingFileId(null);
+                                                                    }}
+                                                                />
+                                                                <button
+                                                                    onClick={() => handleRename(file.id)}
+                                                                    className="p-1.5 text-emerald-500 hover:bg-emerald-500/10 rounded-lg transition-colors"
+                                                                >
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                                                    </svg>
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex flex-col">
+                                                                <span className="text-sm font-black text-foreground group-hover/row:text-blue-600 transition-colors truncate max-w-[200px] md:max-w-xs">
+                                                                    {file.name}
+                                                                </span>
+                                                                <span className="text-[10px] text-muted-foreground font-bold tracking-tight opacity-0 group-hover/row:opacity-100 transition-opacity">
+                                                                    Mime: {file.mimeType?.split('/').pop()?.toUpperCase() || 'UNKNOWN'}
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <span className="px-2.5 py-1 rounded-lg bg-secondary/50 text-[11px] font-black text-foreground/80 border border-border/10">
+                                                        {formatSize(file.size)}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-xs font-bold text-foreground/80">
+                                                            {new Date(file.modifiedTime).toLocaleDateString()}
+                                                        </span>
+                                                        <span className="text-[10px] font-medium text-muted-foreground uppercase opacity-0 group-hover/row:opacity-100 transition-opacity">
+                                                            {new Date(file.modifiedTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center justify-end gap-1.5 opacity-0 group-hover/row:opacity-100 transition-all scale-95 group-hover/row:scale-100">
+                                                        <a
+                                                            href={file.webViewLink}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            title="View Original"
+                                                            className="p-2 text-muted-foreground hover:text-blue-600 hover:bg-blue-600/10 rounded-xl transition-all"
                                                         >
-                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                            </svg>
+                                                        </a>
+                                                        <button
+                                                            onClick={() => { setEditingFileId(file.id); setNewName(file.name); }}
+                                                            title="Rename Asset"
+                                                            className="p-2 text-muted-foreground hover:text-indigo-600 hover:bg-indigo-600/10 rounded-xl transition-all"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                                            </svg>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDelete(file.id, file.name)}
+                                                            title="Delete Permanently"
+                                                            className="p-2 text-muted-foreground hover:text-rose-600 hover:bg-rose-600/10 rounded-xl transition-all"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                                                             </svg>
                                                         </button>
                                                     </div>
-                                                ) : (
-                                                    <div className="flex flex-col">
-                                                        <span className="text-sm font-black text-foreground group-hover/row:text-blue-600 transition-colors truncate max-w-[200px] md:max-w-xs">
-                                                            {file.name}
-                                                        </span>
-                                                        <span className="text-[10px] text-muted-foreground font-bold tracking-tight opacity-0 group-hover/row:opacity-100 transition-opacity">
-                                                            Mime: {file.mimeType?.split('/').pop()?.toUpperCase() || 'UNKNOWN'}
-                                                        </span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <span className="px-2.5 py-1 rounded-lg bg-secondary/50 text-[11px] font-black text-foreground/80 border border-border/10">
-                                                {formatSize(file.size)}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex flex-col">
-                                                <span className="text-xs font-bold text-foreground/80">
-                                                    {new Date(file.modifiedTime).toLocaleDateString()}
-                                                </span>
-                                                <span className="text-[10px] font-medium text-muted-foreground uppercase opacity-0 group-hover/row:opacity-100 transition-opacity">
-                                                    {new Date(file.modifiedTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center justify-end gap-1.5 opacity-0 group-hover/row:opacity-100 transition-all scale-95 group-hover/row:scale-100">
-                                                <a
-                                                    href={file.webViewLink}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    title="View Original"
-                                                    className="p-2 text-muted-foreground hover:text-blue-600 hover:bg-blue-600/10 rounded-xl transition-all"
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                    </svg>
-                                                </a>
-                                                <button
-                                                    onClick={() => { setEditingFileId(file.id); setNewName(file.name); }}
-                                                    title="Rename Asset"
-                                                    className="p-2 text-muted-foreground hover:text-indigo-600 hover:bg-indigo-600/10 rounded-xl transition-all"
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                                                    </svg>
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDelete(file.id, file.name)}
-                                                    title="Delete Permanently"
-                                                    className="p-2 text-muted-foreground hover:text-rose-600 hover:bg-rose-600/10 rounded-xl transition-all"
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
 
-                {/* Pagination Footer */}
-                <div className="px-8 py-5 border-t border-border/50 bg-secondary/10 flex items-center justify-between">
-                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">
-                        Page {tokenHistory.length} of {nextPageToken ? 'Many' : tokenHistory.length}
-                    </p>
-                    <div className="flex items-center gap-3">
-                        <button
-                            onClick={handlePrevPage}
-                            disabled={tokenHistory.length <= 1 || isLoading}
-                            className="p-2.5 rounded-xl bg-card border border-border shadow-sm text-foreground hover:bg-secondary disabled:opacity-30 disabled:pointer-events-none transition-all"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                            </svg>
-                        </button>
-                        <button
-                            onClick={handleNextPage}
-                            disabled={!nextPageToken || isLoading}
-                            className="p-2.5 rounded-xl bg-card border border-border shadow-sm text-foreground hover:bg-secondary disabled:opacity-30 disabled:pointer-events-none transition-all"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
+                        {/* Pagination Footer */}
+                        <div className="px-8 py-5 border-t border-border/50 bg-secondary/10 flex items-center justify-between">
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">
+                                Page {tokenHistory.length} of {nextPageToken ? 'Many' : tokenHistory.length}
+                            </p>
+                            <div className="flex items-center gap-3">
+                                <button
+                                    onClick={handlePrevPage}
+                                    disabled={tokenHistory.length <= 1 || isLoading}
+                                    className="p-2.5 rounded-xl bg-card border border-border shadow-sm text-foreground hover:bg-secondary disabled:opacity-30 disabled:pointer-events-none transition-all"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                                    </svg>
+                                </button>
+                                <button
+                                    onClick={handleNextPage}
+                                    disabled={!nextPageToken || isLoading}
+                                    className="p-2.5 rounded-xl bg-card border border-border shadow-sm text-foreground hover:bg-secondary disabled:opacity-30 disabled:pointer-events-none transition-all"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );

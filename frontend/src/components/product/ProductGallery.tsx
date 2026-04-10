@@ -21,23 +21,24 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
     const allImages = [bannerImage, ...galleryImages].filter(Boolean);
 
     return (
-        <div className="flex flex-col gap-6 w-full">
+        <div className="flex flex-col gap-10 w-full">
             {allImages.length > 0 ? (
                 allImages.map((src, idx) => (
-                    <div key={idx} className={`relative w-full overflow-hidden rounded-xl sm:rounded-2xl border border-gray-100 shadow-sm ${color} bg-opacity-20 aspect-[16/10] sm:aspect-[1.4/1]`}>
+                    <div key={idx} className={`relative w-full overflow-hidden rounded-[2.5rem] border border-gray-100/50 shadow-2xl ${color} bg-opacity-20 aspect-16/10 sm:aspect-[1.4/1] group`}>
                         <img
                             src={src}
                             alt={`${product.title} - view ${idx + 1}`}
                             referrerPolicy="no-referrer"
-                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                            className="absolute inset-0 w-full h-full object-cover transition-all duration-1000 group-hover:scale-[1.03]"
                         />
+                        <div className="absolute inset-0 ring-1 ring-inset ring-black/5 rounded-[2.5rem]" />
                     </div>
                 ))
             ) : (
-                <div className={`relative w-full overflow-hidden rounded-2xl ${color} bg-opacity-20 aspect-[1.4/1]`}>
-                    <div className="absolute inset-0 p-2">
-                        <div className="relative w-full h-full bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-center">
-                            <span className="text-gray-400">No images available</span>
+                <div className={`relative w-full overflow-hidden rounded-[2.5rem] ${color} bg-opacity-20 aspect-[1.4/1]`}>
+                    <div className="absolute inset-0 p-4">
+                        <div className="relative w-full h-full bg-white rounded-[2rem] shadow-sm border border-gray-100 flex items-center justify-center">
+                            <span className="text-gray-400 font-medium">No exhibition images available</span>
                         </div>
                     </div>
                 </div>

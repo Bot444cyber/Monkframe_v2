@@ -16,15 +16,23 @@ import DriveSection from '@/components/dashboard/DriveSection';
 import DashboardModals from '@/components/dashboard/DashboardModals';
 import ResetDataModal from '@/components/dashboard/ResetDataModal';
 import AdminSystemAlerts from '@/components/dashboard/AdminSystemAlerts';
-import { OverviewData } from '@/components/dashboard/types';
 import NotificationBell from '@/components/NotificationBell';
 import { ThemeToggle } from '@/components/ThemeToggle';
-
-type Tab = 'overview' | 'uis' | 'payments' | 'users' | 'activity' | 'drive';
+import DashboardSkeleton from '@/components/dashboard/DashboardSkeleton';
 
 import { useAuth } from '@/context/AuthContext';
 import { NotificationService } from '@/services/notification.service';
 import toast from 'react-hot-toast';
+
+export type Tab = 'overview' | 'uis' | 'payments' | 'users' | 'activity' | 'drive' | string;
+
+export interface OverviewData {
+    stats: { label: string; value: string; change: string; color: string }[];
+    graphData: any[];
+    trendingUIs: any[];
+    paymentStatusDistribution: { completed: number; pending: number; canceled: number; failed: number };
+    formattedActivities: any[];
+}
 
 export default function Dashboard() {
     const { user, logout, isLoading: authLoading } = useAuth(); // Get user
@@ -469,7 +477,7 @@ export default function Dashboard() {
     };
 
     if (authLoading || !user || (user.role !== 'ADMIN' && user.role !== 'EDITOR')) {
-        return null;
+        return <DashboardSkeleton />;
     }
 
     return (
@@ -679,6 +687,7 @@ export default function Dashboard() {
                     {activeTab === 'overview' && (
                         <div className="space-y-8">
                             <OverviewSection
+                                isLoading={isLoading}
                                 overviewData={overviewData}
                                 handleLike={handleLike}
                                 handleWishlist={handleWishlist}
@@ -707,6 +716,7 @@ export default function Dashboard() {
                     )}
                     {activeTab === 'payments' && (
                         <PaymentsSection
+                            isLoading={isLoading}
                             payments={payments}
                             paymentsPage={paymentsPage}
                             paymentsTotalPages={paymentsTotalPages}
@@ -716,6 +726,7 @@ export default function Dashboard() {
                     )}
                     {activeTab === 'users' && (
                         <UsersSection
+                            isLoading={isLoading}
                             users={users}
                             usersPage={usersPage}
                             usersTotalPages={usersTotalPages}

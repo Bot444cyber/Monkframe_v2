@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Product } from '@/components/ts/types';
+import { ChevronDown } from 'lucide-react';
 
 interface DashboardModalsProps {
     isAddOpen: boolean;
@@ -42,6 +43,7 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
     previews,
     setPreviews
 }) => {
+    const [newItem, setNewItem] = React.useState('');
     if (!isAddOpen && !isEditOpen) return null;
 
     return (
@@ -64,82 +66,252 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                 </div>
 
                 {/* Form Fields */}
-                <div className="space-y-4">
+                <div className="space-y-6">
 
-                    {/* Title */}
-                    <input
-                        placeholder="Title"
-                        className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-foreground focus:border-blue-600 outline-none"
-                        value={currentUI.title || ''}
-                        onChange={e => setCurrentUI({ ...currentUI, title: e.target.value })}
-                    />
+                    {/* Reusable Toolbar Helper */}
+                    {(() => {
+                        const FormattingToolbar = ({ inputId, value, onChange }: { inputId: string, value: string, onChange: (val: string) => void }) => {
+                            const applyFormat = (prefix: string, suffix: string) => {
+                                const input = document.getElementById(inputId) as HTMLInputElement | HTMLTextAreaElement;
+                                if (!input) return;
+                                const start = input.selectionStart || 0;
+                                const end = input.selectionEnd || 0;
+                                const selected = value.substring(start, end);
+                                const before = value.substring(0, start);
+                                const after = value.substring(end);
+                                const newVal = `${before}${prefix}${selected}${suffix}${after}`;
+                                onChange(newVal);
+                                setTimeout(() => {
+                                    input.focus();
+                                    input.setSelectionRange(start + prefix.length, end + prefix.length);
+                                }, 0);
+                            };
 
-                    {/* Description */}
-                    <textarea
-                        placeholder="Description"
-                        className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-foreground focus:border-blue-600 outline-none h-24 resize-none"
-                        value={currentUI.overview || ''}
-                        onChange={e => setCurrentUI({ ...currentUI, overview: e.target.value })}
-                    />
+                            const applyLineFormat = (prefix: string) => {
+                                const input = document.getElementById(inputId) as HTMLInputElement | HTMLTextAreaElement;
+                                if (!input) return;
+                                const start = input.selectionStart || 0;
+                                const beforeCursor = value.substring(0, start);
+                                const lastNewline = beforeCursor.lastIndexOf('\n');
+                                const lineStart = lastNewline === -1 ? 0 : lastNewline + 1;
+                                const beforeLine = value.substring(0, lineStart);
+                                const afterLineStart = value.substring(lineStart);
+                                const newVal = `${beforeLine}${prefix}${afterLineStart}`;
+                                onChange(newVal);
+                                setTimeout(() => {
+                                    input.focus();
+                                    input.setSelectionRange(start + prefix.length, start + prefix.length);
+                                }, 0);
+                            };
 
-                    {/* Category */}
-                    <input
-                        placeholder="Category"
-                        className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-foreground focus:border-blue-600 outline-none"
-                        value={currentUI.category || ''}
-                        onChange={e => setCurrentUI({ ...currentUI, category: e.target.value })}
-                    />
-
-                    {/* Assets — file upload (Add mode only) */}
-                    {isAddOpen && (
-                        <div className="space-y-2">
-                            <label className="text-xs text-muted-foreground font-bold uppercase tracking-widest pl-1">Assets</label>
-                            <div className="relative">
-                                <input
-                                    type="file"
-                                    accept=".zip,.rar,.7z,.pdf"
-                                    className="hidden"
-                                    id="file-upload"
-                                    onChange={e => setFiles(prev => ({ ...prev, uiFile: e.target.files ? e.target.files[0] : null }))}
-                                />
-                                <label
-                                    htmlFor="file-upload"
-                                    className={`flex items-center gap-4 w-full p-4 rounded-xl border cursor-pointer transition-all ${files.uiFile ? 'bg-blue-600/10 border-blue-600/50' : 'bg-secondary border-border hover:bg-secondary/80'
-                                        }`}
-                                >
-                                    <div className={`p-3 rounded-lg ${files.uiFile ? 'bg-blue-600/20 text-blue-600' : 'bg-secondary text-muted-foreground'}`}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                            return (
+                                <div className="flex flex-wrap items-center gap-1.5 mb-1 px-1">
+                                    <button
+                                        type="button"
+                                        onClick={() => applyFormat('**', '**')}
+                                        className="p-1.5 bg-secondary hover:bg-blue-600/10 hover:text-blue-600 rounded-lg text-muted-foreground transition-all"
+                                        title="Bold"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3.75h4.125a3.375 3.375 0 110 6.75H6.75V3.75z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 10.5h4.875a3.375 3.375 0 110 6.75H6.75V10.5z" />
                                         </svg>
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        {files.uiFile ? (
-                                            <>
-                                                <p className="text-sm font-bold text-foreground truncate max-w-[180px]">{files.uiFile.name}</p>
-                                                <p className="text-[10px] text-blue-600 font-medium">{(files.uiFile.size / 1024 / 1024).toFixed(2)} MB</p>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <p className="text-sm font-medium text-muted-foreground">Upload Source File</p>
-                                                <p className="text-[10px] text-muted-foreground/60 font-bold uppercase tracking-wider">ZIP, RAR, 7Z, PDF</p>
-                                            </>
-                                        )}
-                                    </div>
-                                    <div className="px-4 py-2 bg-secondary rounded-lg text-xs font-bold text-foreground uppercase tracking-wider">
-                                        {files.uiFile ? 'Change' : 'Browse'}
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-                    )}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => applyFormat('*', '*')}
+                                        className="p-1.5 bg-secondary hover:bg-blue-600/10 hover:text-blue-600 rounded-lg text-muted-foreground transition-all"
+                                        title="Italic"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.625c0-1.036.84-1.875 1.875-1.875h10.5c1.036 0 1.875.839 1.875 1.875v.75c0 1.036-.84 1.875-1.875 1.875h-10.5c-1.036 0-1.875-.839-1.875-1.875v-.75z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v7.5" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 18h4.5" />
+                                        </svg>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => applyFormat('__', '__')}
+                                        className="p-1.5 bg-secondary hover:bg-blue-600/10 hover:text-blue-600 rounded-lg text-muted-foreground transition-all flex items-center justify-center min-w-[30px]"
+                                        title="Underline"
+                                    >
+                                        <span className="text-[10px] font-black underline decoration-2 leading-none">U</span>
+                                    </button>
+                                    {inputId === 'description-input' && (
+                                        <>
+                                            <div className="w-px h-4 bg-border mx-1" />
+                                            <button
+                                                type="button"
+                                                onClick={() => applyLineFormat('### ')}
+                                                className="p-1.5 bg-secondary hover:bg-blue-600/10 hover:text-blue-600 rounded-lg text-muted-foreground transition-all"
+                                                title="Sub-Header"
+                                            >
+                                                <span className="text-[10px] font-black leading-none">H3</span>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => applyLineFormat('- ')}
+                                                className="p-1.5 bg-secondary hover:bg-blue-600/10 hover:text-blue-600 rounded-lg text-muted-foreground transition-all"
+                                                title="Bullet List"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-0.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                                                </svg>
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
+                            );
+                        };
 
-                    {/* Additional Information */}
-                    <input
-                        placeholder="Additional Information"
-                        className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-foreground focus:border-blue-600 outline-none"
-                        value={currentUI.author || ''}
-                        onChange={e => setCurrentUI({ ...currentUI, author: e.target.value })}
-                    />
+                        return (
+                            <>
+                                {/* Title */}
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest pl-1">Name</label>
+                                    <FormattingToolbar inputId="title-input" value={currentUI.title || ''} onChange={val => setCurrentUI({ ...currentUI, title: val })} />
+                                    <input
+                                        id="title-input"
+                                        placeholder="Title"
+                                        className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-foreground focus:border-blue-600 outline-none font-bold"
+                                        value={currentUI.title || ''}
+                                        onChange={e => setCurrentUI({ ...currentUI, title: e.target.value })}
+                                    />
+                                </div>
+
+                                {/* Description */}
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest pl-1">Exhibition Description</label>
+                                    <FormattingToolbar inputId="description-input" value={currentUI.overview || ''} onChange={val => setCurrentUI({ ...currentUI, overview: val })} />
+                                    <textarea
+                                        id="description-input"
+                                        placeholder="Description (**bold**, *italic*, __underline__)"
+                                        className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-foreground focus:border-blue-600 outline-none h-32 resize-none leading-relaxed"
+                                        value={currentUI.overview || ''}
+                                        onChange={e => setCurrentUI({ ...currentUI, overview: e.target.value })}
+                                    />
+                                </div>
+
+                                {/* Category */}
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest pl-1">Category</label>
+                                    <div className="relative">
+                                        <select
+                                            id="category-input"
+                                            className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-foreground hover:border-border/80 focus:border-blue-600 outline-none text-sm font-bold appearance-none cursor-pointer transition-all shadow-sm focus:shadow-md focus:shadow-blue-600/10"
+                                            value={currentUI.category || ''}
+                                            onChange={e => setCurrentUI({ ...currentUI, category: e.target.value })}
+                                        >
+                                            <option value="" disabled>Select a Category</option>
+                                            <option value="Flyer">Flyer</option>
+                                            <option value="Brochure">Brochure</option>
+                                            <option value="Business Card">Business Card</option>
+                                            <option value="Outdoor">Outdoor</option>
+                                            <option value="Book">Book</option>
+                                            <option value="Stationery">Stationery</option>
+                                            <option value="Packaging">Packaging</option>
+                                            <option value="Poster">Poster</option>
+                                            <option value="More">More</option>
+                                        </select>
+                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-muted-foreground group-hover:text-blue-600 transition-colors">
+                                            <ChevronDown className="w-4 h-4" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Additional Information */}
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest pl-1">Additional details (Tags)</label>
+
+                                    {/* Tags Display */}
+                                    <div className="flex flex-wrap gap-2 mb-3">
+                                        {(() => {
+                                            const rawAuthor = currentUI.author || '';
+                                            let tags: string[] = [];
+                                            try {
+                                                const parsed = JSON.parse(rawAuthor);
+                                                tags = Array.isArray(parsed) ? parsed : [rawAuthor];
+                                            } catch {
+                                                tags = rawAuthor.split(',').map(item => item.trim()).filter(Boolean);
+                                            }
+
+                                            return tags.map((tag, idx) => (
+                                                <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-blue-600/5 border border-blue-600/10 rounded-full text-[10px] font-black uppercase text-blue-600 group hover:border-blue-600/30 transition-all">
+                                                    <span>{tag}</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const newTags = [...tags];
+                                                            newTags.splice(idx, 1);
+                                                            setCurrentUI({ ...currentUI, author: JSON.stringify(newTags) });
+                                                        }}
+                                                        className="hover:text-red-500 transition-colors"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3 h-3">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            ));
+                                        })()}
+                                    </div>
+
+                                    <FormattingToolbar inputId="author-input" value={newItem} onChange={setNewItem} />
+                                    <div className="relative group">
+                                        <input
+                                            id="author-input"
+                                            placeholder="Add new detail (Press Enter)..."
+                                            className="w-full bg-secondary border border-border rounded-xl pl-4 pr-12 py-3 text-foreground focus:border-blue-600 outline-none text-sm font-bold"
+                                            value={newItem}
+                                            onChange={e => setNewItem(e.target.value)}
+                                            onKeyDown={e => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    if (newItem.trim()) {
+                                                        const rawAuthor = currentUI.author || '';
+                                                        let tags: string[] = [];
+                                                        try {
+                                                            const parsed = JSON.parse(rawAuthor);
+                                                            tags = Array.isArray(parsed) ? parsed : [];
+                                                        } catch {
+                                                            tags = rawAuthor.split(',').map(item => item.trim()).filter(Boolean);
+                                                        }
+                                                        const newTags = [...tags, newItem.trim()];
+                                                        setCurrentUI({ ...currentUI, author: JSON.stringify(newTags) });
+                                                        setNewItem('');
+                                                    }
+                                                }
+                                            }}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                if (newItem.trim()) {
+                                                    const rawAuthor = currentUI.author || '';
+                                                    let tags: string[] = [];
+                                                    try {
+                                                        const parsed = JSON.parse(rawAuthor);
+                                                        tags = Array.isArray(parsed) ? parsed : [];
+                                                    } catch {
+                                                        tags = rawAuthor.split(',').map(item => item.trim()).filter(Boolean);
+                                                    }
+                                                    const newTags = [...tags, newItem.trim()];
+                                                    setCurrentUI({ ...currentUI, author: JSON.stringify(newTags) });
+                                                    setNewItem('');
+                                                }
+                                            }}
+                                            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-blue-600 transition-colors"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <p className="text-[9px] text-muted-foreground/60 font-bold uppercase tracking-wider pl-1">Tip: Press Enter to add. Use **bold** for highlights.</p>
+                                </div>
+                            </>
+                        );
+                    })()}
 
                     {/* Banner Image (Add mode only) */}
                     {isAddOpen && (
