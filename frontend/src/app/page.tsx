@@ -1,15 +1,16 @@
 "use client"
-import React, { useState, useMemo, Suspense, useRef, useEffect, useCallback } from 'react';
+import React, { useState, Suspense, useRef, useEffect, useCallback } from 'react';
 import Header from '@/components/Header';
 import ProductCard from '@/components/ProductCard';
 import ProductCardSkeleton from '@/components/ProductCardSkeleton';
 import Footer from '@/components/Footer';
 import { Product } from '@/components/ts/types';
 import Pagination from '@/components/Pagination';
+import { SearchBar } from '@/components/SearchBar';
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { ChevronDown, Search } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 
@@ -29,7 +30,7 @@ const DynamicMegaMenu = React.memo(({ category, onClose }: { category: string; o
         if (data.status && active) {
           setItems(data.data.map((ui: any) => {
             const rawDesc = ui.overview || 'High-fidelity mockups for your next big project.';
-            let plainDesc = rawDesc.replace(/[*_~`#><=\[\]\(\)]/g, ' ').replace(/\s+/g, ' ').trim();
+            let plainDesc = rawDesc.replace(/[*_~`#><=[[\]()]/g, ' ').replace(/\s+/g, ' ').trim();
             if (plainDesc.length > 95) plainDesc = plainDesc.substring(0, 95) + '...';
             const rawTitle = ui.title || 'Untitled';
             const shortTitle = rawTitle.length > 45 ? rawTitle.substring(0, 45) + '...' : rawTitle;
@@ -119,7 +120,7 @@ const DynamicMegaMenu = React.memo(({ category, onClose }: { category: string; o
       ) : (
         <div className="flex flex-col justify-center items-center w-full h-full bg-gray-50/50">
           <div className="w-12 h-12 bg-white rounded-xl border border-gray-100 shadow-sm flex items-center justify-center mb-4">
-            <Search className="w-5 h-5 text-gray-300" />
+            <span className="text-2xl">🔍</span>
           </div>
           <p className="text-[13px] font-bold text-gray-800">No mockups available</p>
           <p className="text-[11px] text-gray-400 mt-1">We're actively updating our {category} collection.</p>
@@ -130,204 +131,6 @@ const DynamicMegaMenu = React.memo(({ category, onClose }: { category: string; o
 });
 DynamicMegaMenu.displayName = 'DynamicMegaMenu';
 
-// ─── Simple list dropdown ─────────────────────────────────────────────────────
-const SimpleDropdown = React.memo(({ items, onClose }: { items: string[]; onClose: () => void }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 6 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: 6 }}
-    transition={{ duration: 0.14, ease: 'easeOut' }}
-    className="mt-2 w-52 bg-white border border-gray-100 shadow-xl rounded-xl py-2"
-  >
-    {items.map((item, i) => (
-      <a key={i} href="#" onClick={onClose} className="block px-4 py-2.5 text-[14px] text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
-        {item}
-      </a>
-    ))}
-  </motion.div>
-));
-SimpleDropdown.displayName = 'SimpleDropdown';
-
-// ─── Search Dropdown ──────────────────────────────────────────────────────────
-const SEARCH_TABS = [
-  { label: "Everything", sort: "", filter: "" },
-  { label: "Trending", sort: "trending", filter: "" },
-  { label: "New Arrival", sort: "newest", filter: "" },
-  { label: "PSD Files", sort: "", filter: "PSD" },
-];
-
-// Tab counts are fetched once globally and cached — avoids re-fetch on every focus
-let _cachedTabCounts: Record<string, number | null> | null = null;
-let _tabCountsPromise: Promise<void> | null = null;
-
-function fetchTabCountsOnce(apiUrl: string): Promise<void> {
-  if (_cachedTabCounts !== null) return Promise.resolve();
-  if (_tabCountsPromise) return _tabCountsPromise;
-  _tabCountsPromise = (async () => {
-    try {
-      const [allRes, trendRes, newRes, psdRes] = await Promise.all([
-        fetch(`${apiUrl}/api/uis?limit=1`),
-        fetch(`${apiUrl}/api/uis?limit=1&sort=trending`),
-        fetch(`${apiUrl}/api/uis?limit=1&sort=newest`),
-        fetch(`${apiUrl}/api/uis?limit=1&search=PSD`),
-      ]);
-      const [all, trend, newest, psd] = await Promise.all([
-        allRes.json(), trendRes.json(), newRes.json(), psdRes.json(),
-      ]);
-      _cachedTabCounts = {
-        Everything: all.meta?.total ?? 0,
-        Trending: trend.meta?.total ?? 0,
-        'New Arrival': newest.meta?.total ?? 0,
-        'PSD Files': psd.meta?.total ?? 0,
-      };
-    } catch { /* silent */ }
-  })();
-  return _tabCountsPromise;
-}
-
-const SearchDropdown = React.memo(({
-  query,
-  activeTab,
-  setActiveTab,
-  onSelect,
-}: {
-  query: string;
-  activeTab: string;
-  setActiveTab: (t: string) => void;
-  onSelect: (title: string, id?: string) => void;
-}) => {
-  const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<any[]>([]);
-  const [tabCounts, setTabCounts] = useState<Record<string, number | null>>(
-    _cachedTabCounts ?? { Everything: null, Trending: null, 'New Arrival': null, 'PSD Files': null }
-  );
-
-  // Fetch tab counts once, reuse cached value
-  useEffect(() => {
-    if (_cachedTabCounts) {
-      setTabCounts(_cachedTabCounts);
-      return;
-    }
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
-    fetchTabCountsOnce(apiUrl).then(() => {
-      if (_cachedTabCounts) setTabCounts(_cachedTabCounts);
-    });
-  }, []);
-
-  // Debounced fetch for search results
-  useEffect(() => {
-    let active = true;
-    const fetchResults = async () => {
-      setLoading(true);
-      try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
-        const tabConfig = SEARCH_TABS.find(t => t.label === activeTab);
-        let url = `${apiUrl}/api/uis?limit=5`;
-        const terms: string[] = [];
-        if (query) terms.push(query);
-        if (tabConfig?.filter) terms.push(tabConfig.filter);
-        if (terms.length > 0) url += `&search=${encodeURIComponent(terms.join(' '))}`;
-        if (tabConfig?.sort) url += `&sort=${tabConfig.sort}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.status && active) {
-          setResults(data.data.map((ui: any) => ({
-            id: ui.id,
-            title: ui.title,
-            imageSrc: ui.imageSrc,
-            overview: ui.overview || `High-quality ${ui.category || 'asset'} mockup.`,
-          })));
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        if (active) setLoading(false);
-      }
-    };
-    const timeout = setTimeout(fetchResults, 250);
-    return () => { active = false; clearTimeout(timeout); };
-  }, [query, activeTab]);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 6 }}
-      transition={{ duration: 0.14, ease: 'easeOut' }}
-      className="absolute top-full left-0 right-0 mt-3 bg-white border border-gray-100 shadow-2xl rounded-2xl overflow-hidden z-50 py-2"
-    >
-      {/* Filter tabs */}
-      <div className="flex items-center gap-2 px-4 pt-2 pb-3 overflow-x-auto no-scrollbar border-b border-gray-50/50">
-        {SEARCH_TABS.map((tab) => {
-          const count = tabCounts[tab.label];
-          const isActive = activeTab === tab.label;
-          return (
-            <button
-              key={tab.label}
-              onClick={(e) => { e.preventDefault(); setActiveTab(tab.label); }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-bold transition-all whitespace-nowrap shrink-0 ${isActive
-                ? 'bg-[#0f172a] text-white'
-                : 'bg-transparent text-gray-500 hover:text-gray-800 hover:bg-gray-50'
-              }`}
-            >
-              {tab.label}
-              <span className={`text-[12px] font-medium ${isActive ? 'text-gray-300' : 'text-gray-400'}`}>
-                {count === null
-                  ? <span className="inline-block w-4 h-2.5 bg-gray-200 animate-pulse rounded" />
-                  : count
-                }
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Results */}
-      <div className="py-2 min-h-[100px]">
-        {loading ? (
-          [...Array(3)].map((_, i) => (
-            <div key={i} className="w-full flex items-center gap-4 px-4 py-3 animate-pulse">
-              <div className="w-12 h-12 rounded-xl bg-gray-100 shrink-0" />
-              <div className="flex-1 flex flex-col gap-2">
-                <div className="h-4 bg-gray-200 rounded w-1/3" />
-                <div className="h-3 bg-gray-100 rounded w-2/3" />
-              </div>
-            </div>
-          ))
-        ) : results.length > 0 ? (
-          results.map((item, i) => (
-            <button
-              key={i}
-              onClick={(e) => { e.preventDefault(); onSelect(item.title, item.id); }}
-              className="w-full flex items-center gap-4 px-4 py-3 hover:bg-gray-50 transition-colors text-left group"
-            >
-              <div className="w-12 h-12 rounded-xl bg-[#f8fafc] flex items-center justify-center overflow-hidden shrink-0 group-hover:shadow-sm transition-all p-1">
-                {item.imageSrc
-                  ? <img src={item.imageSrc} alt="" className="w-full h-full object-cover rounded-lg" />
-                  : <span className="text-xl">📦</span>
-                }
-              </div>
-              <div className="min-w-0">
-                <p className="text-[15px] font-bold text-[#0f172a] group-hover:text-blue-600 transition-colors truncate leading-tight">
-                  {item.title}
-                </p>
-                <p className="text-[13px] font-medium text-gray-400 truncate mt-0.5 leading-tight">
-                  {item.overview.replace(/[*_~`#><=[\]()]/g, ' ')}
-                </p>
-              </div>
-            </button>
-          ))
-        ) : (
-          <div className="py-6 text-center text-gray-400 text-sm font-medium">
-            No results found {query ? `for "${query}"` : 'for this tab'}
-          </div>
-        )}
-      </div>
-    </motion.div>
-  );
-});
-SearchDropdown.displayName = 'SearchDropdown';
-
 // ─── Dropdown Mappings ────────────────────────────────────────────────────────
 const simpleDropdowns: Record<string, string[]> = {};
 const navItems = ["Flyer", "Brochure", "Business Card", "Outdoor", "Book", "Stationery", "Packaging", "Poster", "More", "All"];
@@ -335,17 +138,12 @@ const navItems = ["Flyer", "Brochure", "Business Card", "Outdoor", "Book", "Stat
 // ─── Main Component ───────────────────────────────────────────────────────────
 function HomeContent() {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [searchTab, setSearchTab] = useState("Everything");
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [dropdownLeft, setDropdownLeft] = useState(0);
 
-  const searchWrapperRef = useRef<HTMLDivElement>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
   const dropdownTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navSectionRef = useRef<HTMLDivElement>(null);
   const navItemRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -357,12 +155,6 @@ function HomeContent() {
   const router = useRouter();
   const { checkSession } = useAuth();
   const hasProcessedToken = useRef(false);
-
-  // Debounce the search query for product grid fetching only
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearch(searchQuery), 350);
-    return () => clearTimeout(t);
-  }, [searchQuery]);
 
   React.useEffect(() => {
     const token = searchParams?.get('token');
@@ -385,18 +177,7 @@ function HomeContent() {
     }
   }, [searchParams]);
 
-  // Close search dropdown on outside click
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (searchWrapperRef.current && !searchWrapperRef.current.contains(e.target as Node)) {
-        setIsSearchFocused(false);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
-
-  // Fetch products — only re-runs when page, category, or DEBOUNCED search changes
+  // Fetch products — only fires when page, category, or debounced search changes
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
@@ -433,7 +214,6 @@ function HomeContent() {
 
   useEffect(() => {
     fetchProducts();
-    // Refresh every 5 minutes silently
     const i = setInterval(fetchProducts, 300000);
     return () => clearInterval(i);
   }, [fetchProducts]);
@@ -465,18 +245,11 @@ function HomeContent() {
     if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
   }, []);
 
-  const handleSearchSelect = useCallback((title: string, id?: string) => {
-    if (id) {
-      router.push(`/product/v1/${id}`);
-    } else {
-      setSearchQuery(title);
-    }
-    setIsSearchFocused(false);
-  }, [router]);
-
-  const handleSearchFocus = useCallback(() => setIsSearchFocused(true), []);
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value), []);
-  const handleSearchClear = useCallback(() => { setSearchQuery(""); searchInputRef.current?.focus(); }, []);
+  // Stable callback for SearchBar — won't change identity ever
+  const handleSearchCommit = useCallback((query: string) => {
+    setDebouncedSearch(query);
+    setPage(1);
+  }, []);
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900 flex flex-col">
@@ -485,56 +258,18 @@ function HomeContent() {
 
         {/* ── Hero ── */}
         <section className="max-w-4xl mx-auto px-4 sm:px-6 pt-14 sm:pt-20 pb-8 sm:pb-10 text-center">
-          <div>
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-tight text-gray-900">
-              Design Better With
-            </h1>
-            <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-tight text-blue-600 mt-1">
-              Flawless Mockups
-            </h2>
-            <p className="mt-4 sm:mt-5 text-gray-400 text-sm sm:text-base leading-relaxed max-w-xs sm:max-w-md mx-auto">
-              Access Thousands Of High-Fidelity, Customizable Templates To Showcase Your Next Big Project. Always Free.
-            </p>
-          </div>
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-tight text-gray-900">
+            Design Better With
+          </h1>
+          <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-tight text-blue-600 mt-1">
+            Flawless Mockups
+          </h2>
+          <p className="mt-4 sm:mt-5 text-gray-400 text-sm sm:text-base leading-relaxed max-w-xs sm:max-w-md mx-auto">
+            Access Thousands Of High-Fidelity, Customizable Templates To Showcase Your Next Big Project. Always Free.
+          </p>
 
-          {/* ── Search Bar ── */}
-          <div
-            className="mt-8 sm:mt-10 max-w-xl mx-auto relative"
-            ref={searchWrapperRef}
-          >
-            <div className={`flex items-center gap-2 sm:gap-3 bg-white border rounded-full px-4 sm:px-5 py-2.5 sm:py-3 shadow-sm transition-all duration-150 ${isSearchFocused ? 'border-blue-600 shadow-blue-100 shadow-md' : 'border-gray-200'
-            }`}>
-              <Search className="w-4 h-4 text-gray-400 shrink-0" />
-              <input
-                ref={searchInputRef}
-                value={searchQuery}
-                onChange={handleSearchChange}
-                onFocus={handleSearchFocus}
-                type="text"
-                placeholder="Search mockups, files, bundles..."
-                className="flex-1 bg-transparent outline-none text-gray-700 placeholder-gray-400 text-sm min-w-0"
-              />
-              {searchQuery ? (
-                <button
-                  onClick={handleSearchClear}
-                  className="shrink-0 text-[11px] font-semibold text-gray-500 hover:text-gray-800 border border-gray-200 hover:border-gray-300 px-2.5 sm:px-3 py-1 rounded-full transition-colors"
-                >
-                  Clear
-                </button>
-              ) : null}
-            </div>
-
-            <AnimatePresence>
-              {isSearchFocused && (
-                <SearchDropdown
-                  query={searchQuery}
-                  activeTab={searchTab}
-                  setActiveTab={setSearchTab}
-                  onSelect={handleSearchSelect}
-                />
-              )}
-            </AnimatePresence>
-          </div>
+          {/* Search bar — isolated component, typing never re-renders HomeContent */}
+          <SearchBar onCommit={handleSearchCommit} />
         </section>
 
         {/* ── Sub-nav / Filter ── */}
@@ -574,10 +309,9 @@ function HomeContent() {
                         }
                       }}
                       className={`flex items-center gap-1 py-1.5 transition-colors cursor-pointer ${isAll
-                        ? `px-3 sm:px-4 rounded-full text-[12px] sm:text-[13px] font-bold uppercase tracking-widest ${isActive ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-blue-600 hover:text-white'
-                        }`
+                        ? `px-3 sm:px-4 rounded-full text-[12px] sm:text-[13px] font-bold uppercase tracking-widest ${isActive ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-blue-600 hover:text-white'}`
                         : `hover:text-blue-600 ${isActive ? 'text-blue-600' : ''}`
-                      }`}
+                        }`}
                     >
                       {item}
                       {!isAll && hasDropdown && <ChevronDown className="w-2.5 h-2.5 sm:w-3 sm:h-3" />}
@@ -588,24 +322,17 @@ function HomeContent() {
             </nav>
 
             <AnimatePresence>
-              {activeDropdown && (!(["All"].includes(activeDropdown)) || simpleDropdowns[activeDropdown]) && (
+              {activeDropdown && (!["All"].includes(activeDropdown) || simpleDropdowns[activeDropdown]) && (
                 <div
                   className="absolute top-full z-50 pt-2"
                   style={{ left: dropdownLeft, transform: 'translateX(-50%)' }}
                   onMouseEnter={keepOpen}
                   onMouseLeave={handleNavLeave}
                 >
-                  {!simpleDropdowns[activeDropdown] ? (
-                    <DynamicMegaMenu
-                      category={activeDropdown}
-                      onClose={() => setActiveDropdown(null)}
-                    />
-                  ) : (
-                    <SimpleDropdown
-                      items={simpleDropdowns[activeDropdown]!}
-                      onClose={() => setActiveDropdown(null)}
-                    />
-                  )}
+                  <DynamicMegaMenu
+                    category={activeDropdown}
+                    onClose={() => setActiveDropdown(null)}
+                  />
                 </div>
               )}
             </AnimatePresence>
@@ -634,7 +361,7 @@ function HomeContent() {
               <h3 className="text-xl sm:text-2xl font-bold text-gray-800">No items found</h3>
               <p className="text-gray-400 text-sm sm:text-base">Try selecting a different category or search term.</p>
               <button
-                onClick={() => { setSelectedCategory("All"); setSearchQuery(""); setPage(1); }}
+                onClick={() => { setSelectedCategory("All"); setDebouncedSearch(""); setPage(1); }}
                 className="mt-2 px-5 sm:px-6 py-2 sm:py-2.5 bg-blue-600 text-white text-sm font-bold rounded-full hover:bg-blue-700 transition-all"
               >
                 Reset Filter
