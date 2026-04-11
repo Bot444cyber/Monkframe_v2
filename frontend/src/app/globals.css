@@ -220,5 +220,19 @@ body {
 
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  footer {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 400px;
+  }
+
+  /* Optimize heavy sections for production */
+  section {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 800px;
   }
 }

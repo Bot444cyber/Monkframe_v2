@@ -367,7 +367,7 @@ function HomeContent() {
         </section>
 
         {/* ── Product Grid ── */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-8 pt-6 sm:pt-8 pb-16 sm:pb-20">
+        <section className="max-w-7xl mx-auto px-4 sm:px-8 pt-6 sm:pt-8 pb-16 sm:pb-20 min-h-[800px]">
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-7 mb-10 sm:mb-14">
               {[...Array(6)].map((_, i) => (

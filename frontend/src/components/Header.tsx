@@ -59,7 +59,7 @@ export default function Header() {
 
     return (
         <>
-            <header className="border-b border-gray-100 sticky top-0 bg-white/80 backdrop-blur-md z-50 overflow-visible">
+            <header className="border-b border-gray-100 sticky top-0 bg-white/70 backdrop-blur-sm z-50 overflow-visible transform-gpu">
                 <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
                     <Link href="/" className="flex items-center gap-2 group">
                         <div className="w-8 h-8 rounded-lg flex items-center justify-center">
