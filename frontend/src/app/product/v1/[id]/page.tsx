@@ -150,11 +150,14 @@ export default function ProductDetailsPage() {
                 {/* 2-Column Layout */}
                 <div className="flex flex-col lg:flex-row gap-10 sm:gap-16 lg:gap-24 relative items-start">
 
-                    {/* Left Column - Images (Sticky capability) */}
-                    <div className="w-full lg:w-[62%] flex flex-col gap-12 lg:sticky lg:top-32 h-fit">
+                    {/* Left Column - Images (Standard Flow) */}
+                    <div className="w-full lg:w-[62%] flex flex-col gap-12 h-fit">
                         {/* Huge Vertical Stack */}
                         <ProductGallery product={product} />
 
+                        <div className="mt-20">
+                            <CommentSection uiId={product.id} variant="embedded" />
+                        </div>
                     </div>
 
                     {/* Right Column - Meta Data (Sticky) */}
