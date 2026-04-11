@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Mail, Lock, User, Eye, EyeOff, KeyRound, ArrowRight, Sparkles } from 'lucide-react';
@@ -99,15 +100,18 @@ export default function SignupPage() {
 
                 {/* Simple Brand Header */}
                 <div className="flex justify-between items-center w-full mb-12 sm:mb-16">
-                    <Link href="/" className="inline-flex items-center gap-2.5 group cursor-pointer transition-transform hover:opacity-80">
-                        <div className="w-9 h-9 rounded-xl bg-[#1200FF] flex items-center justify-center p-1.5 shadow-md shadow-[#1200FF]/20">
-                            <img src="/logo/M_SHAPE.svg" alt="Logo" className="w-full h-full object-contain brightness-0 invert" />
+                    <Link href="/" className="flex items-center gap-2 group">
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center relative">
+                            <Image src="/logo/M_SHAPE.svg" alt="MOCKUPIDEA Logo" fill className="object-contain" />
                         </div>
-                        <span className="font-extrabold tracking-widest text-[#1200FF] text-[15px]">MOCKUPIDEA</span>
+                        <span className="font-bold tracking-wider text-[15px] text-gray-900">MOCKUPIDEA</span>
                     </Link>
-                    <Link href="/login" className="text-[13px] font-bold text-gray-400 hover:text-[#1200FF] transition-colors uppercase tracking-wider">
-                        Sign In Instead
-                    </Link>
+                    <p className="text-[13px] font-bold text-gray-400 uppercase tracking-wider">
+                        Already have an account?{' '}
+                        <Link href="/login" className="text-[#1200FF] hover:text-blue-700 transition-all hover:underline underline-offset-4 decoration-2">
+                            Log In
+                        </Link>
+                    </p>
                 </div>
 
                 {/* Dynamic Form Container */}
@@ -296,10 +300,12 @@ export default function SignupPage() {
             {/* Right Panel: Immersive Graphic Component */}
             <div className="hidden lg:flex flex-1 bg-blue-50 relative overflow-hidden flex-col items-center justify-center border-l border-gray-100">
                 <div className="absolute inset-0">
-                    <img
-                        src="https://static.vecteezy.com/system/resources/thumbnails/003/689/228/small_2x/online-registration-or-sign-up-login-for-account-on-smartphone-app-user-interface-with-secure-password-mobile-application-for-ui-web-banner-access-cartoon-people-illustration-vector.jpg"
+                    <Image
+                        src="/images/auth_image.png"
                         alt="Authentication Illustration"
-                        className="w-full h-full object-cover object-center"
+                        fill
+                        className="object-cover object-center"
+                        priority
                     />
                 </div>
             </div>
