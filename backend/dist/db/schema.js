@@ -143,6 +143,7 @@ exports.notifications = (0, mysql_core_1.mysqlTable)('notifications', {
     type: (0, mysql_core_1.mysqlEnum)('type', ['PAYMENT', 'COMMENT', 'LIKE', 'WISHLIST', 'SYSTEM']).notNull(),
     message: (0, mysql_core_1.text)('message').notNull(),
     isRead: (0, mysql_core_1.boolean)('isRead').default(false).notNull(),
+    status: (0, mysql_core_1.mysqlEnum)('status', ['PENDING', 'FIXED', 'DISMISSED']).default('PENDING').notNull(),
     userId: (0, mysql_core_1.int)('userId').notNull(),
     uiId: (0, mysql_core_1.varchar)('uiId', { length: 36 }),
     created_at: (0, mysql_core_1.timestamp)('created_at').defaultNow().notNull(),

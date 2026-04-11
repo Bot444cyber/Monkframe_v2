@@ -12,19 +12,49 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renameFile = exports.deleteFile = exports.uploadFile = exports.listFiles = void 0;
+exports.renameFile = exports.deleteFile = exports.uploadFile = exports.bulkDelete = exports.getStorageUsage = exports.listFiles = void 0;
 const googleDrive_service_1 = __importDefault(require("../services/googleDrive.service"));
 const stream_1 = __importDefault(require("stream"));
 const listFiles = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const files = yield googleDrive_service_1.default.listFiles();
-        res.json({ status: true, data: files });
+        const pageSize = parseInt(req.query.pageSize) || 10;
+        const pageToken = req.query.pageToken;
+        const result = yield googleDrive_service_1.default.listFiles(pageSize, pageToken);
+        res.json({ status: true, data: result.files, nextPageToken: result.nextPageToken });
     }
     catch (error) {
         res.status(500).json({ status: false, message: error.message });
     }
 });
 exports.listFiles = listFiles;
+const getStorageUsage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const usage = yield googleDrive_service_1.default.getStorageUsage();
+        res.json({ status: true, data: usage });
+    }
+    catch (error) {
+        res.status(500).json({ status: false, message: error.message });
+    }
+});
+exports.getStorageUsage = getStorageUsage;
+const bulkDelete = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { fileIds } = req.body;
+        if (!fileIds || !Array.isArray(fileIds) || fileIds.length === 0) {
+            return res.status(400).json({ status: false, message: 'Invalid or empty fileIds' });
+        }
+        const result = yield googleDrive_service_1.default.bulkDeleteFiles(fileIds);
+        res.json({
+            status: true,
+            message: `Deleted ${result.successCount} files. ${result.failCount} failed.`,
+            data: result
+        });
+    }
+    catch (error) {
+        res.status(500).json({ status: false, message: error.message });
+    }
+});
+exports.bulkDelete = bulkDelete;
 const uploadFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         if (!req.file) {

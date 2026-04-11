@@ -226,23 +226,57 @@ const downloadUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const auth = new googleapis_1.google.auth.OAuth2(clientId, clientSecret, 'https://developers.google.com/oauthplayground');
         auth.setCredentials({ refresh_token: refreshToken });
         const drive = googleapis_1.google.drive({ version: 'v3', auth });
-        const fileStream = yield drive.files.get({ fileId: ui.google_file_id, alt: 'media' }, { responseType: 'stream' });
-        // Set headers for download
-        res.setHeader('Content-Disposition', `attachment; filename="${ui.title || 'download'}.zip"`);
-        res.setHeader('Content-Type', 'application/octet-stream');
-        // Increment Download Counter
-        yield db_1.db.update(schema_1.uis).set({ downloads: (0, drizzle_orm_1.sql) `${schema_1.uis.downloads} + 1` }).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id));
-        fileStream.data.pipe(res);
-        // Prevent memory leak: destroy stream if client disconnects
-        req.on('close', () => {
-            if (!res.writableEnded) {
-                fileStream.data.destroy();
+        try {
+            const fileStream = yield drive.files.get({ fileId: ui.google_file_id, alt: 'media' }, { responseType: 'stream' });
+            // Set headers for download
+            res.setHeader('Content-Disposition', `attachment; filename="${ui.title || 'download'}.zip"`);
+            res.setHeader('Content-Type', 'application/octet-stream');
+            // Increment Download Counter
+            yield db_1.db.update(schema_1.uis).set({ downloads: (0, drizzle_orm_1.sql) `${schema_1.uis.downloads} + 1` }).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id));
+            fileStream.data.pipe(res);
+            // Prevent memory leak: destroy stream if client disconnects
+            req.on('close', () => {
+                if (!res.writableEnded) {
+                    fileStream.data.destroy();
+                }
+            });
+        }
+        catch (driveError) {
+            // Check for 404 File Not Found
+            if (driveError.code === 404 || (driveError.message && driveError.message.includes('File not found'))) {
+                console.error(`[CRITICAL] Drive File Missing for UI ${id}: ${ui.google_file_id}`);
+                // 1. Notify Admins through the notification system
+                try {
+                    const adminUsers = yield db_1.db.select({ user_id: schema_1.users.user_id }).from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.role, 'ADMIN'));
+                    if (adminUsers.length > 0) {
+                        const notificationPromises = adminUsers.map(admin => {
+                            return db_1.db.insert(schema_1.notifications).values({
+                                id: (0, crypto_1.randomUUID)(),
+                                type: 'SYSTEM',
+                                message: `⚠️ MISSING ASSET: The file for "${ui.title}" is missing from Google Drive (ID: ${ui.google_file_id}). A user attempted to download it.`,
+                                userId: admin.user_id,
+                                uiId: id,
+                                isRead: false
+                            });
+                        });
+                        yield Promise.all(notificationPromises);
+                    }
+                }
+                catch (notifyErr) {
+                    console.error("Failed to create admin notifications:", notifyErr);
+                }
+                // 2. Respond to the user with a professional message
+                return res.status(404).json({
+                    status: false,
+                    message: "This file is currently unavailable or being moved for maintenance. Our administrators have been notified and it will be restored shortly. Please try again later."
+                });
             }
-        });
+            throw driveError; // Re-throw other errors to be caught by outer catch
+        }
     }
     catch (error) {
         console.error("Download Error:", error);
-        res.status(500).json({ status: false, message: (error === null || error === void 0 ? void 0 : error.message) || "Google Drive integration failed or credentials missing. Check backend logs." });
+        res.status(500).json({ status: false, message: (error === null || error === void 0 ? void 0 : error.message) || "Internal server error during download. Please contact support if the issue persists." });
     }
 });
 exports.downloadUI = downloadUI;
@@ -408,7 +442,7 @@ const deleteUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             }
         }
         // 4. Delete Showcase Images
-        const showcase = ui.showcase;
+        const showcase = parseArray(ui.showcase);
         if (showcase && showcase.length > 0) {
             for (const url of showcase) {
                 const fileId = extractDriveFileId(url);
@@ -418,7 +452,12 @@ const deleteUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 }
             }
         }
-        // 5. Delete from DB
+        // 5. Delete associated records to prevent orphaned entries
+        yield db_1.db.delete(schema_1.wishlists).where((0, drizzle_orm_1.eq)(schema_1.wishlists.ui_id, id));
+        yield db_1.db.delete(schema_1.likes).where((0, drizzle_orm_1.eq)(schema_1.likes.ui_id, id));
+        yield db_1.db.delete(schema_1.comments).where((0, drizzle_orm_1.eq)(schema_1.comments.ui_id, id));
+        yield db_1.db.delete(schema_1.notifications).where((0, drizzle_orm_1.eq)(schema_1.notifications.uiId, id));
+        // 6. Delete from DB
         yield db_1.db.delete(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id));
         res.json({ status: true, message: "UI and associated Drive files deleted successfully" });
     }

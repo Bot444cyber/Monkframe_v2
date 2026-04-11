@@ -27,18 +27,79 @@ class GoogleDriveService {
         this.drive = googleapis_1.google.drive({ version: 'v3', auth: oauth2Client });
     }
     listFiles() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter(this, arguments, void 0, function* (pageSize = 10, pageToken) {
             try {
                 const response = yield this.drive.files.list({
                     q: `'${this.folderId}' in parents and trashed = false`,
-                    fields: 'files(id, name, mimeType, size, modifiedTime, webViewLink, iconLink)',
-                    orderBy: 'folder, name'
+                    fields: 'nextPageToken, files(id, name, mimeType, size, modifiedTime, webViewLink, iconLink)',
+                    orderBy: 'folder, name',
+                    pageSize: pageSize,
+                    pageToken: pageToken
                 });
-                return response.data.files;
+                return {
+                    files: response.data.files,
+                    nextPageToken: response.data.nextPageToken
+                };
             }
             catch (error) {
                 console.error('Error listing Drive files:', error.message);
                 throw new Error(`Failed to list files: ${error.message}`);
+            }
+        });
+    }
+    getStorageUsage() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // Drive API does not provide folder size directly.
+                // We list all files in the folder and sum their sizes.
+                let totalSize = 0;
+                let pageToken = undefined;
+                do {
+                    const response = yield this.drive.files.list({
+                        q: `'${this.folderId}' in parents and trashed = false`,
+                        fields: 'nextPageToken, files(size)',
+                        pageSize: 1000,
+                        pageToken: pageToken
+                    });
+                    const files = response.data.files || [];
+                    files.forEach((file) => {
+                        if (file.size) {
+                            totalSize += parseInt(file.size);
+                        }
+                    });
+                    pageToken = response.data.nextPageToken;
+                } while (pageToken);
+                return {
+                    totalSizeBytes: totalSize,
+                    totalSizeHuman: this.formatBytes(totalSize)
+                };
+            }
+            catch (error) {
+                console.error('Error calculating storage usage:', error.message);
+                throw new Error(`Failed to calculate storage: ${error.message}`);
+            }
+        });
+    }
+    formatBytes(bytes, decimals = 2) {
+        if (bytes === 0)
+            return '0 Bytes';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    }
+    bulkDeleteFiles(fileIds) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const results = yield Promise.allSettled(fileIds.map(id => this.drive.files.delete({ fileId: id })));
+                const successCount = results.filter(r => r.status === 'fulfilled').length;
+                const failCount = results.length - successCount;
+                return { successCount, failCount };
+            }
+            catch (error) {
+                console.error('Error in bulk deletion:', error.message);
+                throw new Error(`Bulk deletion failed: ${error.message}`);
             }
         });
     }
@@ -56,7 +117,7 @@ class GoogleDriveService {
                 const response = yield this.drive.files.create({
                     requestBody: fileMetadata,
                     media: media,
-                    fields: 'id, name, webViewLink'
+                    fields: 'id, name, webViewLink, size, modifiedTime'
                 });
                 return response.data;
             }

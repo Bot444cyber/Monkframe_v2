@@ -12,9 +12,9 @@ function GenerateToken(payload) {
         throw new Error('JWT_SECRET environment variable not set');
     }
     const Token = jsonwebtoken_1.default.sign(payload, process.env.JWT_SECRET, {
-        expiresIn: '12h',
+        expiresIn: '7d',
         algorithm: 'HS256',
-        issuer: 'Ticket-Management-System',
+        issuer: 'Mockupidea',
         audience: 'client-app'
     });
     return Token;

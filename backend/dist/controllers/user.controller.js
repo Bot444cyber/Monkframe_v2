@@ -183,13 +183,17 @@ const getUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function*
             return res.status(404).json({ status: false, message: "User not found" });
         }
         // Get counts
-        const [[wishlistCount], [paymentCount]] = yield Promise.all([
-            db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.wishlists).where((0, drizzle_orm_1.eq)(schema_1.wishlists.user_id, userId)),
+        const [wishlistCountResult] = yield db_1.db
+            .select({ value: (0, drizzle_orm_1.count)() })
+            .from(schema_1.wishlists)
+            .innerJoin(schema_1.uis, (0, drizzle_orm_1.eq)(schema_1.uis.id, schema_1.wishlists.ui_id))
+            .where((0, drizzle_orm_1.eq)(schema_1.wishlists.user_id, userId));
+        const [[paymentCount]] = yield Promise.all([
             db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.payments).where((0, drizzle_orm_1.eq)(schema_1.payments.userId, userId))
         ]);
-        const countWishlists = wishlistCount.value;
+        const countWishlists = wishlistCountResult.value;
         const countPayments = paymentCount.value;
-        // Fetch wishlist items with UI details via leftJoin
+        // Fetch wishlist items with UI details via innerJoin to exclude orphans
         const wishlistRows = yield db_1.db
             .select({
             wishlist_id: schema_1.wishlists.id,
@@ -209,7 +213,7 @@ const getUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function*
             creator_name: schema_1.users.full_name,
         })
             .from(schema_1.wishlists)
-            .leftJoin(schema_1.uis, (0, drizzle_orm_1.eq)(schema_1.uis.id, schema_1.wishlists.ui_id))
+            .innerJoin(schema_1.uis, (0, drizzle_orm_1.eq)(schema_1.uis.id, schema_1.wishlists.ui_id))
             .leftJoin(schema_1.users, (0, drizzle_orm_1.eq)(schema_1.users.user_id, schema_1.uis.creatorId))
             .where((0, drizzle_orm_1.eq)(schema_1.wishlists.user_id, userId))
             .orderBy((0, drizzle_orm_1.desc)(schema_1.wishlists.created_at))

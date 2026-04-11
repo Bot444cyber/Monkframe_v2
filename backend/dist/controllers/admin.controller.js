@@ -62,6 +62,22 @@ const extractDriveFileId = (url) => {
         return dMatch[1];
     return null;
 };
+const parseArray = (data) => {
+    if (!data)
+        return [];
+    if (Array.isArray(data))
+        return data;
+    if (typeof data === 'string') {
+        try {
+            const parsed = JSON.parse(data);
+            return Array.isArray(parsed) ? parsed : [];
+        }
+        catch (_a) {
+            return [];
+        }
+    }
+    return [];
+};
 // Helper for debug logging
 const logToDebug = (message) => {
     const logPath = path.join(__dirname, '../../logs/drive_reset.log');
@@ -366,8 +382,9 @@ const resetData = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 const bannerId = extractDriveFileId(ui.imageSrc);
                 if (bannerId)
                     fileIdsToDelete.push(bannerId);
-                if (ui.showcase && Array.isArray(ui.showcase)) {
-                    ui.showcase.forEach((url) => {
+                const showcase = parseArray(ui.showcase);
+                if (showcase && showcase.length > 0) {
+                    showcase.forEach((url) => {
                         const sId = extractDriveFileId(url);
                         if (sId)
                             fileIdsToDelete.push(sId);

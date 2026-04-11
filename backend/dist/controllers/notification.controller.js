@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getNotifications = void 0;
+exports.dismissNotification = exports.resolveNotification = exports.getNotifications = void 0;
 const db_1 = require("../db");
 const schema_1 = require("../db/schema");
 const drizzle_orm_1 = require("drizzle-orm");
@@ -28,7 +28,7 @@ const getNotifications = (req, res) => __awaiter(void 0, void 0, void 0, functio
         let notificationsRes = [];
         let total = 0;
         if (role === 'ADMIN' && scope === 'all') {
-            const [totalRes] = yield db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.notifications);
+            const [totalRes] = yield db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.notifications).where((0, drizzle_orm_1.eq)(schema_1.notifications.status, 'PENDING'));
             total = totalRes.value;
             const rows = yield db_1.db
                 .select({
@@ -38,6 +38,7 @@ const getNotifications = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 isRead: schema_1.notifications.isRead,
                 userId: schema_1.notifications.userId,
                 uiId: schema_1.notifications.uiId,
+                status: schema_1.notifications.status,
                 created_at: schema_1.notifications.created_at,
                 user_full_name: schema_1.users.full_name,
                 user_email: schema_1.users.email,
@@ -48,6 +49,7 @@ const getNotifications = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 .from(schema_1.notifications)
                 .leftJoin(schema_1.users, (0, drizzle_orm_1.eq)(schema_1.users.user_id, schema_1.notifications.userId))
                 .leftJoin(schema_1.uis, (0, drizzle_orm_1.eq)(schema_1.uis.id, schema_1.notifications.uiId))
+                .where((0, drizzle_orm_1.eq)(schema_1.notifications.status, 'PENDING'))
                 .orderBy((0, drizzle_orm_1.desc)(schema_1.notifications.created_at))
                 .limit(limit)
                 .offset(skip);
@@ -56,6 +58,7 @@ const getNotifications = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 type: r.type,
                 message: r.message,
                 isRead: r.isRead,
+                status: r.status,
                 userId: r.userId,
                 uiId: r.uiId,
                 created_at: r.created_at,
@@ -114,3 +117,31 @@ const getNotifications = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.getNotifications = getNotifications;
+const resolveNotification = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        yield db_1.db.update(schema_1.notifications)
+            .set({ status: 'FIXED', isRead: true })
+            .where((0, drizzle_orm_1.eq)(schema_1.notifications.id, id));
+        return res.status(200).json({ status: true, message: "Notification marked as FIXED" });
+    }
+    catch (error) {
+        console.error("Error resolving notification:", error);
+        res.status(500).json({ error: "Failed to resolve notification" });
+    }
+});
+exports.resolveNotification = resolveNotification;
+const dismissNotification = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        yield db_1.db.update(schema_1.notifications)
+            .set({ status: 'DISMISSED', isRead: true })
+            .where((0, drizzle_orm_1.eq)(schema_1.notifications.id, id));
+        return res.status(200).json({ status: true, message: "Notification marked as DISMISSED" });
+    }
+    catch (error) {
+        console.error("Error dismissing notification:", error);
+        res.status(500).json({ error: "Failed to dismiss notification" });
+    }
+});
+exports.dismissNotification = dismissNotification;

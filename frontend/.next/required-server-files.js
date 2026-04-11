@@ -66,6 +66,14 @@ self.__SERVER_FILES_MANIFEST={
         {
           "protocol": "https",
           "hostname": "images.unsplash.com"
+        },
+        {
+          "protocol": "http",
+          "hostname": "darkred-herring-630324.hostingersite.com"
+        },
+        {
+          "protocol": "https",
+          "hostname": "darkred-herring-630324.hostingersite.com"
         }
       ],
       "qualities": [
