@@ -123,12 +123,8 @@ const SearchDropdown = React.memo(({ query, activeTab, setActiveTab, onSelect }:
     }, [query, activeTab]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 6 }}
-            transition={{ duration: 0.13, ease: "easeOut" }}
-            className="absolute top-full left-0 right-0 mt-3 bg-white border border-gray-100 shadow-2xl rounded-2xl overflow-hidden z-50 py-2"
+        <div
+            className="absolute top-full left-0 right-0 mt-3 bg-white border border-gray-100 shadow-2xl rounded-2xl overflow-hidden z-200 py-2"
         >
             {/* Tabs */}
             <div className="flex items-center gap-2 px-4 pt-2 pb-3 overflow-x-auto no-scrollbar border-b border-gray-100">
@@ -193,7 +189,7 @@ const SearchDropdown = React.memo(({ query, activeTab, setActiveTab, onSelect }:
                     </div>
                 )}
             </div>
-        </motion.div>
+        </div>
     );
 });
 SearchDropdown.displayName = "SearchDropdown";
@@ -277,16 +273,14 @@ export const SearchBar = React.memo(({ onCommit }: SearchBarProps) => {
             </div>
 
             {/* Dropdown */}
-            <AnimatePresence>
-                {focused && (
-                    <SearchDropdown
-                        query={query}
-                        activeTab={activeTab}
-                        setActiveTab={setActiveTab}
-                        onSelect={handleSelect}
-                    />
-                )}
-            </AnimatePresence>
+            {focused && (
+                <SearchDropdown
+                    query={query}
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                    onSelect={handleSelect}
+                />
+            )}
         </div>
     );
 });

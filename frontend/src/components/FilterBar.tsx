@@ -16,7 +16,7 @@ export default function FilterBar({ onCategoryChange }: FilterBarProps) {
     };
 
     return (
-        <div className="w-full sticky top-16 z-40 py-4 lg:py-5 bg-background/50 backdrop-blur-md border-b border-border transition-colors transform-gpu">
+        <div className="w-full sticky top-16 z-40 py-4 lg:py-5 bg-background/50 backdrop-blur-md border-b border-border transition-colors">
             <div className="px-4 lg:px-10 flex items-center justify-between gap-4 max-w-[1800px] mx-auto">
                 {/* Categories Scrollable List (Unified for Mobile & Desktop) */}
                 <div className="relative flex-1 overflow-hidden group">
