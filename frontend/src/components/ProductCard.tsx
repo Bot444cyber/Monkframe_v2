@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Product } from './ts/types';
 import { InteractionService } from '@/services/interaction.service';
 import CommentSection from './CommentSection';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
 
-export default function ProductCard({ product }: { product: Product }) {
+export default function ProductCard({ product, priority = false }: { product: Product; priority?: boolean }) {
     const { user } = useAuth();
     const [isWishlisted, setIsWishlisted] = useState(product.wished);
 
@@ -44,11 +45,14 @@ export default function ProductCard({ product }: { product: Product }) {
                 {/* ── Image Block ── */}
                 <div className="relative w-full aspect-4/3 bg-[#EEF0F5] rounded-2xl overflow-hidden">
                     {product.imageSrc ? (
-                        <img
+                        <Image
                             src={product.imageSrc}
                             alt={product.title}
-                            referrerPolicy="no-referrer"
+                            fill
+                            priority={priority}
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105 will-change-transform transform-gpu backface-hidden"
+                            unoptimized={product.imageSrc.includes('drive.google.com')}
                         />
                     ) : (
                         <div className="h-full w-full bg-[#EEF0F5]" />
@@ -89,7 +93,7 @@ export default function ProductCard({ product }: { product: Product }) {
                     </h3>
 
                     {/* File meta */}
-                    <p className="text-[13px] text-gray-400 leading-none mt-0.5">
+                    <p className="text-[13px] text-gray-500 leading-none mt-0.5">
                         {fileLabel}
                     </p>
                 </div>

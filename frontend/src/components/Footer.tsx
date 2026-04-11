@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 
 // ── Custom Brand Icons (High-Fidelity SVGs for premium look) ────────────────
@@ -38,8 +39,8 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2.5 mb-8 group cursor-default">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center p-0.5">
-                <img src="/logo/M_SHAPE.svg" alt="Logo" className="w-full h-full object-contain group-hover:rotate-12 transition-transform duration-500" />
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center p-0.5 relative">
+                <Image src="/logo/M_SHAPE.svg" alt="Logo" fill className="object-contain group-hover:rotate-12 transition-transform duration-500" />
               </div>
               <span className="font-extrabold tracking-widest text-lg text-blue-600">MOCKUPIDEA</span>
             </div>
@@ -62,7 +63,7 @@ export default function Footer() {
 
           {/* Column 2: Browse */}
           <div>
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-8 py-1">Categories</h4>
+            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-8 py-1">Categories</h4>
             <ul className="space-y-4">
               <li><Link href="/?category=Flyer" className="text-sm font-bold text-gray-500 hover:text-blue-600 transition-colors">Flyer Design</Link></li>
               <li><Link href="/?category=Brochure" className="text-sm font-bold text-gray-500 hover:text-blue-600 transition-colors">Brochure Pack</Link></li>
@@ -74,7 +75,7 @@ export default function Footer() {
 
           {/* Column 3: Company */}
           <div className="md:pl-8">
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-8 py-1">Essentials</h4>
+            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-8 py-1">Essentials</h4>
             <ul className="space-y-4">
               <li><Link href="/licenses" className="text-sm font-bold text-gray-500 hover:text-blue-600 transition-colors">Licensing Info</Link></li>
               <li><Link href="/contact" className="text-sm font-bold text-gray-500 hover:text-blue-600 transition-colors">Contact Support</Link></li>
@@ -84,7 +85,7 @@ export default function Footer() {
 
           {/* Column 4: Platform */}
           <div className="md:pl-8">
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-8 py-1">My Account</h4>
+            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-8 py-1">My Account</h4>
             <ul className="space-y-4">
               <li><Link href="/profile" className="text-sm font-bold text-gray-500 hover:text-blue-600 transition-colors">Your Profile</Link></li>
               {canAccessDashboard && (
@@ -104,7 +105,7 @@ export default function Footer() {
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)] animate-pulse" />
               Platform Status
             </a>
-            <p className="text-[11px] font-black uppercase tracking-widest text-gray-300">
+            <p className="text-[11px] font-black uppercase tracking-widest text-gray-500">
               Made with Precision
             </p>
           </div>

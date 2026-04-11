@@ -8,6 +8,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Search } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import useSWR from "swr";
 
 // ── Tab config ────────────────────────────────────────────────────────────────
@@ -140,7 +141,15 @@ const SearchDropdown = React.memo(({ query, activeTab, setActiveTab, onSelect }:
                         >
                             <div className="w-12 h-12 rounded-xl bg-[#f8fafc] flex items-center justify-center overflow-hidden shrink-0 group-hover:shadow-sm transition-all p-1">
                                 {item.imageSrc
-                                    ? <img src={item.imageSrc} alt="" className="w-full h-full object-cover rounded-lg" />
+                                    ? <div className="w-full h-full relative">
+                                        <Image
+                                            src={item.imageSrc}
+                                            alt={item.title}
+                                            fill
+                                            className="object-cover rounded-lg"
+                                            unoptimized={item.imageSrc.includes('drive.google.com')}
+                                        />
+                                    </div>
                                     : <span className="text-xl">📦</span>}
                             </div>
                             <div className="min-w-0">
@@ -222,7 +231,7 @@ export const SearchBar = React.memo(({ onCommit }: SearchBarProps) => {
             {/* Input pill */}
             <div className={`flex items-center gap-2 sm:gap-3 bg-white border rounded-full px-4 sm:px-5 py-2.5 sm:py-3 shadow-sm transition-all duration-150 ${focused ? "border-blue-600 shadow-blue-100 shadow-md" : "border-gray-200"
                 }`}>
-                <Search className="w-4 h-4 text-gray-400 shrink-0" />
+                <Search className="w-4 h-4 text-gray-500 shrink-0" />
                 <input
                     ref={inputRef}
                     value={query}
@@ -230,7 +239,7 @@ export const SearchBar = React.memo(({ onCommit }: SearchBarProps) => {
                     onFocus={() => setFocused(true)}
                     type="text"
                     placeholder="Search mockups, files, bundles..."
-                    className="flex-1 bg-transparent outline-none text-gray-700 placeholder-gray-400 text-sm min-w-0"
+                    className="flex-1 bg-transparent outline-none text-gray-700 placeholder-gray-500 text-sm min-w-0"
                 />
                 {query && (
                     <button

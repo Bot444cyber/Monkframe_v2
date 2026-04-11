@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import NotificationBell from './NotificationBell';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -62,8 +63,8 @@ export default function Header() {
             <header className="border-b border-gray-100 sticky top-0 bg-white/70 backdrop-blur-sm z-50 overflow-visible">
                 <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
                     <Link href="/" className="flex items-center gap-2 group">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center">
-                            <img src="/logo/M_SHAPE.svg" alt="MOCKUPIDEA Logo" className="w-full h-full object-contain" />
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center relative">
+                            <Image src="/logo/M_SHAPE.svg" alt="MOCKUPIDEA Logo" fill className="object-contain" />
                         </div>
                         <span className="font-bold tracking-wider text-[15px] text-gray-900">MOCKUPIDEA</span>
                     </Link>
