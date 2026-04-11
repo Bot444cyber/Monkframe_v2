@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 interface ProductGalleryProps {
     product: any;
 }
@@ -25,11 +27,15 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
             {allImages.length > 0 ? (
                 allImages.map((src, idx) => (
                     <div key={idx} className={`relative w-full overflow-hidden rounded-[2.5rem] border border-gray-100/50 shadow-2xl ${color} bg-opacity-20 aspect-16/10 sm:aspect-[1.4/1] group`}>
-                        <img
+                        <Image
                             src={src}
                             alt={`${product.title} - view ${idx + 1}`}
-                            referrerPolicy="no-referrer"
+                            fill
+                            priority={idx === 0}
+                            sizes="(max-width: 1024px) 100vw, 62vw"
                             className="absolute inset-0 w-full h-full object-cover transition-all duration-1000 group-hover:scale-[1.03]"
+                            unoptimized={src.includes('drive.google.com') || src.includes('darkred-herring-630324.hostingersite.com')}
+                            {...({ referrerPolicy: "no-referrer" } as any)}
                         />
                         <div className="absolute inset-0 ring-1 ring-inset ring-black/5 rounded-[2.5rem]" />
                     </div>

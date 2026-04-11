@@ -3,17 +3,19 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import ProductPageSkeleton from "@/components/ProductPageSkeleton";
 import ProductGallery from "@/components/product/ProductGallery";
 import ProductInfo from "@/components/product/ProductInfo";
+import ProductIncludes from "@/components/product/ProductIncludes";
 import { useParams } from "next/navigation";
 import { InteractionService } from "@/services/interaction.service";
-import CommentSection from "@/components/CommentSection";
-import ProductIncludes from "@/components/product/ProductIncludes";
 import { useAuth } from "@/context/AuthContext";
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { CheckCircle } from 'lucide-react';
+
+const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
+const CommentSection = dynamic(() => import("@/components/CommentSection"), { ssr: false });
 
 export default function ProductDetailsPage() {
     const params = useParams();
@@ -134,7 +136,7 @@ export default function ProductDetailsPage() {
     if (!product) {
         return (
             <div className="min-h-screen bg-white text-gray-900 flex items-center justify-center">
-                <p className="text-xl text-gray-500">Product not found</p>
+                <p className="text-xl text-gray-600">Product not found</p>
             </div>
         );
     }
@@ -168,7 +170,7 @@ export default function ProductDetailsPage() {
                             {/* Free Download Box */}
                             <div className="w-full bg-white border border-gray-100 rounded-[2rem] p-8 flex flex-col items-center justify-center text-center gap-6 shadow-sm">
                                 <div className="max-w-md">
-                                    <p className="text-[14px] text-gray-500 leading-relaxed mb-8">
+                                    <p className="text-[14px] text-gray-600 leading-relaxed mb-8 font-medium">
                                         This premium UI asset is available for free. Download and use it in your personal or commercial projects.
                                     </p>
                                     <div className="flex flex-col gap-3 w-full">

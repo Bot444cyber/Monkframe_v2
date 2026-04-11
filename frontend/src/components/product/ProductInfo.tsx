@@ -77,6 +77,8 @@ export default function ProductInfo({ product, isWished, onToggleWishlist }: Pro
                     {onToggleWishlist && (
                         <button
                             onClick={onToggleWishlist}
+                            aria-label={isWished ? "Remove from wishlist" : "Add to wishlist"}
+                            title={isWished ? "Remove from wishlist" : "Add to wishlist"}
                             className={`group flex items-center gap-2.5 px-6 py-3 rounded-full border transition-all duration-300 text-[11px] font-black uppercase tracking-[0.15em] shrink-0 ${isWished
                                 ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-600/20'
                                 : 'bg-white border-gray-100 text-gray-400 hover:text-blue-600 hover:border-blue-200 shadow-sm'}`}
@@ -108,7 +110,7 @@ export default function ProductInfo({ product, isWished, onToggleWishlist }: Pro
             {/* Additional Information Section (Large Pill Design) */}
             {allInfoItems.length > 0 && (
                 <div className="flex flex-col gap-4 pt-4">
-                    <h3 className="text-xl font-black text-gray-900">Additional info:</h3>
+                    <h2 className="text-xl font-black text-gray-900">Additional info:</h2>
 
                     <div className="flex flex-col gap-4">
                         {allInfoItems.map((item: string, idx: number) => (
@@ -126,7 +128,7 @@ export default function ProductInfo({ product, isWished, onToggleWishlist }: Pro
             {tagsToRender.length > 0 && !allInfoItems.some(i => tagsToRender.includes(i)) && (
                 <div className="flex flex-wrap gap-2 mt-6">
                     {tagsToRender.map((tag: string, idx: number) => (
-                        <span key={idx} className="px-4 py-2 rounded-xl border border-gray-50 bg-gray-50/30 text-gray-400 text-[10px] font-black uppercase tracking-widest cursor-default">
+                        <span key={idx} className="px-4 py-2 rounded-xl border border-gray-100 bg-gray-50/50 text-gray-500 text-[10px] font-black uppercase tracking-widest cursor-default">
                             #{tag}
                         </span>
                     ))}

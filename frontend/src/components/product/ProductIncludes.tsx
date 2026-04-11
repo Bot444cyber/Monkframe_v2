@@ -68,7 +68,7 @@ export default function ProductIncludes({ product }: ProductIncludesProps) {
             <div className="flex flex-col gap-6">
                 <div className="flex items-center gap-4">
                     <div className="h-px w-8 bg-gray-100" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Specifications</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-600">Specifications</span>
                 </div>
                 <ul className="flex flex-col gap-5">
                     {specs.map((spec, idx) => {
@@ -88,7 +88,7 @@ export default function ProductIncludes({ product }: ProductIncludesProps) {
             </div>
 
             {/* Newsletter Subscription */}
-            
+
         </div >
     );
 }
