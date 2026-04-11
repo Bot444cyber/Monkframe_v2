@@ -48,7 +48,7 @@ export default function ProductCard({ product }: { product: Product }) {
                             src={product.imageSrc}
                             alt={product.title}
                             referrerPolicy="no-referrer"
-                            className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
+                            className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105 will-change-transform transform-gpu backface-hidden"
                         />
                     ) : (
                         <div className="h-full w-full bg-[#EEF0F5]" />
@@ -63,7 +63,7 @@ export default function ProductCard({ product }: { product: Product }) {
                         <button
                             onClick={toggleWishlist}
                             title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-                            className={`flex h-8 w-8 items-center justify-center rounded-xl border backdrop-blur-sm shadow-sm transition-all duration-200 ${isWishlisted
+                            className={`flex h-8 w-8 items-center justify-center rounded-xl border shadow-sm transition-all duration-200 ${isWishlisted
                                 ? 'bg-blue-600 text-white border-blue-500'
                                 : 'bg-white/95 border-gray-200/80 text-gray-400 hover:text-blue-600'
                                 }`}

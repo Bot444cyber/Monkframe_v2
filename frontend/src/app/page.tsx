@@ -205,9 +205,9 @@ function HomeContent() {
   }, [searchParams]);
 
   // Fetch products — only fires when page, category, or debounced search changes
-  const fetchProducts = useCallback(async () => {
+  const fetchProducts = useCallback(async (silentInterval = false) => {
     try {
-      setLoading(true);
+      if (!silentInterval) setLoading(true);
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
       const token = localStorage.getItem('auth_token');
       const headers: Record<string, string> = {};
@@ -235,13 +235,13 @@ function HomeContent() {
     } catch (err) {
       console.error("Failed to fetch products:", err);
     } finally {
-      setLoading(false);
+      if (!silentInterval) setLoading(false);
     }
   }, [page, selectedCategory, debouncedSearch]);
 
   useEffect(() => {
-    fetchProducts();
-    const i = setInterval(fetchProducts, 300000);
+    fetchProducts(false);
+    const i = setInterval(() => fetchProducts(true), 300000); // 5 min background refresh
     return () => clearInterval(i);
   }, [fetchProducts]);
 
