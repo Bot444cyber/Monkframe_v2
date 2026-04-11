@@ -1,5 +1,4 @@
 "use client";
-import Image from 'next/image';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Cell =
@@ -44,8 +43,8 @@ function MosaicCell({ cell }: { cell: Cell }) {
 
     if (cell.type === 'photo') {
         return (
-            <div className={`${base} overflow-hidden border border-white/8 ${cell.round ? 'rounded-full' : 'rounded-xl'} relative`}>
-                <Image src={cell.src} alt="" fill className="object-cover" />
+            <div className={`${base} overflow-hidden border border-white/8 ${cell.round ? 'rounded-full' : 'rounded-xl'}`}>
+                <img src={cell.src} alt="" className="w-full h-full object-cover" loading="lazy" />
             </div>
         );
     }
