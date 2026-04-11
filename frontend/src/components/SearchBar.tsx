@@ -19,9 +19,11 @@ const SEARCH_TABS = [
 
 type TabLabel = (typeof SEARCH_TABS)[number]["label"];
 
-// ── Module-level tab-count cache (fetched once, persists across navigations) ──
+// ── Module-level caches (persist across navigations / focus-blur cycles) ──────
 let _tabCounts: Record<string, number | null> | null = null;
 let _tabFetch: Promise<void> | null = null;
+// Results cache: key = "query|tab", value = result array
+const _resultsCache = new Map<string, any[]>();
 
 function warmTabCounts(apiUrl: string) {
     if (_tabCounts) return;
@@ -54,29 +56,44 @@ type DropdownProps = {
 };
 
 const SearchDropdown = React.memo(({ query, activeTab, setActiveTab, onSelect }: DropdownProps) => {
-    const [loading, setLoading] = useState(false);
-    const [results, setResults] = useState<any[]>([]);
+    const cacheKey = `${query}|${activeTab}`;
+
+    // Seed from cache immediately — no skeleton flash for repeated queries
+    const [loading, setLoading] = useState(() => !_resultsCache.has(cacheKey));
+    const [results, setResults] = useState<any[]>(() => _resultsCache.get(cacheKey) ?? []);
     const [tabCounts, setTabCounts] = useState<Record<string, number | null>>(
         _tabCounts ?? { Everything: null, Trending: null, "New Arrival": null, "PSD Files": null }
     );
+
+    // Keep a ref so the effect closure always reads the latest cacheKey
+    const cacheKeyRef = useRef(cacheKey);
+    cacheKeyRef.current = cacheKey;
 
     // Sync cached tab counts into local state once available
     useEffect(() => {
         if (_tabCounts) { setTabCounts(_tabCounts); return; }
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1000";
         warmTabCounts(apiUrl);
-        // poll until resolved (usually < 500 ms)
         const interval = setInterval(() => {
             if (_tabCounts) { setTabCounts(_tabCounts); clearInterval(interval); }
         }, 200);
         return () => clearInterval(interval);
     }, []);
 
-    // Fetch results (debounced 250 ms)
+    // Fetch results — skip network call if already cached
     useEffect(() => {
+        const key = cacheKey;
+
+        // Instantly show cached data, no loading state needed
+        if (_resultsCache.has(key)) {
+            setResults(_resultsCache.get(key)!);
+            setLoading(false);
+            return;
+        }
+
+        setLoading(true);
         let alive = true;
         const run = async () => {
-            setLoading(true);
             try {
                 const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1000";
                 const tab = SEARCH_TABS.find(t => t.label === activeTab)!;
@@ -89,20 +106,23 @@ const SearchDropdown = React.memo(({ query, activeTab, setActiveTab, onSelect }:
                 const res = await fetch(url);
                 const data = await res.json();
                 if (data.status && alive) {
-                    setResults(data.data.map((ui: any) => ({
+                    const mapped = data.data.map((ui: any) => ({
                         id: ui.id,
                         title: ui.title,
                         imageSrc: ui.imageSrc,
                         overview: ui.overview || `High-quality ${ui.category || "asset"} mockup.`,
-                    })));
+                    }));
+                    _resultsCache.set(key, mapped);
+                    if (alive) { setResults(mapped); setLoading(false); }
                 }
             } catch { /* silent */ } finally {
                 if (alive) setLoading(false);
             }
         };
-        const t = setTimeout(run, 250);
+        // Short debounce only for new queries — cached ones are instant
+        const t = setTimeout(run, 220);
         return () => { alive = false; clearTimeout(t); };
-    }, [query, activeTab]);
+    }, [query, activeTab]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <motion.div

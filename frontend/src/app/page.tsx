@@ -7,43 +7,68 @@ import Footer from '@/components/Footer';
 import { Product } from '@/components/ts/types';
 import Pagination from '@/components/Pagination';
 import { SearchBar } from '@/components/SearchBar';
-
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 
+// ─── Mega-menu cache (module-level — persists across hovers/navigations) ──────
+const _megaCache = new Map<string, any[]>();
+const _megaFetching = new Set<string>();
+
 // ─── Mega-menu ────────────────────────────────────────────────────────────────
 const DynamicMegaMenu = React.memo(({ category, onClose }: { category: string; onClose: () => void }) => {
-  const [items, setItems] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Seed from cache immediately so we never show a skeleton for cached categories
+  const [items, setItems] = useState<any[]>(() => _megaCache.get(category) ?? []);
+  const [loading, setLoading] = useState(() => !_megaCache.has(category));
 
   useEffect(() => {
+    // Already cached → nothing to do
+    if (_megaCache.has(category)) {
+      setItems(_megaCache.get(category)!);
+      setLoading(false);
+      return;
+    }
+    // Fetch in progress by another instance → poll until ready
+    if (_megaFetching.has(category)) {
+      let alive = true;
+      const poll = setInterval(() => {
+        if (_megaCache.has(category)) {
+          clearInterval(poll);
+          if (alive) { setItems(_megaCache.get(category)!); setLoading(false); }
+        }
+      }, 80);
+      return () => { alive = false; clearInterval(poll); };
+    }
+
+    // First fetch for this category
+    _megaFetching.add(category);
     let active = true;
-    const fetchMegaMenuData = async () => {
+    (async () => {
       try {
-        setLoading(true);
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
         const res = await fetch(`${apiUrl}/api/uis?category=${encodeURIComponent(category)}&limit=7`);
         const data = await res.json();
-        if (data.status && active) {
-          setItems(data.data.map((ui: any) => {
+        if (data.status) {
+          const mapped = data.data.map((ui: any) => {
             const rawDesc = ui.overview || 'High-fidelity mockups for your next big project.';
             let plainDesc = rawDesc.replace(/[*_~`#><=[[\]()]/g, ' ').replace(/\s+/g, ' ').trim();
             if (plainDesc.length > 95) plainDesc = plainDesc.substring(0, 95) + '...';
             const rawTitle = ui.title || 'Untitled';
             const shortTitle = rawTitle.length > 45 ? rawTitle.substring(0, 45) + '...' : rawTitle;
             return { id: ui.id, title: shortTitle, imageSrc: ui.imageSrc, description: plainDesc };
-          }));
+          });
+          _megaCache.set(category, mapped);
+          if (active) { setItems(mapped); setLoading(false); }
         }
       } catch (err) {
         console.error("Failed to fetch mega menu data:", err);
-      } finally {
         if (active) setLoading(false);
+      } finally {
+        _megaFetching.delete(category);
       }
-    };
-    fetchMegaMenuData();
+    })();
     return () => { active = false; };
   }, [category]);
 

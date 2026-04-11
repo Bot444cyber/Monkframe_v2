@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { Mail, Lock, User, Eye, EyeOff, KeyRound, ArrowRight } from 'lucide-react';
 
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -16,6 +17,7 @@ export default function SignupPage() {
         password: "",
     });
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [otpStep, setOtpStep] = useState(false);
     const [otp, setOtp] = useState("");
 
@@ -93,115 +95,126 @@ export default function SignupPage() {
     };
 
     return (
-        <div className="min-h-screen bg-white flex flex-col font-sans text-gray-900">
+        <div className="min-h-screen bg-white flex flex-col font-sans text-gray-900 selection:bg-blue-100 selection:text-blue-900">
             <Header />
 
-            <main className="flex-1 flex flex-col items-center justify-center py-24 px-6 relative overflow-hidden">
+            <main className="flex-1 flex flex-col items-center justify-center py-20 px-4 sm:px-6 relative overflow-hidden">
+                {/* Subtle Background Pattern */}
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,white_100%)] pointer-events-none opacity-80" />
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-50/50 rounded-full blur-3xl -z-10 mix-blend-multiply" />
-                <div className="absolute bottom-1/4 right-1/4 w-md h-112 bg-blue-50/50 rounded-full blur-3xl -z-10 mix-blend-multiply" />
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-50/50 rounded-full blur-3xl -z-10 mix-blend-multiply transition-all duration-1000 hover:scale-110" />
+                <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-blue-50/50 rounded-full blur-3xl -z-10 mix-blend-multiply transition-all duration-1000 hover:scale-110" />
 
-                <div className="w-full max-w-md mx-auto z-10 animate-fade-in-up">
-                    <div className="text-center mb-10">
-                        <h2 className="text-4xl font-bold tracking-tight text-gray-900 mb-4">
+                <div className="w-full max-w-[420px] mx-auto z-10 transition-all duration-500 ease-in-out transform">
+                    <div className="text-center mb-8">
+                        <div className="inline-flex items-center gap-2.5 mb-5 group cursor-default">
+                            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center p-1.5 shadow-sm ring-1 ring-blue-100/50">
+                                <img src="/logo/M_SHAPE.svg" alt="Logo" className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" />
+                            </div>
+                            <span className="font-black tracking-widest text-xl text-[#1200FF]">MOCKUPIDEA</span>
+                        </div>
+
+                        <h2 className="text-[32px] font-bold tracking-tight text-gray-900 mb-2">
                             {otpStep ? "Verify Email" : "Create Account"}
                         </h2>
                         <p className="text-gray-500 font-medium text-[15px]">
-                            {otpStep ? `Enter the code sent to ${formData.email}` : "Join the professional network."}
+                            {otpStep ? `Enter the secure code sent to ${formData.email}` : "Join the professional design network."}
                         </p>
                     </div>
 
-                    <div className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
+                    <div className="bg-white/90 backdrop-blur-md rounded-3xl p-8 sm:p-10 shadow-[0_15px_40px_rgba(18,0,255,0.06)] border border-gray-100/80 w-full">
                         {!otpStep ? (
-                            <form onSubmit={handleSignupSubmit} className="space-y-6">
+                            <form onSubmit={handleSignupSubmit} className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 <div className="space-y-5">
-                                    <div className="space-y-2 relative group">
-                                        <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Full Name</label>
+                                    <div className="space-y-1.5 group">
+                                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-1">Full Name</label>
                                         <div className="relative">
-                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors duration-300">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                                                </svg>
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1200FF] transition-colors duration-300">
+                                                <User className="w-5 h-5" strokeWidth={2} />
                                             </div>
                                             <input
                                                 type="text"
                                                 name="fullName"
                                                 value={formData.fullName}
                                                 onChange={handleInputChange}
-                                                inputMode="text"
                                                 required
-                                                className="w-full bg-gray-50/50 border border-gray-200 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] placeholder:text-gray-400 outline-none transition-all duration-300"
+                                                className="w-full bg-gray-50/80 border border-gray-200/80 focus:border-[#1200FF]/50 focus:bg-white focus:ring-[4px] focus:ring-[#1200FF]/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] font-medium placeholder:text-gray-400 outline-none transition-all duration-300"
                                                 placeholder="John Doe"
                                             />
                                         </div>
                                     </div>
 
-                                    <div className="space-y-2 relative group">
-                                        <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Email Address</label>
+                                    <div className="space-y-1.5 group">
+                                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-1">Email Address</label>
                                         <div className="relative">
-                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors duration-300">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-                                                </svg>
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1200FF] transition-colors duration-300">
+                                                <Mail className="w-5 h-5" strokeWidth={2} />
                                             </div>
                                             <input
                                                 type="email"
                                                 name="email"
                                                 value={formData.email}
                                                 onChange={handleInputChange}
-                                                inputMode="email"
                                                 required
-                                                className="w-full bg-gray-50/50 border border-gray-200 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] placeholder:text-gray-400 outline-none transition-all duration-300"
-                                                placeholder="name@example.com"
+                                                className="w-full bg-gray-50/80 border border-gray-200/80 focus:border-[#1200FF]/50 focus:bg-white focus:ring-[4px] focus:ring-[#1200FF]/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] font-medium placeholder:text-gray-400 outline-none transition-all duration-300"
+                                                placeholder="your@email.com"
                                             />
                                         </div>
                                     </div>
 
-                                    <div className="space-y-2 relative group">
-                                        <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Password</label>
+                                    <div className="space-y-1.5 group">
+                                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-1">Password</label>
                                         <div className="relative">
-                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors duration-300">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                                                </svg>
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1200FF] transition-colors duration-300">
+                                                <Lock className="w-5 h-5" strokeWidth={2} />
                                             </div>
                                             <input
-                                                type="password"
+                                                type={showPassword ? "text" : "password"}
                                                 name="password"
                                                 value={formData.password}
                                                 onChange={handleInputChange}
-                                                autoComplete="new-password"
                                                 required
-                                                className="w-full bg-gray-50/50 border border-gray-200 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] placeholder:text-gray-400 outline-none transition-all duration-300"
+                                                className="w-full bg-gray-50/80 border border-gray-200/80 focus:border-[#1200FF]/50 focus:bg-white focus:ring-[4px] focus:ring-[#1200FF]/10 pl-12 pr-12 py-3.5 rounded-2xl text-gray-900 text-[15px] font-medium placeholder:text-gray-400 outline-none transition-all duration-300"
                                                 placeholder="••••••••"
                                             />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors"
+                                            >
+                                                {showPassword ? <EyeOff className="w-4 h-4" strokeWidth={2.5} /> : <Eye className="w-4 h-4" strokeWidth={2.5} />}
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-3 mt-4">
-                                    <input type="checkbox" className="w-4 h-4 rounded border-gray-300 bg-transparent text-blue-600 focus:ring-offset-white focus:ring-blue-600" required />
-                                    <p className="text-xs text-gray-500">I agree to the <Link href="/licenses" className="text-blue-600 hover:text-blue-700 hover:underline">Terms of Service</Link>.</p>
+                                <div className="flex items-center gap-3 mt-5 ml-1">
+                                    <div className="relative flex items-center justify-center mt-0.5">
+                                        <input type="checkbox" className="peer sr-only" required />
+                                        <div className="w-[18px] h-[18px] border-2 border-gray-300 rounded-[5px] peer-checked:bg-[#1200FF] peer-checked:border-[#1200FF] transition-all duration-200 shadow-sm cursor-pointer" />
+                                        <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                    <p className="text-[12.5px] text-gray-500 font-medium">I agree to the <Link href="/licenses" className="text-[#1200FF] font-bold hover:underline">Terms of Service</Link></p>
                                 </div>
 
                                 <div className="space-y-4 pt-4">
                                     <button
                                         type="submit"
                                         disabled={loading}
-                                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-50 shadow-sm shadow-blue-600/20"
+                                        className="w-full group bg-[#1200FF] hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-70 shadow-md shadow-[#1200FF]/25 active:scale-[0.98] flex items-center justify-center relative overflow-hidden"
                                     >
-                                        {loading ? (
-                                            <span className="flex items-center justify-center gap-2 animate-pulse">
-                                                Processing...
-                                            </span>
-                                        ) : "Get Started"}
+                                        <span className="flex items-center gap-2 relative z-10 transition-transform group-hover:gap-3">
+                                            {loading ? "Processing..." : "Get Started"}
+                                            {!loading && <ArrowRight className="w-4 h-4" />}
+                                        </span>
                                     </button>
 
                                     <div className="relative flex items-center justify-center my-6">
                                         <div className="absolute inset-0 flex items-center">
-                                            <div className="w-full border-t border-gray-200"></div>
+                                            <div className="w-full border-t border-gray-100"></div>
                                         </div>
-                                        <div className="relative bg-white px-4 text-xs font-semibold text-gray-400 uppercase tracking-widest">
+                                        <div className="relative bg-white px-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest">
                                             Or continue with
                                         </div>
                                     </div>
@@ -209,7 +222,7 @@ export default function SignupPage() {
                                     <button
                                         type="button"
                                         onClick={handleGoogleLogin}
-                                        className="w-full bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 py-3.5 rounded-xl font-bold text-[15px] transition-all flex items-center justify-center gap-3"
+                                        className="w-full bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 py-3.5 rounded-xl font-bold text-[15px] transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
                                     >
                                         <svg className="w-5 h-5" viewBox="0 0 24 24">
                                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -222,7 +235,10 @@ export default function SignupPage() {
                                 </div>
                             </form>
                         ) : (
-                            <form onSubmit={handleOtpVerify} className="space-y-8">
+                            <form onSubmit={handleOtpVerify} className="space-y-8 animate-in slide-in-from-right-8 duration-300">
+                                <div className="w-14 h-14 bg-blue-50/80 rounded-2xl flex items-center justify-center mx-auto mb-2 shadow-sm border border-blue-100">
+                                    <KeyRound className="w-7 h-7 text-[#1200FF]" />
+                                </div>
                                 <div className="space-y-4">
                                     <div className="relative group mx-2">
                                         <input
@@ -230,19 +246,19 @@ export default function SignupPage() {
                                             maxLength={6}
                                             value={otp}
                                             onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                                            className="w-full bg-gray-50/50 border border-gray-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 py-6 text-center text-[40px] font-black tracking-[0.2em] text-gray-900 rounded-3xl outline-none transition-all duration-300 placeholder:text-gray-300"
+                                            className="w-full bg-gray-50/80 border border-gray-200/80 focus:border-[#1200FF]/50 focus:bg-white focus:ring-[4px] focus:ring-[#1200FF]/10 py-5 text-center text-[36px] font-black tracking-[0.3em] text-gray-900 rounded-2xl outline-none transition-all duration-300 placeholder:text-gray-300"
                                             placeholder="000000"
                                             autoFocus
                                         />
                                     </div>
-                                    <p className="text-center text-gray-500 text-xs font-bold uppercase tracking-widest">Secret Verification Code</p>
+                                    <p className="text-center text-gray-400 text-[11px] font-bold uppercase tracking-widest">Secret Verification Code</p>
                                 </div>
 
-                                <div className="space-y-4 pt-2">
+                                <div className="space-y-3 pt-2">
                                     <button
                                         type="submit"
                                         disabled={loading || otp.length < 6}
-                                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-50 shadow-sm shadow-blue-600/20"
+                                        className="w-full bg-[#1200FF] hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-70 shadow-md shadow-[#1200FF]/25 active:scale-[0.98]"
                                     >
                                         {loading ? "Verifying..." : "Confirm & Sign Up"}
                                     </button>
@@ -250,7 +266,7 @@ export default function SignupPage() {
                                     <button
                                         type="button"
                                         onClick={() => setOtpStep(false)}
-                                        className="w-full text-gray-500 hover:text-gray-900 text-sm font-semibold transition-colors mt-2"
+                                        className="w-full text-gray-400 hover:text-gray-900 text-[13px] font-bold uppercase tracking-wide transition-colors mt-2"
                                     >
                                         Change Email
                                     </button>
@@ -259,9 +275,9 @@ export default function SignupPage() {
                         )}
 
                         <div className="mt-8 pt-6 border-t border-gray-100 text-center">
-                            <p className="text-gray-500 text-[15px]">
+                            <p className="text-gray-500 text-[14.5px] font-medium">
                                 Already a member? {' '}
-                                <Link href="/login" className="text-blue-600 font-bold hover:underline transition-colors">
+                                <Link href="/login" className="text-[#1200FF] font-bold hover:text-blue-800 transition-colors">
                                     Sign in here
                                 </Link>
                             </p>
