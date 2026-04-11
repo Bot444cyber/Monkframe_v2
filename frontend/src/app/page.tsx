@@ -78,7 +78,11 @@ const DynamicMegaMenu = React.memo(({ category, onClose }: { category: string; o
   const otherItems = items.slice(1);
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 6 }}
+      transition={{ duration: 0.14, ease: 'easeOut' }}
       className="mt-2 w-[92vw] max-w-[720px] bg-white border border-gray-100 shadow-2xl rounded-2xl overflow-hidden h-[300px] flex"
     >
       {loading ? (
@@ -149,7 +153,7 @@ const DynamicMegaMenu = React.memo(({ category, onClose }: { category: string; o
           <p className="text-[11px] text-gray-400 mt-1">We're actively updating our {category} collection.</p>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 });
 DynamicMegaMenu.displayName = 'DynamicMegaMenu';
@@ -344,19 +348,21 @@ function HomeContent() {
               })}
             </nav>
 
-            {activeDropdown && (!["All"].includes(activeDropdown) || simpleDropdowns[activeDropdown]) && (
-              <div
-                className="absolute top-full z-100 pt-2"
-                style={{ left: dropdownLeft, transform: 'translateX(-50%)' }}
-                onMouseEnter={keepOpen}
-                onMouseLeave={handleNavLeave}
-              >
-                <DynamicMegaMenu
-                  category={activeDropdown}
-                  onClose={() => setActiveDropdown(null)}
-                />
-              </div>
-            )}
+            <AnimatePresence>
+              {activeDropdown && (!["All"].includes(activeDropdown) || simpleDropdowns[activeDropdown]) && (
+                <div
+                  className="absolute top-full z-[100] pt-2"
+                  style={{ left: dropdownLeft, transform: 'translateX(-50%)' }}
+                  onMouseEnter={keepOpen}
+                  onMouseLeave={handleNavLeave}
+                >
+                  <DynamicMegaMenu
+                    category={activeDropdown}
+                    onClose={() => setActiveDropdown(null)}
+                  />
+                </div>
+              )}
+            </AnimatePresence>
           </div>
         </section>
 
