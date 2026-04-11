@@ -29,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={interTight.variable}>
-      <body className="font-sans antialiased bg-white text-gray-900 selection:bg-blue-600/10 selection:text-blue-600">
+      <body suppressHydrationWarning className="font-sans antialiased bg-white text-gray-900 selection:bg-blue-600/10 selection:text-blue-600">
         <AuthProvider>
           <Toaster
             position="bottom-right"

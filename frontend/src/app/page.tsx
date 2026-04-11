@@ -12,6 +12,7 @@ import { useAuth } from '@/context/AuthContext';
 import { ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
+import useSWR from 'swr';
 
 // ─── Mega-menu cache (module-level — persists across hovers/navigations) ──────
 const _megaCache = new Map<string, any[]>();
@@ -162,12 +163,36 @@ DynamicMegaMenu.displayName = 'DynamicMegaMenu';
 const simpleDropdowns: Record<string, string[]> = {};
 const navItems = ["Flyer", "Brochure", "Business Card", "Outdoor", "Book", "Stationery", "Packaging", "Poster", "More", "All"];
 
+// ─── Fetcher ────────────────────────────────────────────────────────────────
+const productFetcher = async (url: string): Promise<{ products: Product[]; totalPages: number }> => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+  const headers: Record<string, string> = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  const res = await fetch(url, { credentials: 'include', headers });
+  if (!res.ok) throw new Error('Failed to fetch');
+  const data = await res.json();
+
+  if (!data.status) throw new Error(data.message || 'API Error');
+
+  return {
+    products: data.data.map((ui: any) => ({
+      id: ui.id, title: ui.title,
+      price: !ui.price || ui.price == 0 ? 'Free' : `$${ui.price}`,
+      author: ui.creator?.full_name || ui.author || 'Unknown',
+      category: ui.category, imageSrc: ui.imageSrc,
+      sales: 0, revenue: "0", color: ui.color,
+      likes: ui.likes || 0, liked: ui.liked || false, wished: ui.wished || false,
+      rating: ui.rating || 4.8, fileType: ui.fileType,
+    })),
+    totalPages: data.meta?.totalPages || 1
+  };
+};
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 function HomeContent() {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [dropdownLeft, setDropdownLeft] = useState(0);
 
@@ -176,7 +201,6 @@ function HomeContent() {
   const navItemRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -204,46 +228,27 @@ function HomeContent() {
     }
   }, [searchParams]);
 
-  // Fetch products — only fires when page, category, or debounced search changes
-  const fetchProducts = useCallback(async (silentInterval = false) => {
-    try {
-      if (!silentInterval) setLoading(true);
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
-      const token = localStorage.getItem('auth_token');
-      const headers: Record<string, string> = {};
-      if (token) headers['Authorization'] = `Bearer ${token}`;
+  // ─── SWR Hook for Products ───────────────────────────────────────────────
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
+  const queryParams = new URLSearchParams({
+    page: page.toString(),
+    limit: '12',
+    ...(selectedCategory && selectedCategory !== 'All' && { category: selectedCategory }),
+    ...(debouncedSearch && { search: debouncedSearch })
+  });
 
-      let url = `${apiUrl}/api/uis?page=${page}&limit=12`;
-      if (selectedCategory && selectedCategory !== 'All') url += `&category=${encodeURIComponent(selectedCategory)}`;
-      if (debouncedSearch) url += `&search=${encodeURIComponent(debouncedSearch)}`;
-
-      const res = await fetch(url, { credentials: 'include', headers });
-      const data = await res.json();
-
-      if (data.status) {
-        setProducts(data.data.map((ui: any) => ({
-          id: ui.id, title: ui.title,
-          price: !ui.price || ui.price == 0 ? 'Free' : `$${ui.price}`,
-          author: ui.creator?.full_name || ui.author || 'Unknown',
-          category: ui.category, imageSrc: ui.imageSrc,
-          sales: 0, revenue: "0", color: ui.color,
-          likes: ui.likes || 0, liked: ui.liked || false, wished: ui.wished || false,
-          rating: ui.rating || 4.8, fileType: ui.fileType,
-        })));
-        setTotalPages(data.meta?.totalPages || 1);
-      }
-    } catch (err) {
-      console.error("Failed to fetch products:", err);
-    } finally {
-      if (!silentInterval) setLoading(false);
+  const { data, error, isLoading, isValidating } = useSWR(
+    `${apiUrl}/api/uis?${queryParams.toString()}`,
+    productFetcher,
+    {
+      revalidateOnFocus: false,
+      refreshInterval: 300000,
+      keepPreviousData: true,
     }
-  }, [page, selectedCategory, debouncedSearch]);
+  );
 
-  useEffect(() => {
-    fetchProducts(false);
-    const i = setInterval(() => fetchProducts(true), 300000); // 5 min background refresh
-    return () => clearInterval(i);
-  }, [fetchProducts]);
+  const products = data?.products || [];
+  const totalPages = data?.totalPages || 1;
 
   const handleNavEnter = useCallback((item: string) => {
     if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
@@ -367,8 +372,16 @@ function HomeContent() {
         </section>
 
         {/* ── Product Grid ── */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-8 pt-6 sm:pt-8 pb-16 sm:pb-20 min-h-[800px]">
-          {loading ? (
+        <section className="max-w-7xl mx-auto px-4 sm:px-8 pt-6 sm:pt-8 pb-16 sm:pb-20 min-h-[800px] relative">
+          {isValidating && !isLoading && (
+            <div className="absolute top-0 right-8 z-10">
+              <div className="flex items-center gap-2 px-3 py-1 bg-white/80 backdrop-blur-sm border border-gray-100 rounded-full shadow-sm">
+                <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Updating...</span>
+              </div>
+            </div>
+          )}
+          {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-7 mb-10 sm:mb-14">
               {[...Array(6)].map((_, i) => (
                 <ProductCardSkeleton key={i} />
@@ -377,7 +390,7 @@ function HomeContent() {
           ) : products.length > 0 ? (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-7 mb-10 sm:mb-14">
-                {products.map((product) => (
+                {products.map((product: Product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>

@@ -8,6 +8,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Search } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useRouter } from "next/navigation";
+import useSWR from "swr";
 
 // ── Tab config ────────────────────────────────────────────────────────────────
 const SEARCH_TABS = [
@@ -19,31 +20,35 @@ const SEARCH_TABS = [
 
 type TabLabel = (typeof SEARCH_TABS)[number]["label"];
 
-// ── Module-level caches (persist across navigations / focus-blur cycles) ──────
-let _tabCounts: Record<string, number | null> | null = null;
-let _tabFetch: Promise<Record<string, number | null>> | null = null;
-// Results cache: key = "query|tab", value = result array
-const _resultsCache = new Map<string, any[]>();
+// ─── Fetchers ───────────────────────────────────────────────────────────────
+const searchFetcher = async (url: string) => {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Search failed");
+    const data = await res.json();
+    if (!data.status) return [];
+    return data.data.map((ui: any) => ({
+        id: ui.id,
+        title: ui.title,
+        imageSrc: ui.imageSrc,
+        overview: ui.overview || `High-quality ${ui.category || "asset"} mockup.`,
+    }));
+};
 
-function warmTabCounts(apiUrl: string) {
-    if (_tabCounts) return Promise.resolve(_tabCounts);
-    if (_tabFetch) return _tabFetch;
-    _tabFetch = Promise.all([
-        fetch(`${apiUrl}/api/uis?limit=1`).then(r => r.json()).catch(() => ({})),
-        fetch(`${apiUrl}/api/uis?limit=1&sort=trending`).then(r => r.json()).catch(() => ({})),
-        fetch(`${apiUrl}/api/uis?limit=1&sort=newest`).then(r => r.json()).catch(() => ({})),
-        fetch(`${apiUrl}/api/uis?limit=1&search=PSD`).then(r => r.json()).catch(() => ({})),
-    ]).then(([aj, bj, cj, dj]) => {
-        _tabCounts = {
-            Everything: aj.meta?.total ?? 0,
-            Trending: bj.meta?.total ?? 0,
-            "New Arrival": cj.meta?.total ?? 0,
-            "PSD Files": dj.meta?.total ?? 0,
-        };
-        return _tabCounts;
-    });
-    return _tabFetch;
-}
+const countsFetcher = async (url: string) => {
+    const apiUrl = url.split("?")[0]; // Base URL
+    const [aj, bj, cj, dj] = await Promise.all([
+        fetch(`${apiUrl}/api/uis?limit=1`).then(r => r.json()),
+        fetch(`${apiUrl}/api/uis?limit=1&sort=trending`).then(r => r.json()),
+        fetch(`${apiUrl}/api/uis?limit=1&sort=newest`).then(r => r.json()),
+        fetch(`${apiUrl}/api/uis?limit=1&search=PSD`).then(r => r.json()),
+    ]);
+    return {
+        Everything: aj.meta?.total ?? 0,
+        Trending: bj.meta?.total ?? 0,
+        "New Arrival": cj.meta?.total ?? 0,
+        "PSD Files": dj.meta?.total ?? 0,
+    };
+};
 
 // ── SearchDropdown (results panel) ────────────────────────────────────────────
 type DropdownProps = {
@@ -54,73 +59,34 @@ type DropdownProps = {
 };
 
 const SearchDropdown = React.memo(({ query, activeTab, setActiveTab, onSelect }: DropdownProps) => {
-    const cacheKey = `${query}|${activeTab}`;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1000";
 
-    // Seed from cache immediately — no skeleton flash for repeated queries
-    const [loading, setLoading] = useState(() => !_resultsCache.has(cacheKey));
-    const [results, setResults] = useState<any[]>(() => _resultsCache.get(cacheKey) ?? []);
-    const [tabCounts, setTabCounts] = useState<Record<string, number | null>>(
-        _tabCounts ?? { Everything: null, Trending: null, "New Arrival": null, "PSD Files": null }
+    // ─── Fetch Tab Counts ────────────────────────────────────────────────────
+    const { data: tabCountsData } = useSWR(`${apiUrl}/api/counts`, () => countsFetcher(apiUrl), {
+        revalidateOnFocus: false,
+    });
+    const tabCounts = tabCountsData || { Everything: null, Trending: null, "New Arrival": null, "PSD Files": null };
+
+    // ─── Fetch Search Results ────────────────────────────────────────────────
+    const tab = SEARCH_TABS.find(t => t.label === activeTab)!;
+    const terms: string[] = [];
+    if (query) terms.push(query);
+    if (tab.filter) terms.push(tab.filter);
+    let searchUrl = `${apiUrl}/api/uis?limit=5`;
+    if (terms.length > 0) searchUrl += `&search=${encodeURIComponent(terms.join(" "))}`;
+    if (tab.sort) searchUrl += `&sort=${tab.sort}`;
+
+    const { data: results, isLoading } = useSWR(
+        query ? searchUrl : null, // Only fetch if there is a query, otherwise show trending maybe?
+        searchFetcher,
+        {
+            keepPreviousData: true,
+            revalidateOnFocus: false,
+        }
     );
 
-    // Keep a ref so the effect closure always reads the latest cacheKey
-    const cacheKeyRef = useRef(cacheKey);
-    cacheKeyRef.current = cacheKey;
-
-    // Sync cached tab counts into local state once available
-    useEffect(() => {
-        if (_tabCounts) { setTabCounts(_tabCounts); return; }
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1000";
-        let active = true;
-        warmTabCounts(apiUrl).then(counts => {
-            if (active) setTabCounts(counts);
-        });
-        return () => { active = false; };
-    }, []);
-
-    // Fetch results — skip network call if already cached
-    useEffect(() => {
-        const key = cacheKey;
-
-        // Instantly show cached data, no loading state needed
-        if (_resultsCache.has(key)) {
-            setResults(_resultsCache.get(key)!);
-            setLoading(false);
-            return;
-        }
-
-        setLoading(true);
-        let alive = true;
-        const run = async () => {
-            try {
-                const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1000";
-                const tab = SEARCH_TABS.find(t => t.label === activeTab)!;
-                const terms: string[] = [];
-                if (query) terms.push(query);
-                if (tab.filter) terms.push(tab.filter);
-                let url = `${apiUrl}/api/uis?limit=5`;
-                if (terms.length > 0) url += `&search=${encodeURIComponent(terms.join(" "))}`;
-                if (tab.sort) url += `&sort=${tab.sort}`;
-                const res = await fetch(url);
-                const data = await res.json();
-                if (data.status && alive) {
-                    const mapped = data.data.map((ui: any) => ({
-                        id: ui.id,
-                        title: ui.title,
-                        imageSrc: ui.imageSrc,
-                        overview: ui.overview || `High-quality ${ui.category || "asset"} mockup.`,
-                    }));
-                    _resultsCache.set(key, mapped);
-                    if (alive) { setResults(mapped); setLoading(false); }
-                }
-            } catch { /* silent */ } finally {
-                if (alive) setLoading(false);
-            }
-        };
-        // Short debounce only for new queries — cached ones are instant
-        const t = setTimeout(run, 220);
-        return () => { alive = false; clearTimeout(t); };
-    }, [query, activeTab]); // eslint-disable-line react-hooks/exhaustive-deps
+    const displayResults = results || [];
+    const loading = isLoading;
 
     return (
         <motion.div
@@ -165,8 +131,8 @@ const SearchDropdown = React.memo(({ query, activeTab, setActiveTab, onSelect }:
                             </div>
                         </div>
                     ))
-                ) : results.length > 0 ? (
-                    results.map((item, i) => (
+                ) : displayResults.length > 0 ? (
+                    displayResults.map((item: any, i: number) => (
                         <button
                             key={i}
                             onMouseDown={e => { e.preventDefault(); onSelect(item.title, item.id); }}
@@ -213,10 +179,10 @@ export const SearchBar = React.memo(({ onCommit }: SearchBarProps) => {
     const router = useRouter();
 
     // Warm the tab-count cache as soon as the search bar mounts
-    useEffect(() => {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1000";
-        warmTabCounts(apiUrl);
-    }, []);
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1000";
+    useSWR(`${apiUrl}/api/counts`, () => countsFetcher(apiUrl), {
+        revalidateOnFocus: false,
+    });
 
     // Debounce: only notify parent after user stops typing
     useEffect(() => {
