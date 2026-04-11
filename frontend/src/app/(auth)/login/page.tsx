@@ -4,10 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, KeyRound, Fingerprint } from 'lucide-react';
-
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, KeyRound, Fingerprint, Sparkles } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -179,47 +176,52 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col font-sans text-gray-900 selection:bg-blue-100 selection:text-blue-900">
-      <Header />
+    <div className="min-h-screen bg-white flex font-sans text-gray-900 selection:bg-blue-100 selection:text-blue-900">
 
-      <main className="flex-1 flex flex-col items-center justify-center py-20 px-4 sm:px-6 relative overflow-hidden">
-        {/* Subtle Background Pattern */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,white_100%)] pointer-events-none opacity-80" />
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-50/50 rounded-full blur-3xl -z-10 mix-blend-multiply transition-all duration-1000 hover:scale-110" />
-        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-blue-50/50 rounded-full blur-3xl -z-10 mix-blend-multiply transition-all duration-1000 hover:scale-110" />
+      {/* Left Panel: Auth Form */}
+      <div className="w-full lg:w-[45%] flex flex-col relative px-8 py-10 sm:px-16 sm:py-12 bg-white">
 
-        <div className="w-full max-w-[420px] mx-auto z-10 transition-all duration-500 ease-in-out transform">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2.5 mb-5 group cursor-default">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center p-1.5 shadow-sm ring-1 ring-blue-100/50">
-                <img src="/logo/M_SHAPE.svg" alt="Logo" className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" />
-              </div>
-              <span className="font-black tracking-widest text-xl text-[#1200FF]">MOCKUPIDEA</span>
+        {/* Simple Brand Header */}
+        <div className="flex justify-between items-center w-full mb-12 sm:mb-20">
+          <Link href="/" className="inline-flex items-center gap-2.5 group cursor-pointer transition-transform hover:opacity-80">
+            <div className="w-9 h-9 rounded-xl bg-[#1200FF] flex items-center justify-center p-1.5 shadow-md shadow-[#1200FF]/20">
+              <img src="/logo/M_SHAPE.svg" alt="Logo" className="w-full h-full object-contain brightness-0 invert" />
             </div>
+            <span className="font-extrabold tracking-widest text-[#1200FF] text-[15px]">MOCKUPIDEA</span>
+          </Link>
+          <Link href="/signup" className="text-[13px] font-bold text-gray-400 hover:text-[#1200FF] transition-colors uppercase tracking-wider">
+            Sign Up Instead
+          </Link>
+        </div>
 
-            <h2 className="text-[32px] font-bold tracking-tight text-gray-900 mb-2">
-              {flow === 'login' && "Welcome Back"}
-              {flow === 'forgot-email' && "Recovery Request"}
-              {flow === 'forgot-otp' && "Verify Identity"}
-              {flow === 'forgot-reset' && "Secure Reset"}
+        {/* Dynamic Form Container */}
+        <div className="flex-1 flex flex-col justify-center max-w-[400px] w-full mx-auto">
+          <div className="mb-10">
+            <h2 className="text-[32px] sm:text-[36px] font-extrabold tracking-tight text-gray-900 mb-3 leading-tight">
+              {flow === 'login' && "Welcome back."}
+              {flow === 'forgot-email' && "Recovery Request."}
+              {flow === 'forgot-otp' && "Verify Identity."}
+              {flow === 'forgot-reset' && "Secure Reset."}
             </h2>
-            <p className="text-gray-500 font-medium text-[15px]">
-              {flow === 'login' && "Sign in to access your premium mockups."}
-              {flow === 'forgot-email' && "Enter your email to receive a recovery code."}
+            <p className="text-gray-500 font-medium text-[15px] leading-relaxed">
+              {flow === 'login' && "Enter your credentials to access your workspace."}
+              {flow === 'forgot-email' && "Enter your email to receive a secure recovery code."}
               {flow === 'forgot-otp' && `Enter the 6-digit code sent to ${formData.email}`}
-              {flow === 'forgot-reset' && "Create a new secure password for your account."}
+              {flow === 'forgot-reset' && "Create a new strong password for your account."}
             </p>
           </div>
 
-          <div className="bg-white/90 backdrop-blur-md rounded-3xl p-8 sm:p-10 shadow-[0_15px_40px_rgba(18,0,255,0.06)] border border-gray-100/80 w-full">
+          <div className="w-full">
             {flow === 'login' && (
               <form onSubmit={handleLogin} className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="space-y-5">
+                <div className="space-y-4">
+
+                  {/* Elite Input Styling */}
                   <div className="space-y-1.5 group">
-                    <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-1">Email Address</label>
+                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-0.5">Email Address</label>
                     <div className="relative">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1200FF] transition-colors duration-300">
-                        <Mail className="w-5 h-5" strokeWidth={2} />
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#1200FF] transition-colors duration-300 pointer-events-none">
+                        <Mail className="w-5 h-5" strokeWidth={2.5} />
                       </div>
                       <input
                         type="email"
@@ -227,26 +229,26 @@ export default function LoginPage() {
                         value={formData.email}
                         onChange={handleInputChange}
                         required
-                        className="w-full bg-gray-50/80 border border-gray-200/80 focus:border-[#1200FF]/50 focus:bg-white focus:ring-[4px] focus:ring-[#1200FF]/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] font-medium placeholder:text-gray-400 outline-none transition-all duration-300"
-                        placeholder="your@email.com"
+                        className="w-full bg-white border border-gray-200 focus:border-[#1200FF] focus:ring-4 focus:ring-[#1200FF]/10 pl-12 pr-4 py-3.5 rounded-xl text-gray-900 text-[15px] font-medium placeholder:text-gray-300 outline-none transition-all duration-300 shadow-sm [&:-webkit-autofill]:bg-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_white] [&:-webkit-autofill]:[-webkit-text-fill-color:#111827]"
+                        placeholder="you@company.com"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1.5 group">
-                    <div className="flex justify-between items-center px-1">
-                      <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Password</label>
+                    <div className="flex justify-between items-center">
+                      <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-0.5">Password</label>
                       <button
                         type="button"
                         onClick={() => setFlow('forgot-email')}
                         className="text-[11px] font-bold text-[#1200FF] hover:text-blue-800 transition-colors tracking-wide"
                       >
-                        FORGOT?
+                        FORGET?
                       </button>
                     </div>
                     <div className="relative">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1200FF] transition-colors duration-300">
-                        <Lock className="w-5 h-5" strokeWidth={2} />
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#1200FF] transition-colors duration-300 pointer-events-none">
+                        <Lock className="w-5 h-5" strokeWidth={2.5} />
                       </div>
                       <input
                         type={showPassword ? "text" : "password"}
@@ -254,7 +256,7 @@ export default function LoginPage() {
                         value={formData.password}
                         onChange={handleInputChange}
                         required
-                        className="w-full bg-gray-50/80 border border-gray-200/80 focus:border-[#1200FF]/50 focus:bg-white focus:ring-[4px] focus:ring-[#1200FF]/10 pl-12 pr-12 py-3.5 rounded-2xl text-gray-900 text-[15px] font-medium placeholder:text-gray-400 outline-none transition-all duration-300"
+                        className="w-full bg-white border border-gray-200 focus:border-[#1200FF] focus:ring-4 focus:ring-[#1200FF]/10 pl-12 pr-12 py-3.5 rounded-xl text-gray-900 text-[15px] font-medium placeholder:text-gray-300 outline-none transition-all duration-300 shadow-sm [&:-webkit-autofill]:bg-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_white] [&:-webkit-autofill]:[-webkit-text-fill-color:#111827]"
                         placeholder="••••••••"
                       />
                       <button
@@ -262,14 +264,14 @@ export default function LoginPage() {
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors"
                       >
-                        {showPassword ? <EyeOff className="w-4 h-4" strokeWidth={2.5} /> : <Eye className="w-4 h-4" strokeWidth={2.5} />}
+                        {showPassword ? <EyeOff className="w-5 h-5" strokeWidth={2} /> : <Eye className="w-5 h-5" strokeWidth={2} />}
                       </button>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-start px-1 mt-4">
-                  <label className="flex items-center gap-2.5 cursor-pointer group hover:opacity-80 transition-opacity">
+                <div className="flex items-center justify-start mt-2">
+                  <label className="flex items-center gap-3 cursor-pointer group hover:opacity-80 transition-opacity">
                     <div className="relative flex items-center justify-center">
                       <input
                         type="checkbox"
@@ -277,20 +279,20 @@ export default function LoginPage() {
                         onChange={(e) => setRememberMe(e.target.checked)}
                         className="peer sr-only"
                       />
-                      <div className="w-[18px] h-[18px] border-2 border-gray-300 rounded-[5px] peer-checked:bg-[#1200FF] peer-checked:border-[#1200FF] transition-all duration-200 shadow-sm" />
+                      <div className="w-5 h-5 border-[2.5px] border-gray-200 rounded-[6px] peer-checked:bg-[#1200FF] peer-checked:border-[#1200FF] transition-all duration-200" />
                       <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
-                    <span className="text-[13px] font-semibold text-gray-600 transition-colors select-none pt-0.5">Remember Me</span>
+                    <span className="text-[14px] font-semibold text-gray-500 pt-0.5 select-none">Remember Me</span>
                   </label>
                 </div>
 
-                <div className="space-y-4 pt-4">
+                <div className="space-y-5 pt-4">
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full group bg-[#1200FF] hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-70 shadow-md shadow-[#1200FF]/25 active:scale-[0.98] flex items-center justify-center relative overflow-hidden"
+                    className="w-full group bg-[#1200FF] hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-[15px] transition-all duration-300 disabled:opacity-70 shadow-[0_8px_20px_rgba(18,0,255,0.25)] hover:shadow-[0_12px_25px_rgba(18,0,255,0.35)] active:scale-[0.98] flex items-center justify-center relative overflow-hidden"
                   >
                     <span className="flex items-center gap-2 relative z-10 transition-transform group-hover:gap-3">
                       {loading ? "Authenticating..." : "Sign In"}
@@ -298,11 +300,11 @@ export default function LoginPage() {
                     </span>
                   </button>
 
-                  <div className="relative flex items-center justify-center my-6">
+                  <div className="relative flex items-center justify-center py-2">
                     <div className="absolute inset-0 flex items-center">
                       <div className="w-full border-t border-gray-100"></div>
                     </div>
-                    <div className="relative bg-white px-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+                    <div className="relative bg-white px-4 text-[11px] font-bold text-gray-300 uppercase tracking-widest">
                       Or continue with
                     </div>
                   </div>
@@ -310,7 +312,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={handleGoogleLogin}
-                    className="w-full bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 py-3.5 rounded-xl font-bold text-[15px] transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
+                    className="w-full bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 py-3.5 rounded-xl font-bold text-[15px] transition-all flex items-center justify-center gap-3 active:scale-[0.98] shadow-sm"
                   >
                     <svg className="w-5 h-5" viewBox="0 0 24 24">
                       <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -325,15 +327,12 @@ export default function LoginPage() {
             )}
 
             {flow === 'forgot-email' && (
-              <form onSubmit={handleForgotPasswordOTP} className="space-y-6 animate-in slide-in-from-right-8 duration-300">
-                <div className="w-14 h-14 bg-blue-50/80 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-blue-100">
-                  <ShieldCheck className="w-7 h-7 text-[#1200FF]" />
-                </div>
+              <form onSubmit={handleForgotPasswordOTP} className="space-y-6 animate-in slide-in-from-right-8 duration-300 mt-2">
                 <div className="space-y-1.5 group">
-                  <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-1">Registered Email</label>
+                  <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-0.5">Registered Email</label>
                   <div className="relative">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1200FF] transition-colors">
-                      <Mail className="w-5 h-5" strokeWidth={2} />
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#1200FF] transition-colors pointer-events-none">
+                      <ShieldCheck className="w-5 h-5" strokeWidth={2.5} />
                     </div>
                     <input
                       type="email"
@@ -341,8 +340,8 @@ export default function LoginPage() {
                       value={formData.email}
                       onChange={handleInputChange}
                       required
-                      className="w-full bg-gray-50/80 border border-gray-200/80 focus:border-[#1200FF]/50 focus:bg-white focus:ring-[4px] focus:ring-[#1200FF]/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] font-medium placeholder:text-gray-400 outline-none transition-all duration-300"
-                      placeholder="name@example.com"
+                      className="w-full bg-white border border-gray-200 focus:border-[#1200FF] focus:ring-4 focus:ring-[#1200FF]/10 pl-12 pr-4 py-3.5 rounded-xl text-gray-900 text-[15px] font-medium placeholder:text-gray-300 outline-none transition-all duration-300 shadow-sm"
+                      placeholder="name@company.com"
                     />
                   </div>
                 </div>
@@ -351,9 +350,9 @@ export default function LoginPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-[#1200FF] hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-70 shadow-md shadow-[#1200FF]/25 active:scale-[0.98]"
+                    className="w-full bg-[#1200FF] hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-70 shadow-md active:scale-[0.98]"
                   >
-                    {loading ? "Processing..." : "Continue"}
+                    {loading ? "Processing..." : "Send Recovery Code"}
                   </button>
                   <button
                     type="button"
@@ -367,10 +366,7 @@ export default function LoginPage() {
             )}
 
             {flow === 'forgot-otp' && (
-              <form onSubmit={handleVerifyOTP} className="space-y-8 animate-in slide-in-from-right-8 duration-300">
-                <div className="w-14 h-14 bg-blue-50/80 rounded-2xl flex items-center justify-center mx-auto mb-2 shadow-sm border border-blue-100">
-                  <KeyRound className="w-7 h-7 text-[#1200FF]" />
-                </div>
+              <form onSubmit={handleVerifyOTP} className="space-y-8 animate-in slide-in-from-right-8 duration-300 mt-2">
                 <div className="space-y-4">
                   <div className="relative group mx-2">
                     <input
@@ -378,19 +374,19 @@ export default function LoginPage() {
                       maxLength={6}
                       value={otp}
                       onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                      className="w-full bg-gray-50/80 border border-gray-200/80 focus:border-[#1200FF]/50 focus:bg-white focus:ring-[4px] focus:ring-[#1200FF]/10 py-5 text-center text-[36px] font-black tracking-[0.3em] text-gray-900 rounded-2xl outline-none transition-all duration-300 placeholder:text-gray-300"
+                      className="w-full bg-white border border-gray-200 focus:border-[#1200FF] focus:ring-4 focus:ring-[#1200FF]/10 py-5 text-center text-[36px] font-black tracking-[0.3em] text-gray-900 rounded-2xl outline-none transition-all duration-300 placeholder:text-gray-200 shadow-sm"
                       placeholder="000000"
                       autoFocus
                     />
                   </div>
-                  <p className="text-center text-gray-400 text-[11px] font-bold uppercase tracking-widest">Verification Code</p>
+                  <p className="text-center text-gray-400 text-[11px] font-bold uppercase tracking-widest">Secret OTP Code</p>
                 </div>
 
                 <div className="space-y-3 pt-2">
                   <button
                     type="submit"
                     disabled={otp.length < 6 || loading}
-                    className="w-full bg-[#1200FF] hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-70 shadow-md shadow-[#1200FF]/25 active:scale-[0.98]"
+                    className="w-full bg-[#1200FF] hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-70 shadow-md active:scale-[0.98]"
                   >
                     {loading ? "Verifying..." : "Verify Code"}
                   </button>
@@ -406,23 +402,20 @@ export default function LoginPage() {
             )}
 
             {flow === 'forgot-reset' && (
-              <form onSubmit={handleResetPassword} className="space-y-6 animate-in slide-in-from-right-8 duration-300">
-                <div className="w-14 h-14 bg-blue-50/80 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-blue-100">
-                  <Fingerprint className="w-7 h-7 text-[#1200FF]" />
-                </div>
+              <form onSubmit={handleResetPassword} className="space-y-6 animate-in slide-in-from-right-8 duration-300 mt-2">
                 <div className="space-y-5">
                   <div className="space-y-1.5 group">
-                    <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-1">New Password</label>
+                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-0.5">New Password</label>
                     <div className="relative">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1200FF] transition-colors">
-                        <Lock className="w-5 h-5" strokeWidth={2} />
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#1200FF] transition-colors pointer-events-none">
+                        <Lock className="w-5 h-5" strokeWidth={2.5} />
                       </div>
                       <input
                         type={showPassword ? "text" : "password"}
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         required
-                        className="w-full bg-gray-50/80 border border-gray-200/80 focus:border-[#1200FF]/50 focus:bg-white focus:ring-[4px] focus:ring-[#1200FF]/10 pl-12 pr-12 py-3.5 rounded-2xl text-gray-900 text-[15px] font-medium outline-none transition-all duration-300"
+                        className="w-full bg-white border border-gray-200 focus:border-[#1200FF] focus:ring-4 focus:ring-[#1200FF]/10 pl-12 pr-12 py-3.5 rounded-xl text-gray-900 text-[15px] font-medium outline-none transition-all duration-300 shadow-sm [&:-webkit-autofill]:bg-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_white] [&:-webkit-autofill]:[-webkit-text-fill-color:#111827]"
                         placeholder="••••••••"
                       />
                       <button
@@ -430,23 +423,23 @@ export default function LoginPage() {
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors"
                       >
-                        {showPassword ? <EyeOff className="w-4 h-4" strokeWidth={2.5} /> : <Eye className="w-4 h-4" strokeWidth={2.5} />}
+                        {showPassword ? <EyeOff className="w-5 h-5" strokeWidth={2} /> : <Eye className="w-5 h-5" strokeWidth={2} />}
                       </button>
                     </div>
                   </div>
 
                   <div className="space-y-1.5 group">
-                    <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-1">Confirm New Password</label>
+                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-0.5">Confirm New Password</label>
                     <div className="relative">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1200FF] transition-colors">
-                        <Lock className="w-5 h-5" strokeWidth={2} />
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#1200FF] transition-colors pointer-events-none">
+                        <Fingerprint className="w-5 h-5" strokeWidth={2.5} />
                       </div>
                       <input
                         type="password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         required
-                        className="w-full bg-gray-50/80 border border-gray-200/80 focus:border-[#1200FF]/50 focus:bg-white focus:ring-[4px] focus:ring-[#1200FF]/10 pl-12 pr-4 py-3.5 rounded-2xl text-gray-900 text-[15px] font-medium outline-none transition-all duration-300"
+                        className="w-full bg-white border border-gray-200 focus:border-[#1200FF] focus:ring-4 focus:ring-[#1200FF]/10 pl-12 pr-4 py-3.5 rounded-xl text-gray-900 text-[15px] font-medium outline-none transition-all duration-300 shadow-sm [&:-webkit-autofill]:bg-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_white] [&:-webkit-autofill]:[-webkit-text-fill-color:#111827]"
                         placeholder="••••••••"
                       />
                     </div>
@@ -457,34 +450,35 @@ export default function LoginPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-[#1200FF] hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-70 shadow-md shadow-[#1200FF]/25 active:scale-[0.98]"
+                    className="w-full bg-[#1200FF] hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-[15px] transition-all disabled:opacity-70 shadow-md active:scale-[0.98]"
                   >
                     {loading ? "Updating..." : "Update Password"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFlow('forgot-otp')}
-                    className="w-full text-gray-400 hover:text-gray-900 text-[13px] font-bold uppercase tracking-wide transition-colors mt-2"
-                  >
-                    Back
                   </button>
                 </div>
               </form>
             )}
-
-            <div className="mt-8 pt-6 border-t border-gray-100 text-center">
-              <p className="text-gray-500 text-[14.5px] font-medium">
-                Not a member? {' '}
-                <Link href="/signup" className="text-[#1200FF] font-bold hover:text-blue-800 transition-colors">
-                  Create an account
-                </Link>
-              </p>
-            </div>
           </div>
         </div>
-      </main>
 
-      <Footer />
+        {/* Form Footer */}
+        <div className="mt-auto text-left opacity-80 pt-10">
+          <p className="text-gray-400 text-[13px] font-medium">
+            © 2026 MOCKUPIDEA. All rights reserved.
+          </p>
+        </div>
+      </div>
+
+      {/* Right Panel: Immersive Graphic Component */}
+      <div className="hidden lg:flex flex-1 bg-blue-50 relative overflow-hidden flex-col items-center justify-center border-l border-gray-100">
+        <div className="absolute inset-0">
+          <img
+            src="https://static.vecteezy.com/system/resources/thumbnails/003/689/228/small_2x/online-registration-or-sign-up-login-for-account-on-smartphone-app-user-interface-with-secure-password-mobile-application-for-ui-web-banner-access-cartoon-people-illustration-vector.jpg"
+            alt="Authentication Illustration"
+            className="w-full h-full object-cover object-center"
+          />
+        </div>
+      </div>
+
     </div>
   );
 }

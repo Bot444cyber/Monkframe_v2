@@ -15,7 +15,7 @@ import Link from 'next/link';
 
 // ─── Mega-menu cache (module-level — persists across hovers/navigations) ──────
 const _megaCache = new Map<string, any[]>();
-const _megaFetching = new Set<string>();
+const _megaPromises = new Map<string, Promise<any[]>>();
 
 // ─── Mega-menu ────────────────────────────────────────────────────────────────
 const DynamicMegaMenu = React.memo(({ category, onClose }: { category: string; onClose: () => void }) => {
@@ -30,26 +30,22 @@ const DynamicMegaMenu = React.memo(({ category, onClose }: { category: string; o
       setLoading(false);
       return;
     }
-    // Fetch in progress by another instance → poll until ready
-    if (_megaFetching.has(category)) {
-      let alive = true;
-      const poll = setInterval(() => {
-        if (_megaCache.has(category)) {
-          clearInterval(poll);
-          if (alive) { setItems(_megaCache.get(category)!); setLoading(false); }
-        }
-      }, 80);
-      return () => { alive = false; clearInterval(poll); };
+
+    let active = true;
+
+    // Fetch in progress by another instance → attach to that promise
+    if (_megaPromises.has(category)) {
+      _megaPromises.get(category)!.then(data => {
+        if (active) { setItems(data); setLoading(false); }
+      });
+      return () => { active = false; };
     }
 
     // First fetch for this category
-    _megaFetching.add(category);
-    let active = true;
-    (async () => {
-      try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
-        const res = await fetch(`${apiUrl}/api/uis?category=${encodeURIComponent(category)}&limit=7`);
-        const data = await res.json();
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
+    const fetchPromise = fetch(`${apiUrl}/api/uis?category=${encodeURIComponent(category)}&limit=7`)
+      .then(res => res.json())
+      .then(data => {
         if (data.status) {
           const mapped = data.data.map((ui: any) => {
             const rawDesc = ui.overview || 'High-fidelity mockups for your next big project.';
@@ -60,15 +56,21 @@ const DynamicMegaMenu = React.memo(({ category, onClose }: { category: string; o
             return { id: ui.id, title: shortTitle, imageSrc: ui.imageSrc, description: plainDesc };
           });
           _megaCache.set(category, mapped);
-          if (active) { setItems(mapped); setLoading(false); }
+          return mapped;
         }
-      } catch (err) {
+        return [];
+      })
+      .catch(err => {
         console.error("Failed to fetch mega menu data:", err);
-        if (active) setLoading(false);
-      } finally {
-        _megaFetching.delete(category);
-      }
-    })();
+        return [];
+      });
+
+    _megaPromises.set(category, fetchPromise);
+
+    fetchPromise.then(data => {
+      if (active) { setItems(data); setLoading(false); }
+    });
+
     return () => { active = false; };
   }, [category]);
 
@@ -328,9 +330,9 @@ function HomeContent() {
                         setSelectedCategory(item);
                         setPage(1);
                         if (item === "All") {
-                          router.push('/', { scroll: false });
+                          window.history.pushState(null, '', '/');
                         } else {
-                          router.push(`/?category=${encodeURIComponent(item)}`, { scroll: false });
+                          window.history.pushState(null, '', `/?category=${encodeURIComponent(item)}`);
                         }
                       }}
                       className={`flex items-center gap-1 py-1.5 transition-colors cursor-pointer ${isAll

@@ -21,30 +21,28 @@ type TabLabel = (typeof SEARCH_TABS)[number]["label"];
 
 // ── Module-level caches (persist across navigations / focus-blur cycles) ──────
 let _tabCounts: Record<string, number | null> | null = null;
-let _tabFetch: Promise<void> | null = null;
+let _tabFetch: Promise<Record<string, number | null>> | null = null;
 // Results cache: key = "query|tab", value = result array
 const _resultsCache = new Map<string, any[]>();
 
 function warmTabCounts(apiUrl: string) {
-    if (_tabCounts) return;
-    if (_tabFetch) return;
-    _tabFetch = (async () => {
-        try {
-            const [a, b, c, d] = await Promise.all([
-                fetch(`${apiUrl}/api/uis?limit=1`),
-                fetch(`${apiUrl}/api/uis?limit=1&sort=trending`),
-                fetch(`${apiUrl}/api/uis?limit=1&sort=newest`),
-                fetch(`${apiUrl}/api/uis?limit=1&search=PSD`),
-            ]);
-            const [aj, bj, cj, dj] = await Promise.all([a.json(), b.json(), c.json(), d.json()]);
-            _tabCounts = {
-                Everything: aj.meta?.total ?? 0,
-                Trending: bj.meta?.total ?? 0,
-                "New Arrival": cj.meta?.total ?? 0,
-                "PSD Files": dj.meta?.total ?? 0,
-            };
-        } catch { /* silent */ }
-    })();
+    if (_tabCounts) return Promise.resolve(_tabCounts);
+    if (_tabFetch) return _tabFetch;
+    _tabFetch = Promise.all([
+        fetch(`${apiUrl}/api/uis?limit=1`).then(r => r.json()).catch(() => ({})),
+        fetch(`${apiUrl}/api/uis?limit=1&sort=trending`).then(r => r.json()).catch(() => ({})),
+        fetch(`${apiUrl}/api/uis?limit=1&sort=newest`).then(r => r.json()).catch(() => ({})),
+        fetch(`${apiUrl}/api/uis?limit=1&search=PSD`).then(r => r.json()).catch(() => ({})),
+    ]).then(([aj, bj, cj, dj]) => {
+        _tabCounts = {
+            Everything: aj.meta?.total ?? 0,
+            Trending: bj.meta?.total ?? 0,
+            "New Arrival": cj.meta?.total ?? 0,
+            "PSD Files": dj.meta?.total ?? 0,
+        };
+        return _tabCounts;
+    });
+    return _tabFetch;
 }
 
 // ── SearchDropdown (results panel) ────────────────────────────────────────────
@@ -73,11 +71,11 @@ const SearchDropdown = React.memo(({ query, activeTab, setActiveTab, onSelect }:
     useEffect(() => {
         if (_tabCounts) { setTabCounts(_tabCounts); return; }
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1000";
-        warmTabCounts(apiUrl);
-        const interval = setInterval(() => {
-            if (_tabCounts) { setTabCounts(_tabCounts); clearInterval(interval); }
-        }, 200);
-        return () => clearInterval(interval);
+        let active = true;
+        warmTabCounts(apiUrl).then(counts => {
+            if (active) setTabCounts(counts);
+        });
+        return () => { active = false; };
     }, []);
 
     // Fetch results — skip network call if already cached
