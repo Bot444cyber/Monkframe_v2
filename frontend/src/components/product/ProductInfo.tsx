@@ -62,6 +62,10 @@ export default function ProductInfo({ product, isWished, onToggleWishlist }: Pro
     // Combine highlights and additional info items for a comprehensive list
     const allInfoItems = [...new Set([...highlights, ...additionalInfoItems])];
 
+    const overview = product?.overview || product?.description || "This premium quality UI kit is carefully crafted and organized. Highly useful for any professional design work, featuring a modern aesthetic and scalable components.";
+    const isLongDescription = overview.length > 350;
+    const [isExpanded, setIsExpanded] = React.useState(false);
+
     return (
         <div className="w-full flex flex-col gap-10 relative">
             {/* Header Section */}
@@ -98,13 +102,33 @@ export default function ProductInfo({ product, isWished, onToggleWishlist }: Pro
             </div>
 
             {/* Description / Overview */}
-            <div className="relative">
+            <div className="relative group/desc">
                 <div
-                    className="pl-0 text-gray-600 leading-relaxed text-[16px] font-medium selection:bg-blue-500/30 wrap-break-word whitespace-pre-wrap opacity-90"
+                    className={`pl-0 text-gray-700 leading-relaxed text-[16px] font-medium selection:bg-blue-500/30 wrap-break-word whitespace-pre-wrap transition-all duration-500 ${!isExpanded && isLongDescription ? 'max-h-[160px] overflow-hidden' : 'max-h-[5000px]'}`}
                     dangerouslySetInnerHTML={{
-                        __html: parseMarkdown(product?.overview || product?.description || "This premium quality UI kit is carefully crafted and organized. Highly useful for any professional design work, featuring a modern aesthetic and scalable components.", true)
+                        __html: parseMarkdown(isExpanded || !isLongDescription ? overview : overview.substring(0, 350) + '...', true)
                     }}
                 />
+                {isLongDescription && (
+                    <div className="mt-4 flex justify-start">
+                        <button
+                            onClick={() => setIsExpanded(!isExpanded)}
+                            className="group/btn flex items-center gap-2 px-5 py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-[11px] font-black uppercase tracking-[0.12em] rounded-xl transition-all active:scale-95 shadow-sm border border-blue-100/50"
+                        >
+                            {isExpanded ? (
+                                <>
+                                    Show Less
+                                    <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover/btn:-translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" /></svg>
+                                </>
+                            ) : (
+                                <>
+                                    Read Full Description
+                                    <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover/btn:translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" /></svg>
+                                </>
+                            )}
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Additional Information Section (Large Pill Design) */}

@@ -52,7 +52,7 @@ const ProductCard = React.memo(({ product, priority = false }: { product: Produc
                             priority={priority}
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105 will-change-transform transform-gpu backface-hidden"
-                            unoptimized={product.imageSrc.includes('drive.google.com')}
+                            unoptimized={product.imageSrc.startsWith('http') || product.imageSrc.startsWith('/api')}
                             {...({ referrerPolicy: "no-referrer" } as any)}
                         />
                     ) : (

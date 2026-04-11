@@ -154,10 +154,6 @@ export default function ProductDetailsPage() {
                     <div className="w-full lg:w-[62%] flex flex-col gap-12 h-fit">
                         {/* Huge Vertical Stack */}
                         <ProductGallery product={product} />
-
-                        <div className="mt-20">
-                            <CommentSection uiId={product.id} variant="embedded" />
-                        </div>
                     </div>
 
                     {/* Right Column - Meta Data (Sticky) */}
