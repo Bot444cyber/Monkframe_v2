@@ -104,11 +104,11 @@ export default function DynamicMegaMenu({ category, onClose }: { category: strin
                                 src={trendingItem.imageSrc}
                                 alt={trendingItem.title}
                                 fill
-                                className="object-cover opacity-20 group-hover:scale-105 transition-transform duration-700"
+                                className="object-cover opacity-50 group-hover:scale-105 transition-transform duration-700"
                                 referrerPolicy="no-referrer"
                             />
                         )}
-                        <div className="p-6 relative z-10 flex flex-col h-full bg-linear-to-t from-blue-900/40 to-transparent">
+                        <div className="p-6 relative z-10 flex flex-col h-full bg-linear-to-t from-blue-900/80 to-transparent">
                             <div>
                                 <span className="text-[11px] font-black text-blue-200 uppercase tracking-widest bg-blue-800/50 px-2 py-0.5 rounded backdrop-blur-sm">Trending</span>
                                 <h3 className="mt-4 text-[18px] font-black text-white leading-snug group-hover:text-blue-100 transition-colors" title={trendingItem.title}>{trendingItem.title}</h3>
