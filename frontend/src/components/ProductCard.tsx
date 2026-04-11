@@ -7,7 +7,7 @@ import CommentSection from './CommentSection';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
 
-export default function ProductCard({ product, priority = false }: { product: Product; priority?: boolean }) {
+const ProductCard = React.memo(({ product, priority = false }: { product: Product; priority?: boolean }) => {
     const { user } = useAuth();
     const [isWishlisted, setIsWishlisted] = useState(product.wished);
 
@@ -102,4 +102,7 @@ export default function ProductCard({ product, priority = false }: { product: Pr
 
         </>
     );
-}
+});
+
+ProductCard.displayName = "ProductCard";
+export default ProductCard;

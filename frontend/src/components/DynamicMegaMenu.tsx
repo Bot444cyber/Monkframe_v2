@@ -69,10 +69,10 @@ export default function DynamicMegaMenu({ category, onClose }: { category: strin
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 6 }}
+            initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 6 }}
-            transition={{ duration: 0.14, ease: 'easeOut' }}
+            exit={{ opacity: 0, y: 4 }}
+            transition={{ duration: 0.1, ease: 'linear' }}
             className="mt-2 w-[92vw] max-w-[720px] bg-white border border-gray-100 shadow-2xl rounded-2xl overflow-hidden h-[300px] flex"
         >
             {loading ? (

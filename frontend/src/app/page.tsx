@@ -130,7 +130,7 @@ function HomeContent() {
   }, []);
 
   const handleNavLeave = useCallback(() => {
-    dropdownTimeoutRef.current = setTimeout(() => setActiveDropdown(null), 120);
+    dropdownTimeoutRef.current = setTimeout(() => setActiveDropdown(null), 150);
   }, []);
 
   const keepOpen = useCallback(() => {
