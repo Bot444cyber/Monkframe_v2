@@ -105,6 +105,7 @@ export default function DynamicMegaMenu({ category, onClose }: { category: strin
                                 alt={trendingItem.title}
                                 fill
                                 className="object-cover opacity-20 group-hover:scale-105 transition-transform duration-700"
+                                referrerPolicy="no-referrer"
                             />
                         )}
                         <div className="p-6 relative z-10 flex flex-col h-full bg-linear-to-t from-blue-900/40 to-transparent">

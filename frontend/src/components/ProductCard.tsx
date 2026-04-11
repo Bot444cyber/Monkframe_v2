@@ -53,6 +53,7 @@ export default function ProductCard({ product, priority = false }: { product: Pr
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105 will-change-transform transform-gpu backface-hidden"
                             unoptimized={product.imageSrc.includes('drive.google.com')}
+                            {...({ referrerPolicy: "no-referrer" } as any)}
                         />
                     ) : (
                         <div className="h-full w-full bg-[#EEF0F5]" />

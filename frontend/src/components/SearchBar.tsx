@@ -148,6 +148,7 @@ const SearchDropdown = React.memo(({ query, activeTab, setActiveTab, onSelect }:
                                             fill
                                             className="object-cover rounded-lg"
                                             unoptimized={item.imageSrc.includes('drive.google.com')}
+                                            referrerPolicy="no-referrer"
                                         />
                                     </div>
                                     : <span className="text-xl">📦</span>}
