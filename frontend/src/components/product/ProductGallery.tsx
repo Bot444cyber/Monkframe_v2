@@ -17,10 +17,9 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
         try { showcase = JSON.parse(product.showcase); } catch { showcase = []; }
     }
 
-    // Limit showcase to 3 images
-    const galleryImages = showcase.slice(0, 3).filter(Boolean);
-
-    const allImages = [bannerImage, ...galleryImages].filter(Boolean);
+    // Deduplicate and filter valid images (Primary banner + all showcase)
+    const rawShowcase = Array.isArray(showcase) ? showcase : [];
+    const allImages = [...new Set([bannerImage, ...rawShowcase].filter(Boolean))];
 
     return (
         <div className="flex flex-col gap-10 w-full">
