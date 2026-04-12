@@ -4,6 +4,7 @@ import { OverviewData, TrendingUI } from './types';
 import TradingChart from './TradingChart';
 import { formatDistanceToNow } from 'date-fns';
 import OverviewSkeleton from './OverviewSkeleton';
+import toast from 'react-hot-toast';
 
 interface OverviewSectionProps {
     isLoading?: boolean;
@@ -19,8 +20,23 @@ const Icons = {
     Zap: () => <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />,
     Layers: () => <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />,
     Bell: () => <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" />,
+    Dollar: () => <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />,
+    FileDown: () => (
+        <>
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="12" y1="18" x2="12" y2="12" />
+            <polyline points="9 15 12 18 15 15" />
+        </>
+    ),
+    Users: () => (
+        <>
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+        </>
+    ),
     Grid: () => <path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z" />,
-    Dollar: () => <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
 };
 
 const getColorStyles = (color: string) => {
@@ -29,18 +45,22 @@ const getColorStyles = (color: string) => {
         case 'indigo': return { bg: 'bg-blue-500/10', text: 'text-blue-500', border: 'border-blue-500/20', glow: 'bg-blue-500' };
         case 'blue': return { bg: 'bg-blue-600/10', text: 'text-blue-600', border: 'border-blue-600/20', glow: 'bg-blue-600' };
         case 'rose': return { bg: 'bg-rose-500/10', text: 'text-rose-400', border: 'border-rose-500/20', glow: 'bg-rose-500' };
+        case 'teal': return { bg: 'bg-emerald-500/10', text: 'text-emerald-500', border: 'border-emerald-500/20', glow: 'bg-emerald-500' };
         default: return { bg: 'bg-blue-500/10', text: 'text-blue-500', border: 'border-blue-500/20', glow: 'bg-blue-500' };
     }
 };
 
-const OverviewSection: React.FC<OverviewSectionProps> = ({ isLoading, overviewData, handleLike, handleWishlist, setOpenCommentsId }) => {
-    const [chartTimeRange, setChartTimeRange] = React.useState('7D');
+const OverviewSection: React.FC<OverviewSectionProps> = ({
+    isLoading,
+    overviewData,
+    handleLike,
+    handleWishlist,
+    setOpenCommentsId,
+}) => {
 
-    if (isLoading) {
-        return <OverviewSkeleton />;
-    }
+    if (isLoading) return <OverviewSkeleton />;
 
-    // safe access to data
+    // Safe data access
     const payCompleted = overviewData?.paymentStatusDistribution?.completed || 0;
     const payPending = overviewData?.paymentStatusDistribution?.pending || 0;
     const payFailed = overviewData?.paymentStatusDistribution?.failed || 0;
@@ -54,25 +74,70 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ isLoading, overviewDa
     const displayStats = stats.map((stat) => {
         let icon = Icons.TrendingUp;
         let colorKey = stat.color || 'blue';
-
-        // Normalize label for matching
         const label = stat.label?.toLowerCase() || '';
 
-        // Note: 'Total Downloads' will be intercepted in render
         if (label.includes('download')) { icon = Icons.Download; colorKey = 'emerald'; }
         else if (label.includes('active user')) { icon = Icons.TrendingUp; colorKey = 'indigo'; }
         else if (label.includes('live ui')) { icon = Icons.Layers; colorKey = 'blue'; }
 
-
         return { ...stat, icon, styles: getColorStyles(colorKey) };
     });
 
+    // ─── Download Report ─────────────────────────────────────────────────────────
+    const handleDownloadReport = () => {
+        if (!graphData || graphData.length === 0) {
+            toast.error('No graph data available to export.');
+            return;
+        }
+        const headers = ['Day', 'Users', 'UIs', 'Downloads', 'Revenue (Volume)'];
+        const rows = graphData.map(p => [
+            p.day,
+            p.users,
+            p.uis,
+            (p as any).downloads ?? 0,
+            (p as any).volume ?? 0,
+        ]);
+        const csvContent = [headers, ...rows]
+            .map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+            .join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `mockupidea_overview_report_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        toast.success('Overview report downloaded!');
+    };
+
     return (
         <div className="space-y-8 pb-20">
-            {/* HERO METRICS */}
+
+            {/* ── HEADER ACTIONS ─────────────────────────────────────────────────── */}
+            <div className="flex items-center justify-end">
+                <button
+                    onClick={handleDownloadReport}
+                    className="group relative flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-card border border-border hover:border-emerald-500/40 text-muted-foreground hover:text-emerald-500 text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:bg-emerald-500/5 hover:shadow-[0_0_20px_rgba(16,185,129,0.12)] active:scale-95"
+                    title="Download Overview as CSV"
+                >
+                    {/* Glow decoration */}
+                    <span className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity bg-linear-to-r from-emerald-500/5 to-transparent pointer-events-none" />
+                    <svg
+                        className="w-4 h-4 fill-none stroke-current stroke-2 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0"
+                        viewBox="0 0 24 24"
+                    >
+                        <Icons.FileDown />
+                    </svg>
+                    <span className="relative">Download Report</span>
+                </button>
+            </div>
+
+            {/* ── HERO METRICS ────────────────────────────────────────────────────── */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {displayStats.map((stat, idx) => {
-                    // Custom Revenue Widget (Replacing Total Downloads)
                     if (stat.label === 'Total Revenue') {
                         return (
                             <div key={idx} className="group relative p-6 rounded-3xl bg-card border border-border hover:border-border/80 transition-all duration-500 hover:-translate-y-1 shadow-2xl overflow-hidden">
@@ -86,17 +151,13 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ isLoading, overviewDa
                                             +12.5%
                                         </div>
                                     </div>
-
                                     <div>
                                         <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Total Revenue</p>
                                         <h3 className="text-4xl font-medium text-foreground tracking-tight flex items-baseline gap-1">
                                             <span className="text-2xl text-muted-foreground font-bold">$</span>
-                                            {/* Using a distinct styling for revenue, mocking value scaling if needed, or using stat.value if appropriate */}
                                             {stat.value}
                                         </h3>
                                     </div>
-
-                                    {/* Mini Sparkline Decoration */}
                                     <div className="absolute bottom-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity">
                                         <svg width="60" height="30" viewBox="0 0 60 30" fill="none" className="stroke-blue-500 stroke-2">
                                             <path d="M0 25 L10 20 L20 22 L30 10 L40 15 L50 5 L60 8" />
@@ -129,7 +190,6 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ isLoading, overviewDa
                         </div>
                     );
                 })}
-                {/* Fallback if no stats */}
                 {displayStats.length === 0 && (
                     <div className="col-span-full p-8 text-center text-muted-foreground bg-card rounded-3xl border border-border">
                         No statistics available via API
@@ -137,21 +197,22 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ isLoading, overviewDa
                 )}
             </div>
 
-            {/* ANALYTICS GRID */}
+            {/* ── ANALYTICS GRID ──────────────────────────────────────────────────── */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
                 {/* ECOSYSTEM GROWTH / TRADING TERMINAL */}
                 <div className="lg:col-span-8 bg-card border border-border p-8 rounded-[2.5rem] flex flex-col min-h-[480px] relative shadow-2xl overflow-hidden">
-                    {/* Background decoration */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/5 blur-[80px] rounded-full pointer-events-none -mr-16 -mt-16" />
 
+                    {/* Chart Header */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 relative z-10">
                         <div>
                             <h3 className="text-2xl font-bold text-foreground tracking-tight flex items-center gap-2">
                                 Ecosystem Growth
                                 <span className="text-[10px] font-bold text-blue-600 bg-blue-600/10 border border-blue-600/20 px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1.5">
                                     <span className="relative flex h-1.5 w-1.5">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-600"></span>
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
+                                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-600" />
                                     </span>
                                     Live
                                 </span>
@@ -159,23 +220,44 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ isLoading, overviewDa
                             <p className="text-sm text-muted-foreground font-medium mt-1">7-day ecosystem performance</p>
                         </div>
 
-                        {overviewData.dailyStats && (
-                            <div className="flex items-center gap-4 bg-secondary/50 p-2 rounded-xl border border-border/80 backdrop-blur-sm">
-                                <div className="px-3 border-r border-border/50">
-                                    <div className="text-[10px] text-muted-foreground uppercase font-bold">Today's Vol</div>
-                                    <div className="text-sm font-bold text-foreground">${overviewData.dailyStats.revenue.toLocaleString()}</div>
+                        {/* ── SERIES LEGEND PILLS ── */}
+                        <div className="flex items-center gap-2 bg-secondary/50 p-1.5 rounded-xl border border-border/80 backdrop-blur-sm">
+                            {[
+                                { label: 'Users', color: '#3b82f6' },
+                                { label: 'UIs', color: '#8b5cf6' },
+                                { label: 'Downloads', color: '#06b6d4' },
+                            ].map(s => (
+                                <div key={s.label} className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-transparent">
+                                    <span
+                                        className="w-2 h-2 rounded-full shrink-0"
+                                        style={{ backgroundColor: s.color, boxShadow: `0 0 8px ${s.color}99` }}
+                                    />
+                                    <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: s.color }}>
+                                        {s.label}
+                                    </span>
                                 </div>
-                                <div className="px-1">
-                                    <div className="text-[10px] text-muted-foreground uppercase font-bold">Target</div>
-                                    <div className="text-xs font-bold text-muted-foreground/60">${overviewData.dailyStats.revenueGoal.toLocaleString()}</div>
-                                </div>
-                            </div>
-                        )}
+                            ))}
+                        </div>
                     </div>
 
+                    {/* Today's stats bar */}
+                    {overviewData.dailyStats && (
+                        <div className="flex items-center gap-4 bg-secondary/30 px-4 py-2.5 rounded-xl border border-border/50 mb-6 relative z-10 w-fit">
+                            <div className="px-3 border-r border-border/50">
+                                <div className="text-[10px] text-muted-foreground uppercase font-bold">Today's Vol</div>
+                                <div className="text-sm font-bold text-foreground">${overviewData.dailyStats.revenue.toLocaleString()}</div>
+                            </div>
+                            <div className="px-1">
+                                <div className="text-[10px] text-muted-foreground uppercase font-bold">Target</div>
+                                <div className="text-xs font-bold text-muted-foreground/60">${overviewData.dailyStats.revenueGoal.toLocaleString()}</div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Chart */}
                     <div className="flex-1 w-full min-h-[300px] relative z-10">
-                        {overviewData.graphData && overviewData.graphData.length > 0 ? (
-                            <TradingChart data={overviewData.graphData} />
+                        {graphData.length > 0 ? (
+                            <TradingChart data={graphData} />
                         ) : overviewData.hourlyStats && overviewData.hourlyStats.length > 0 ? (
                             <TradingChart data={overviewData.hourlyStats} />
                         ) : (
@@ -185,26 +267,27 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ isLoading, overviewDa
                         )}
                     </div>
 
+                    {/* Legend */}
                     <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between border-t border-border pt-6 gap-4 relative z-10">
-                        <div className="flex gap-8">
-                            <div className="flex items-center gap-3">
-                                <div className="w-2.5 h-2.5 rounded-full bg-blue-400 shadow-[0_0_12px_rgba(37,99,235,0.6)]"></div>
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] text-muted-foreground font-bold uppercase">Users Acquisition</span>
-                                    {overviewData.dailyStats && (
-                                        <span className="text-xs font-bold text-foreground tabular-nums">{overviewData.dailyStats.users} <span className="text-muted-foreground/60 font-medium text-[10px]">Today</span></span>
-                                    )}
+                        <div className="flex flex-wrap gap-6">
+                            {[
+                                { label: 'Users Acquisition', color: '#1200FF', todayKey: 'users' },
+                                { label: 'UIs Deployment', color: '#4E42FF', todayKey: 'uis' },
+                                { label: 'Downloads', color: '#10b981', todayKey: null },
+                            ].map(s => (
+                                <div key={s.label} className="flex items-center gap-3">
+                                    <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: s.color, boxShadow: `0 0 10px ${s.color}88` }} />
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] text-muted-foreground font-bold uppercase">{s.label}</span>
+                                        {overviewData.dailyStats && s.todayKey && (
+                                            <span className="text-xs font-bold text-foreground tabular-nums">
+                                                {(overviewData.dailyStats as any)[s.todayKey]}{' '}
+                                                <span className="text-muted-foreground/60 font-medium text-[10px]">Today</span>
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <div className="w-2.5 h-2.5 rounded-full bg-blue-600 shadow-[0_0_12px_rgba(30,64,175,0.6)]"></div>
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] text-muted-foreground font-bold uppercase">UIs Deployment</span>
-                                    {overviewData.dailyStats && (
-                                        <span className="text-xs font-bold text-foreground tabular-nums">{overviewData.dailyStats.uis} <span className="text-muted-foreground/60 font-medium text-[10px]">Today</span></span>
-                                    )}
-                                </div>
-                            </div>
+                            ))}
                         </div>
                         <div className="text-[10px] font-mono text-muted-foreground/60">
                             UTC {new Date().toISOString().slice(11, 16)} • MARKET OPEN
@@ -218,12 +301,14 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ isLoading, overviewDa
                     <div className="bg-card border border-border p-8 rounded-[2.5rem] flex flex-col h-[400px] shadow-2xl relative overflow-hidden">
                         <div className="flex items-center justify-between mb-6 shrink-0">
                             <h3 className="text-lg font-bold text-foreground flex items-center gap-3">
-                                <span className="p-2 rounded-xl bg-blue-600/10 text-blue-600 border border-blue-600/10"><svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><Icons.Bell /></svg></span>
+                                <span className="p-2 rounded-xl bg-blue-600/10 text-blue-600 border border-blue-600/10">
+                                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><Icons.Bell /></svg>
+                                </span>
                                 Terminal
                             </h3>
                             <span className="relative flex h-2.5 w-2.5">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-600 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.5)]"></span>
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-600 opacity-75" />
+                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.5)]" />
                             </span>
                         </div>
 
@@ -289,11 +374,13 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ isLoading, overviewDa
                 </div>
             </div>
 
-            {/* TOP PERFORMERS */}
+            {/* ── TOP PERFORMERS ──────────────────────────────────────────────────── */}
             <div className="bg-card border border-border p-8 rounded-[2.5rem] shadow-2xl">
                 <div className="flex items-center justify-between mb-8 px-2">
                     <h3 className="text-xl font-bold text-foreground tracking-tight">Market Movers</h3>
-                    <button className="text-[10px] font-bold text-muted-foreground/60 hover:text-foreground transition-all bg-secondary/20 px-4 py-2 rounded-xl border border-border uppercase tracking-widest hover:bg-secondary/40">Global Ranking</button>
+                    <button className="text-[10px] font-bold text-muted-foreground/60 hover:text-foreground transition-all bg-secondary/20 px-4 py-2 rounded-xl border border-border uppercase tracking-widest hover:bg-secondary/40">
+                        Global Ranking
+                    </button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -306,7 +393,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ isLoading, overviewDa
                                 <h4 className="text-[13px] font-bold text-foreground truncate mb-3 group-hover:text-primary transition-colors">{ui.title}</h4>
                                 <div className="flex items-center gap-4">
                                     <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-blue-600/10 border border-blue-600/10">
-                                        <svg className="w-3 h-3 text-blue-600 fill-current" viewBox="0 0 24 24"><Icons.Download /></svg>
+                                        <svg className="w-3 h-3 text-blue-600 fill-none stroke-current stroke-2" viewBox="0 0 24 24"><Icons.Download /></svg>
                                         <span className="text-[10px] font-bold text-blue-600 tabular-nums">{ui.downloads}</span>
                                     </div>
                                     <button onClick={(e) => handleLike(e, ui.id)} className="flex items-center gap-1.5 group/btn">

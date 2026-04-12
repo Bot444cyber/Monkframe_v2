@@ -121,7 +121,7 @@ export const getStats = async (req: Request, res: Response) => {
 
         // 9. Graph Data (Weekly Activity: Users, UIs & Revenue)
         const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        const graphData: { day: string, uis: number, users: number, volume: number, date: string }[] = [];
+        const graphData: { day: string, uis: number, users: number, volume: number, downloads: number, date: string }[] = [];
 
         // Generate last 7 days keys using LOCAL dates
         for (let i = 6; i >= 0; i--) {
@@ -133,7 +133,8 @@ export const getStats = async (req: Request, res: Response) => {
                 date: toLocalDateStr(d), // LOCAL date string to avoid UTC drift
                 uis: 0,
                 users: 0,
-                volume: 0
+                volume: 0,
+                downloads: 0
             });
         }
 
@@ -170,11 +171,14 @@ export const getStats = async (req: Request, res: Response) => {
         recentPayments.forEach(item => {
             const dateStr = toLocalDateStr(new Date(item.created_at));
             const entry = graphData.find(g => g.date === dateStr);
-            if (entry) entry.volume += item.amount;
+            if (entry) {
+                entry.volume += item.amount;
+                entry.downloads++; // Each completed payment = 1 download event
+            }
         });
 
-        // Remove the 'date' field from final output if not needed, or keep it. Let's keep structure simple.
-        const finalGraphData = graphData.map(({ day, uis, users, volume }) => ({ day, uis, users, volume }));
+        // Remove the 'date' field from final output
+        const finalGraphData = graphData.map(({ day, uis, users, volume, downloads }) => ({ day, uis, users, volume, downloads }));
 
         // 10. Trending UIs
         const trendingUIs = await db.select({
@@ -210,7 +214,7 @@ export const getStats = async (req: Request, res: Response) => {
         };
 
         // 12. Intraday Graph Data (Hourly breakdown for today)
-        const hourlyStats: { day: string, uis: number, users: number, volume: number }[] = [];
+        const hourlyStats: { day: string, uis: number, users: number, volume: number, downloads: number }[] = [];
 
         // Fetch raw data for today to aggregate in memory (efficient for daily range)
         const todayPayments = await db.select({ created_at: payments.created_at, amount: payments.amount })
@@ -232,15 +236,16 @@ export const getStats = async (req: Request, res: Response) => {
             // Filter counts for this hour
             const usersCount = todayUsersList.filter(u => new Date(u.created_at).getHours() === i).length;
             const uisCount = todayUIsList.filter(u => new Date(u.created_at).getHours() === i).length;
-            const revenueSum = todayPayments
-                .filter(p => new Date(p.created_at).getHours() === i)
-                .reduce((acc, curr) => acc + curr.amount, 0);
+            const hourPayments = todayPayments.filter(p => new Date(p.created_at).getHours() === i);
+            const revenueSum = hourPayments.reduce((acc, curr) => acc + curr.amount, 0);
+            const downloadsCount = hourPayments.length; // Each completed payment = 1 download
 
             hourlyStats.push({
                 day: hourLabel, // reusing 'day' key for XAxis compatibility with existing types/chart
                 users: usersCount,
                 uis: uisCount,
-                volume: revenueSum
+                volume: revenueSum,
+                downloads: downloadsCount
             });
         }
 
@@ -251,6 +256,7 @@ export const getStats = async (req: Request, res: Response) => {
                     { label: 'Total Revenue', value: totalRevenue.toLocaleString(), change: revenueChangeStr, color: 'emerald' },
                     { label: 'Active Users', value: activeUsers < 1000 ? activeUsers.toString() : (activeUsers / 1000).toFixed(1) + 'k', change: '+0', color: 'indigo' },
                     { label: 'Live UIs', value: liveUis.toString(), change: '+5.1%', color: 'amber' },
+                    { label: 'Total Downloads', value: totalDownloads < 1000 ? totalDownloads.toString() : (totalDownloads / 1000).toFixed(1) + 'k', change: '+0%', color: 'teal' },
                 ],
                 graphData: finalGraphData,
                 hourlyStats,

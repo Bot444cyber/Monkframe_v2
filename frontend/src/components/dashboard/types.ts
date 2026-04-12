@@ -11,6 +11,7 @@ export interface GraphPoint {
     users: number;
     uis: number;
     volume: number;
+    downloads: number;
 }
 
 export interface Activity {
