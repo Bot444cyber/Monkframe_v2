@@ -15,7 +15,6 @@ import dynamic from 'next/dynamic';
 import { CheckCircle } from 'lucide-react';
 
 const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
-const CommentSection = dynamic(() => import("@/components/CommentSection"), { ssr: false });
 
 export default function ProductDetailsPage() {
     const params = useParams();
@@ -142,10 +141,10 @@ export default function ProductDetailsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-blue-500/30">
+        <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-blue-500/30 flex flex-col">
             <Header />
 
-            <main className="relative mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-16 py-8 sm:py-12 lg:py-16">
+            <main className="flex-1 relative mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-16 py-8 sm:py-12 lg:py-16">
 
                 {/* 2-Column Layout */}
                 <div className="flex flex-col lg:flex-row gap-10 sm:gap-16 lg:gap-24 relative items-start">
@@ -157,7 +156,7 @@ export default function ProductDetailsPage() {
                     </div>
 
                     {/* Right Column - Meta Data (Sticky) */}
-                    <div className="w-full lg:w-[38%] flex flex-col pt-0 lg:pt-4 lg:sticky lg:top-32 h-fit">
+                    <div className="w-full lg:w-[38%] flex flex-col pt-0 lg:pt-4 lg:sticky lg:top-24 h-fit">
                         <div className="flex flex-col gap-10 lg:gap-12">
 
                             <ProductInfo

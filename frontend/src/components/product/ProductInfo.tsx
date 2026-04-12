@@ -140,7 +140,7 @@ export default function ProductInfo({ product, isWished, onToggleWishlist }: Pro
                         {allInfoItems.map((item: string, idx: number) => (
                             <div
                                 key={idx}
-                                className="w-fit px-8 py-6 rounded-[2rem] border border-gray-100 bg-white text-gray-700 text-[12px] font-black uppercase tracking-widest leading-relaxed shadow-[0_10px_40px_-10px_rgba(0,0,0,0.06)] hover:shadow-[0_15px_50px_-12px_rgba(0,0,0,0.1)] transition-all cursor-default"
+                                className="w-fit px-7 py-4 rounded-[1.5rem] border border-gray-100 bg-white text-gray-700 text-[12px] font-black uppercase tracking-widest leading-relaxed shadow-[0_4px_20px_-5px_rgba(0,0,0,0.05)] hover:shadow-lg hover:border-blue-100 transition-all cursor-default"
                                 dangerouslySetInnerHTML={{ __html: parseMarkdown(item) }}
                             />
                         ))}
