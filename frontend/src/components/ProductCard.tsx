@@ -3,7 +3,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Product } from './ts/types';
 import { InteractionService } from '@/services/interaction.service';
-import CommentSection from './CommentSection';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -50,8 +49,9 @@ const ProductCard = React.memo(({ product, priority = false }: { product: Produc
                             alt={product.title}
                             fill
                             priority={priority}
+                            loading={priority ? 'eager' : 'lazy'}
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105 will-change-transform transform-gpu backface-hidden"
+                            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 transform-gpu"
                             unoptimized={product.imageSrc.startsWith('http') || product.imageSrc.startsWith('/api')}
                             {...({ referrerPolicy: "no-referrer" } as any)}
                         />
