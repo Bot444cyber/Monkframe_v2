@@ -140,7 +140,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({
                 {displayStats.map((stat, idx) => {
                     if (stat.label === 'Total Revenue') {
                         return (
-                            <div key={idx} className="group relative p-6 rounded-3xl bg-card border border-border hover:border-border/80 transition-all duration-500 hover:-translate-y-1 shadow-2xl overflow-hidden">
+                            <div key={idx} className="group relative p-6 rounded-3xl bg-card border border-border hover:border-border/80 transition-all duration-500 hover:-translate-y-1 shadow-xl overflow-hidden">
                                 <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full blur-[60px] opacity-0 group-hover:opacity-10 transition-opacity duration-700 bg-blue-500" />
                                 <div className="relative z-10 flex flex-col justify-between h-full min-h-[140px]">
                                     <div className="flex justify-between items-start mb-4">
@@ -201,7 +201,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
                 {/* ECOSYSTEM GROWTH / TRADING TERMINAL */}
-                <div className="lg:col-span-8 bg-card border border-border p-8 rounded-[2.5rem] flex flex-col min-h-[480px] relative shadow-2xl overflow-hidden">
+                <div className="lg:col-span-8 bg-card border border-border p-8 rounded-[2.5rem] flex flex-col min-h-[480px] relative shadow-xl overflow-hidden">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/5 blur-[80px] rounded-full pointer-events-none -mr-16 -mt-16" />
 
                     {/* Chart Header */}
@@ -298,7 +298,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({
                 {/* SIDEBAR WIDGETS */}
                 <div className="lg:col-span-4 space-y-8">
                     {/* ACTIVITY */}
-                    <div className="bg-card border border-border p-8 rounded-[2.5rem] flex flex-col h-[400px] shadow-2xl relative overflow-hidden">
+                    <div className="bg-card border border-border p-8 rounded-[2.5rem] flex flex-col h-[400px] shadow-xl relative overflow-hidden">
                         <div className="flex items-center justify-between mb-6 shrink-0">
                             <h3 className="text-lg font-bold text-foreground flex items-center gap-3">
                                 <span className="p-2 rounded-xl bg-blue-600/10 text-blue-600 border border-blue-600/10">
@@ -342,7 +342,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({
                     </div>
 
                     {/* PAYMENT HEALTH */}
-                    <div className="bg-card border border-border p-8 rounded-[2.5rem] shadow-2xl h-auto">
+                    <div className="bg-card border border-border p-8 rounded-[2.5rem] shadow-xl h-auto">
                         <div className="flex items-center justify-between mb-6">
                             <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Revenue Status</h3>
                             <span className="text-[10px] font-bold text-blue-600 px-2 py-1 bg-blue-600/10 rounded-md border border-blue-600/10 uppercase tracking-wider">Healthy</span>
@@ -375,7 +375,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({
             </div>
 
             {/* ── TOP PERFORMERS ──────────────────────────────────────────────────── */}
-            <div className="bg-card border border-border p-8 rounded-[2.5rem] shadow-2xl">
+            <div className="bg-card border border-border p-8 rounded-[2.5rem] shadow-xl">
                 <div className="flex items-center justify-between mb-8 px-2">
                     <h3 className="text-xl font-bold text-foreground tracking-tight">Market Movers</h3>
                     <button className="text-[10px] font-bold text-muted-foreground/60 hover:text-foreground transition-all bg-secondary/20 px-4 py-2 rounded-xl border border-border uppercase tracking-widest hover:bg-secondary/40">
@@ -415,4 +415,4 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({
     );
 };
 
-export default OverviewSection;
+export default React.memo(OverviewSection);

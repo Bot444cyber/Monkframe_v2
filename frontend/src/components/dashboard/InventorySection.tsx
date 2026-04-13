@@ -27,7 +27,7 @@ const InventorySection: React.FC<InventorySectionProps> = ({
     setIsAddOpen
 }) => {
     return (
-        <div className="bg-card border border-border rounded-[2rem] overflow-hidden mb-20 relative animate-fade-in-up">
+        <div className="bg-card border border-border rounded-[2rem] overflow-hidden mb-20 relative">
             <div className="p-5 sm:p-8 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-6 bg-secondary/10">
                 <div>
                     <h3 className="text-xl font-bold text-foreground tracking-tight mb-1">Inventory Management</h3>
@@ -103,4 +103,4 @@ const InventorySection: React.FC<InventorySectionProps> = ({
     );
 };
 
-export default InventorySection;
+export default React.memo(InventorySection);

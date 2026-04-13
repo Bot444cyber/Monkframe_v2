@@ -488,25 +488,6 @@ export default function Dashboard() {
 
     return (
         <div className="min-h-screen bg-background text-foreground overflow-x-hidden relative">
-            {/* Dynamic Dashboard Theme Override */}
-            {user?.role === 'ADMIN' && <AdminSystemAlerts />}
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                ::-webkit-scrollbar-track {
-                    background: var(--background) !important;
-                }
-                ::-webkit-scrollbar-thumb {
-                    background-color: var(--secondary) !important;
-                    border: 2px solid var(--background) !important;
-                    border-radius: 10px;
-                }
-                ::-webkit-scrollbar-thumb:hover {
-                    background-color: var(--muted-foreground) !important;
-                }
-                * {
-                    scrollbar-color: var(--secondary) var(--background) !important;
-                }
-            `}} />
 
             {/* Mobile Header (Dashboard Specific) */}
             <header className="lg:hidden fixed top-0 left-0 right-0 z-40 h-16 bg-background/80 backdrop-blur-xl border-b border-border flex items-center justify-between px-6">
@@ -545,7 +526,7 @@ export default function Dashboard() {
             }
 
             {/* Unified Sidebar (Desktop & Mobile) */}
-            <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-card border-r border-border transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} flex flex-col shadow-2xl`}>
+            <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-card border-r border-border transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} flex flex-col shadow-xl`}>
                 {/* Brand Logo Area - PRO Version */}
                 <div className="h-24 flex flex-col justify-center px-8 border-b border-border/50 relative overflow-hidden group/logo bg-linear-to-b from-secondary/20 to-transparent">
                     {/* Decorative background — no blur to avoid compositor layer cost */}
@@ -608,7 +589,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* System / Footer Section */}
-                <div className="p-6 border-t border-border bg-secondary/10 backdrop-blur-sm">
+                <div className="p-6 border-t border-border bg-card">
                     <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4 pl-4">System</h2>
                     <nav className="space-y-2">
                         <div className="lg:hidden flex items-center justify-between px-4 py-2.5 rounded-xl bg-secondary/50 border border-border/50 mb-2">
@@ -660,13 +641,13 @@ export default function Dashboard() {
 
             {/* Main Content */}
             <main className="lg:ml-72 pt-20 lg:pt-8 px-6 lg:px-12 pb-12">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-10 animate-fade-in relative z-10">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-10 relative z-10">
                     <div>
                         <h1 className="text-3xl font-black text-foreground tracking-tight mb-2">Dashboard</h1>
                         <p className="text-muted-foreground">Welcome back, {user?.full_name?.split(' ')[0] || user?.role || 'User'}</p>
                     </div>
                     {/* Action Toolbar */}
-                    <div className="hidden lg:flex items-center gap-4 animate-fade-in-up [animation-delay:100ms]">
+                    <div className="hidden lg:flex items-center gap-4">
                         {/* Theme Toggle */}
                         <ThemeToggle />
 

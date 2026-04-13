@@ -80,10 +80,10 @@ const AdminSystemAlerts = () => {
                         animate={{ opacity: 1, x: 0, scale: 1 }}
                         exit={{ opacity: 0, x: 50, scale: 0.9 }}
                         transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-                        className="pointer-events-auto group w-[420px] bg-card/40 backdrop-blur-3xl border border-red-500/20 rounded-3xl p-6 shadow-[0_20px_50px_-20px_rgba(239,68,68,0.3)] overflow-hidden relative"
+                        className="pointer-events-auto group w-[420px] bg-card border border-red-500/20 rounded-3xl p-6 shadow-xl overflow-hidden relative"
                     >
-                        {/* Dynamic Background Pulse */}
-                        <div className="absolute inset-0 bg-linear-to-br from-red-500/5 via-transparent to-red-500/5 animate-pulse" />
+                        {/* Dynamic Background */}
+                        <div className="absolute inset-0 bg-linear-to-br from-red-500/3 via-transparent to-red-500/3" />
 
                         {/* Top Indicator */}
                         <div className="absolute top-0 right-0 p-3">

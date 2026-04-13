@@ -25,7 +25,7 @@ const SERIES = [
 const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload?.length) return null;
     return (
-        <div className="bg-card/95 border border-border backdrop-blur-xl p-4 rounded-xl shadow-2xl min-w-[160px]">
+        <div className="bg-card/95 border border-border p-4 rounded-xl shadow-xl min-w-[160px]">
             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 border-b border-border pb-2">
                 {label} Report
             </p>
