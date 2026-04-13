@@ -44,7 +44,7 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                     <DashboardTableSkeleton columns={4} />
                 </div>
                 : (
-                    <div className="overflow-x-auto animate-fade-in-up delay-200">
+                    <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="border-b border-border text-[10px] font-bold text-muted-foreground uppercase tracking-widest bg-secondary/10">
@@ -56,14 +56,14 @@ const InventorySection: React.FC<InventorySectionProps> = ({
                             </thead>
                             <tbody className="divide-y divide-border">
                                 {uis.map((product: any) => (
-                                    <tr key={product.id} className="group hover:bg-secondary/50 transition-colors">
+                                    <tr key={product.id} className="group hover:bg-secondary/50">
                                         <td className="px-8 py-6">
                                             <div className="flex items-center gap-5 min-w-[300px]">
                                                 <div className="h-14 w-20 rounded-xl overflow-hidden bg-muted border border-border shrink-0">
-                                                    <img src={product.imageSrc} referrerPolicy="no-referrer" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                                                    <img src={product.imageSrc} referrerPolicy="no-referrer" className="w-full h-full object-cover opacity-80 group-hover:opacity-100" />
                                                 </div>
                                                 <div>
-                                                    <span className="block font-medium text-foreground group-hover:text-primary transition-colors text-sm mb-0.5">{product.title}</span>
+                                                    <span className="block font-medium text-foreground group-hover:text-primary text-sm mb-0.5">{product.title}</span>
                                                     <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider flex items-center gap-1.5 mt-1">
                                                         <svg className="w-2.5 h-2.5 text-blue-600/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                                                             <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />

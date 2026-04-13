@@ -405,6 +405,11 @@ export const resetData = async (req: Request, res: Response) => {
             transactionOperations.push((tx: any) => tx.delete(notifications));
         }
 
+        if (targets.downloads) {
+            // Reset download counters on all UIs back to 0
+            transactionOperations.push((tx: any) => tx.update(uis).set({ downloads: 0 }));
+        }
+
         // Execute Transaction
         if (transactionOperations.length > 0) {
             await db.transaction(async (tx) => {

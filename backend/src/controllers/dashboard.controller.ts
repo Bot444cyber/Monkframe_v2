@@ -155,6 +155,12 @@ export const getStats = async (req: Request, res: Response) => {
             .from(payments)
             .where(and(gte(payments.created_at, sevenDaysAgo), eq(payments.status, 'COMPLETED')));
 
+        // Real download events: fetch UIs that were downloaded (updated_at updated by download route)
+        // updated_at is refreshed via onUpdateNow() every time a download increments uis.downloads
+        const recentDownloadedUIs = await db.select({ updated_at: uis.updated_at, downloads: uis.downloads })
+            .from(uis)
+            .where(and(gte(uis.updated_at, sevenDaysAgo), sql`${uis.downloads} > 0`));
+
         // Map to graphData — use local date string to match keys
         recentUIs.forEach(item => {
             const dateStr = toLocalDateStr(new Date(item.created_at));
@@ -173,8 +179,14 @@ export const getStats = async (req: Request, res: Response) => {
             const entry = graphData.find(g => g.date === dateStr);
             if (entry) {
                 entry.volume += item.amount;
-                entry.downloads++; // Each completed payment = 1 download event
             }
+        });
+
+        // Count actual downloads per day using updated_at as the event timestamp
+        recentDownloadedUIs.forEach(item => {
+            const dateStr = toLocalDateStr(new Date(item.updated_at));
+            const entry = graphData.find(g => g.date === dateStr);
+            if (entry) entry.downloads += item.downloads;
         });
 
         // Remove the 'date' field from final output
@@ -229,6 +241,11 @@ export const getStats = async (req: Request, res: Response) => {
             .from(uis)
             .where(gte(uis.created_at, startOfToday));
 
+        // Real intraday downloads: UIs whose updated_at is today (download triggered update)
+        const todayDownloadedUIs = await db.select({ updated_at: uis.updated_at, downloads: uis.downloads })
+            .from(uis)
+            .where(and(gte(uis.updated_at, startOfToday), sql`${uis.downloads} > 0`));
+
         // Generate buckets for 00:00 to 23:00
         for (let i = 0; i < 24; i++) {
             const hourLabel = `${i.toString().padStart(2, '0')}:00`;
@@ -238,7 +255,10 @@ export const getStats = async (req: Request, res: Response) => {
             const uisCount = todayUIsList.filter(u => new Date(u.created_at).getHours() === i).length;
             const hourPayments = todayPayments.filter(p => new Date(p.created_at).getHours() === i);
             const revenueSum = hourPayments.reduce((acc, curr) => acc + curr.amount, 0);
-            const downloadsCount = hourPayments.length; // Each completed payment = 1 download
+            // Real download count: sum downloads of UIs updated in this hour
+            const downloadsCount = todayDownloadedUIs
+                .filter(u => new Date(u.updated_at).getHours() === i)
+                .reduce((acc, u) => acc + u.downloads, 0);
 
             hourlyStats.push({
                 day: hourLabel, // reusing 'day' key for XAxis compatibility with existing types/chart

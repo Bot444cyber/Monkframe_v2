@@ -4,21 +4,25 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Product } from '@/components/ts/types';
 import { InteractionService } from '@/services/interaction.service';
-import CommentSection from '@/components/CommentSection';
+import dynamic from 'next/dynamic';
 
 // Imports from new components
-import NotificationTable from '@/components/dashboard/NotificationTable';
-import OverviewSection from '@/components/dashboard/OverviewSection';
-import InventorySection from '@/components/dashboard/InventorySection';
-import PaymentsSection from '@/components/dashboard/PaymentsSection';
-import UsersSection from '@/components/dashboard/UsersSection';
-import DriveSection from '@/components/dashboard/DriveSection';
-import DashboardModals from '@/components/dashboard/DashboardModals';
-import ResetDataModal from '@/components/dashboard/ResetDataModal';
-import AdminSystemAlerts from '@/components/dashboard/AdminSystemAlerts';
+import DashboardSkeleton from '@/components/dashboard/DashboardSkeleton';
+import DashboardTableSkeleton from '@/components/dashboard/DashboardTableSkeleton';
 import NotificationBell from '@/components/NotificationBell';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import DashboardSkeleton from '@/components/dashboard/DashboardSkeleton';
+
+// Lazy-loaded heavy section components (only loaded when tabs are visited)
+const NotificationTable = dynamic(() => import('@/components/dashboard/NotificationTable'), { ssr: false, loading: () => <DashboardTableSkeleton /> });
+const OverviewSection = dynamic(() => import('@/components/dashboard/OverviewSection'), { ssr: false, loading: () => <DashboardTableSkeleton /> });
+import InventorySection from '@/components/dashboard/InventorySection';
+const PaymentsSection = dynamic(() => import('@/components/dashboard/PaymentsSection'), { ssr: false, loading: () => <DashboardTableSkeleton /> });
+const UsersSection = dynamic(() => import('@/components/dashboard/UsersSection'), { ssr: false, loading: () => <DashboardTableSkeleton /> });
+const DriveSection = dynamic(() => import('@/components/dashboard/DriveSection'), { ssr: false, loading: () => <DashboardTableSkeleton /> });
+const DashboardModals = dynamic(() => import('@/components/dashboard/DashboardModals'), { ssr: false });
+const ResetDataModal = dynamic(() => import('@/components/dashboard/ResetDataModal'), { ssr: false });
+const AdminSystemAlerts = dynamic(() => import('@/components/dashboard/AdminSystemAlerts'), { ssr: false });
+const CommentSection = dynamic(() => import('@/components/CommentSection'), { ssr: false });
 
 import { useAuth } from '@/context/AuthContext';
 import { NotificationService } from '@/services/notification.service';
@@ -65,6 +69,7 @@ export default function Dashboard() {
     const [paymentsTotalPages, setPaymentsTotalPages] = useState(1);
 
     const [isLoading, setIsLoading] = useState(false);
+    const [isUisLoading, setIsUisLoading] = useState(false);
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [currentUI, setCurrentUI] = useState<Partial<Product>>({});
@@ -111,7 +116,8 @@ export default function Dashboard() {
 
     // Fetch UIs
     const fetchUIs = async () => {
-        setIsLoading(true);
+        // Only show skeleton on first load (when no data yet)
+        if (uis.length === 0) setIsUisLoading(true);
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
             const token = localStorage.getItem('auth_token');
@@ -127,7 +133,7 @@ export default function Dashboard() {
         } catch (error) {
             console.error("Fetch error", error);
         } finally {
-            setIsLoading(false);
+            setIsUisLoading(false);
         }
     };
 
@@ -542,17 +548,16 @@ export default function Dashboard() {
             <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-card border-r border-border transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} flex flex-col shadow-2xl`}>
                 {/* Brand Logo Area - PRO Version */}
                 <div className="h-24 flex flex-col justify-center px-8 border-b border-border/50 relative overflow-hidden group/logo bg-linear-to-b from-secondary/20 to-transparent">
-                    {/* Dynamic Background Effects */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 blur-3xl rounded-full pointer-events-none -mr-16 -mt-16 transition-all duration-700 group-hover/logo:bg-blue-600/20"></div>
-                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary/5 blur-2xl rounded-full pointer-events-none -ml-12 -mb-12"></div>
+                    {/* Decorative background — no blur to avoid compositor layer cost */}
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/8 rounded-full pointer-events-none -mr-16 -mt-16" />
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary/5 rounded-full pointer-events-none -ml-12 -mb-12" />
 
                     <div className="flex items-center gap-3.5 relative z-10">
                         {/* Logo Container with Glass Effect and Glow */}
                         <div className="relative group/icon">
-                            <div className="absolute inset-0 bg-blue-600/20 blur-md rounded-xl transition-all duration-500 group-hover/logo:bg-blue-600/40 group-hover/logo:scale-110"></div>
-                            <div className="relative w-10 h-10 rounded-xl bg-card border border-border/50 flex items-center justify-center shadow-2xl transition-all duration-500 group-hover/logo:rotate-3 group-hover/logo:scale-105 overflow-hidden">
-                                <div className="absolute inset-0 bg-linear-to-br from-white/10 to-transparent opacity-0 group-hover/logo:opacity-100 transition-opacity"></div>
-                                <img src="/logo/M_SHAPE.svg" alt="MOCKUPIDEA" className="w-7 h-7 object-contain transition-transform duration-500 group-hover/logo:scale-110" />
+                            <div className="absolute inset-0 bg-blue-600/15 rounded-xl" />
+                            <div className="relative w-10 h-10 rounded-xl bg-card border border-border/50 flex items-center justify-center shadow-lg transition-transform duration-300 group-hover/logo:scale-105 overflow-hidden">
+                                <img src="/logo/M_SHAPE.svg" alt="MOCKUPIDEA" className="w-7 h-7 object-contain" />
                             </div>
                         </div>
 
@@ -703,7 +708,7 @@ export default function Dashboard() {
                     )}
                     {activeTab === 'uis' && (
                         <InventorySection
-                            isLoading={isLoading}
+                            isLoading={isUisLoading}
                             uis={uis}
                             uisPage={uisPage}
                             uisTotalPages={uisTotalPages}

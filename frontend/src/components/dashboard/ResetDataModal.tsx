@@ -18,7 +18,8 @@ const ResetDataModal: React.FC<ResetDataModalProps> = ({ isOpen, onClose }) => {
         users: false,
         payments: false,
         social: false,
-        notifications: false
+        notifications: false,
+        downloads: false
     });
 
     // Auto-scroll terminal
@@ -37,7 +38,8 @@ const ResetDataModal: React.FC<ResetDataModalProps> = ({ isOpen, onClose }) => {
             users: newValue,
             payments: newValue,
             social: newValue,
-            notifications: newValue
+            notifications: newValue,
+            downloads: newValue
         });
     };
 
@@ -119,6 +121,7 @@ const ResetDataModal: React.FC<ResetDataModalProps> = ({ isOpen, onClose }) => {
         { id: 'payments', label: 'Transactions', desc: 'Payments and order history.', icon: '💳' },
         { id: 'social', label: 'Community Data', desc: 'Comments, likes, and wishlists.', icon: '💬' },
         { id: 'notifications', label: 'Activity Logs', desc: 'System alerts and notifications.', icon: '🔔' },
+        { id: 'downloads', label: 'Download Counters', desc: 'Reset all asset download counts to zero.', icon: '⬇️' },
     ];
 
     // TERMINAL VIEW
