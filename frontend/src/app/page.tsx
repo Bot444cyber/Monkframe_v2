@@ -37,7 +37,9 @@ const productFetcher = async (url: string): Promise<{ products: Product[]; total
 
   return {
     products: data.data.map((ui: any) => ({
-      id: ui.id, title: ui.title,
+      id: ui.id,
+      slug: ui.slug,
+      title: ui.title,
       price: !ui.price || ui.price == 0 ? 'Free' : `$${ui.price}`,
       author: ui.creator?.full_name || ui.author || 'Unknown',
       category: ui.category, imageSrc: ui.imageSrc,

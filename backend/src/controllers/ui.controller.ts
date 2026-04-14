@@ -7,7 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { processUpload } from '../services/upload.service';
 import { uploadFileToDrive, deleteFileFromDrive } from '../services/drive.service';
-import { transformToProxy } from '../utils/helpers';
+import { transformToProxy, slugify } from '../utils/helpers';
 import { randomUUID } from 'crypto';
 
 const parseArray = (data: any): any[] => {
@@ -133,7 +133,13 @@ export const getUI = async (req: Request, res: Response) => {
         const { id } = req.params;
         const userId = req.user?.user_id;
 
-        const [ui] = await db.select().from(uis).where(eq(uis.id, id)).limit(1);
+        // Try to find by slug first, then by ID
+        const [ui] = await db.select().from(uis).where(
+            or(
+                eq(uis.slug, id),
+                eq(uis.id, id)
+            )
+        ).limit(1);
 
         if (!ui) {
             return res.status(404).json({ status: false, message: "UI not found" });
@@ -397,7 +403,8 @@ export const createUI = async (req: Request, res: Response) => {
             fileType: (files && files['uiFile'] && files['uiFile'][0])
                 ? files['uiFile'][0].originalname.split('.').pop()?.toUpperCase() ?? null
                 : null,
-            creatorId: userId
+            creatorId: userId,
+            slug: slugify(title)
         });
 
         const [newUI] = await db.select().from(uis).where(eq(uis.id, generatedId)).limit(1);
@@ -461,7 +468,7 @@ export const updateUI = async (req: Request, res: Response) => {
 
         // Update only the new form text fields immediately
         await db.update(uis).set({
-            ...(title ? { title } : {}),
+            ...(title ? { title, slug: slugify(title) } : {}),
             ...(category ? { category } : {}),
             ...(author !== undefined ? { author } : {}),
             ...(overview !== undefined ? { overview } : {}),

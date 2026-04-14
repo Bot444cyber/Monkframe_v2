@@ -64,6 +64,7 @@ export const uis = mysqlTable('uis', {
   created_at: timestamp('created_at').defaultNow().notNull(),
   updated_at: timestamp('updated_at').defaultNow().onUpdateNow().notNull(),
   fileType: varchar('fileType', { length: 20 }),
+  slug: varchar('slug', { length: 255 }).unique(),
 });
 
 export const uisRelations = relations(uis, ({ one, many }) => ({

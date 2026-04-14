@@ -7,13 +7,13 @@ dotenv.config();
 // Create the pool using an object to handle special characters safely
 export const poolConnection = mysql.createPool({
   // Fallback to 127.0.0.1 if DB_HOST is missing
-  host: process.env.DB_HOST || '127.0.0.1', 
+  host: process.env.DB_HOST || '127.0.0.1',
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   // Ensure port is a valid number, default to 3306
-  port: Number(process.env.DB_PORT) || 3306, 
-  
+  port: Number(process.env.DB_PORT) || 3306,
+
   waitForConnections: true,
   connectionLimit: 5, // Lower limit is safer for Hostinger shared plans
   queueLimit: 0,
@@ -21,6 +21,7 @@ export const poolConnection = mysql.createPool({
   // Essential for keeping the connection alive on Hostinger
   enableKeepAlive: true,
   keepAliveInitialDelay: 10000,
+  connectTimeout: 20000, // 20 seconds timeout
 });
 
 export const db = drizzle(poolConnection, { schema, mode: 'default' });

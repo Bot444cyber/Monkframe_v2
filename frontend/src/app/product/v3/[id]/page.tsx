@@ -53,6 +53,8 @@ export default function ProductCinematicPage() {
 
     const screenshots = product.screenshots || (product.imageSrc ? [product.imageSrc] : []);
 
+    const productIdentifier = product.slug || product.id;
+
     return (
         <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-blue-500/30">
             <Header />
@@ -116,11 +118,11 @@ export default function ProductCinematicPage() {
 
                 {/* Version Selector */}
                 <div className="mt-64 flex justify-center gap-12 items-center opacity-70 hover:opacity-100 transition-opacity">
-                    <Link href={`/product/v1/${product.id}`} className="text-[10px] font-black uppercase tracking-[0.5em] hover:text-blue-600 transition-all text-gray-400">v1. Standard</Link>
+                    <Link href={`/product/v1/${productIdentifier}`} className="text-[10px] font-black uppercase tracking-[0.5em] hover:text-blue-600 transition-all text-gray-400">v1. Standard</Link>
                     <div className="h-1 w-1 bg-gray-200 rounded-full" />
-                    <Link href={`/product/v2/${product.id}`} className="text-[10px] font-black uppercase tracking-[0.5em] hover:text-blue-600 transition-all text-gray-400">v2. Curator</Link>
+                    <Link href={`/product/v2/${productIdentifier}`} className="text-[10px] font-black uppercase tracking-[0.5em] hover:text-blue-600 transition-all text-gray-400">v2. Curator</Link>
                     <div className="h-1 w-1 bg-gray-200 rounded-full" />
-                    <Link href={`/product/v3/${product.id}`} className="text-[10px] font-black uppercase tracking-[0.5em] text-blue-600 transition-all">v3. Panoramic</Link>
+                    <Link href={`/product/v3/${productIdentifier}`} className="text-[10px] font-black uppercase tracking-[0.5em] text-blue-600 transition-all">v3. Panoramic</Link>
                 </div>
             </main>
 

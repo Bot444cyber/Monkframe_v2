@@ -36,6 +36,13 @@
       "when": 1775812647839,
       "tag": "0004_slow_hairball",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1776194285092,
+      "tag": "0005_good_liz_osborn",
+      "breakpoints": true
     }
   ]
 }

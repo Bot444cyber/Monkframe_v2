@@ -43,7 +43,7 @@ export default function DynamicMegaMenu({ category, onClose }: { category: strin
                         if (plainDesc.length > 95) plainDesc = plainDesc.substring(0, 95) + '...';
                         const rawTitle = ui.title || 'Untitled';
                         const shortTitle = rawTitle.length > 45 ? rawTitle.substring(0, 45) + '...' : rawTitle;
-                        return { id: ui.id, title: shortTitle, imageSrc: ui.imageSrc, description: plainDesc };
+                        return { id: ui.id, slug: ui.slug, title: shortTitle, imageSrc: ui.imageSrc, description: plainDesc };
                     });
                     _megaCache.set(category, mapped);
                     return mapped;
@@ -98,7 +98,7 @@ export default function DynamicMegaMenu({ category, onClose }: { category: strin
                 </div>
             ) : items.length > 0 ? (
                 <div className="flex flex-col sm:flex-row w-full h-full">
-                    <Link href={`/product/v1/${trendingItem.id}`} onClick={onClose} className="sm:w-64 bg-blue-600 flex flex-col justify-between shrink-0 relative overflow-hidden group">
+                    <Link href={`/product/v1/${trendingItem.slug || trendingItem.id}`} onClick={onClose} className="sm:w-64 bg-blue-600 flex flex-col justify-between shrink-0 relative overflow-hidden group">
                         {trendingItem.imageSrc && (
                             <Image
                                 src={trendingItem.imageSrc}
@@ -126,7 +126,7 @@ export default function DynamicMegaMenu({ category, onClose }: { category: strin
                         {otherItems.length > 0 ? (
                             otherItems.map((item, ii) => (
                                 <div key={ii} className="flex flex-col gap-1">
-                                    <Link href={`/product/v1/${item.id}`} onClick={onClose} className="group block">
+                                    <Link href={`/product/v1/${item.slug || item.id}`} onClick={onClose} className="group block">
                                         <h4 className="text-[13px] font-bold text-gray-800 group-hover:text-blue-600 transition-colors truncate">{item.title}</h4>
                                         <p className="text-[11px] text-gray-600 truncate mt-0.5">View details</p>
                                     </Link>

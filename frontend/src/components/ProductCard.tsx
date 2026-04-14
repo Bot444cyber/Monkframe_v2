@@ -38,7 +38,7 @@ const ProductCard = React.memo(({ product, priority = false }: { product: Produc
     return (
         <>
             <Link
-                href={`/product/v1/${product.id}`}
+                href={`/product/v1/${product.slug || product.id}`}
                 className="group flex flex-col gap-3 cursor-pointer"
             >
                 {/* ── Image Block ── */}
