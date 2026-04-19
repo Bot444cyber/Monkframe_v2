@@ -17,6 +17,7 @@ const payload = {
         imageSrc: string().nullable().optional(),
         google_file_id: string().nullable().optional(),
         specifications: any().optional(),
+        customUrl: string().nullable().optional(),
     }),
 };
 

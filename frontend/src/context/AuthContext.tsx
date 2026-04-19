@@ -8,6 +8,7 @@ interface User {
     email: string;
     role: string;
     full_name?: string;
+    dashboard_access?: boolean;
 }
 
 interface AuthContextType {
@@ -52,7 +53,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                         user_id: decoded.user_id || decoded.id || decoded.sub,
                         email: decoded.email,
                         role: decoded.role,
-                        full_name: decoded.full_name || decoded.name
+                        full_name: decoded.full_name || decoded.name,
+                        dashboard_access: decoded.dashboard_access
                     });
 
                     // Ensure it's in local storage if we found it in cookie (sync)

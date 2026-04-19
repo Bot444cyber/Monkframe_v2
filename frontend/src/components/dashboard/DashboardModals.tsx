@@ -219,6 +219,37 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                                     </div>
                                 </div>
 
+                                {/* Custom URL */}
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest pl-1">Custom Product URL Slug</label>
+                                    {(() => {
+                                        const generatedSlug = currentUI.slug || (currentUI.title ? currentUI.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '');
+                                        const siteUrl = process.env.NEXT_PUBLIC_FRONTEND_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+
+                                        return (
+                                            <>
+                                                <div className="flex bg-[#EEF0F5]/50 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-600 transition-shadow">
+                                                    <span className="flex items-center px-3 text-[11px] font-medium text-gray-400 bg-gray-50 border-r border-gray-200 select-none hidden sm:flex">
+                                                        {siteUrl}/product/v1/
+                                                    </span>
+                                                    <input
+                                                        id="custom-url-input"
+                                                        type="text"
+                                                        placeholder={generatedSlug || "your-custom-slug-here"}
+                                                        value={currentUI.customUrl || ''}
+                                                        onChange={(e) => setCurrentUI({ ...currentUI, customUrl: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') })}
+                                                        className="w-full px-4 py-3 bg-transparent border-0 outline-none text-[13px] font-semibold text-gray-900 placeholder:text-gray-400"
+                                                    />
+                                                </div>
+                                                <p className="px-1 text-[9px] font-bold text-gray-400/80 uppercase tracking-widest leading-relaxed mt-1.5">
+                                                    IF EMPTY, WE USE YOUR DEFAULT PRODUCT LINK:<br />
+                                                    <span className="text-gray-400 font-medium normal-case tracking-normal">{siteUrl}/product/v1/{currentUI.customUrl || generatedSlug || 'free-standing-front-facing-6x9-book-mockup-psd'}</span>
+                                                </p>
+                                            </>
+                                        );
+                                    })()}
+                                </div>
+
                                 {/* Additional Information */}
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest pl-1">Additional details (Tags)</label>

@@ -133,9 +133,10 @@ export const getUI = async (req: Request, res: Response) => {
         const { id } = req.params;
         const userId = req.user?.user_id;
 
-        // Try to find by slug first, then by ID
+        // Try to find by customUrl, then slug, then by ID
         const [ui] = await db.select().from(uis).where(
             or(
+                eq(uis.customUrl, id),
                 eq(uis.slug, id),
                 eq(uis.id, id)
             )
@@ -301,7 +302,7 @@ export const downloadUI = async (req: Request, res: Response) => {
 
                 // 1. Notify Admins through the notification system
                 try {
-                    const adminUsers = await db.select({ user_id: users.user_id }).from(users).where(eq(users.role, 'ADMIN'));
+                    const adminUsers = await db.select({ user_id: users.user_id }).from(users).where(or(eq(users.role, 'ADMIN'), eq(users.role, 'DEVELOPER')));
 
                     if (adminUsers.length > 0) {
                         const notificationPromises = adminUsers.map(admin => {
@@ -338,8 +339,8 @@ export const downloadUI = async (req: Request, res: Response) => {
 // Create new UI
 export const createUI = async (req: Request, res: Response) => {
     try {
-        // Only title, category, overview (description), author (additional info) come from form now
-        const { title, category, author, overview } = req.body;
+        // Only title, category, overview (description), author (additional info), customUrl come from form now
+        const { title, category, author, overview, customUrl } = req.body;
         const userId = (req.user as any)?.user_id;
 
         // Handle Files
@@ -393,6 +394,7 @@ export const createUI = async (req: Request, res: Response) => {
             price: 'Free',                                   // Default: free asset
             author: author || '',                            // "Additional Information"
             overview: overview || null,                      // "Description"
+            customUrl: customUrl || null,
             imageSrc: bannerResult ? bannerResult.publicUrl : '',
             google_file_id: uiFileResult ? uiFileResult.id : null,
             color: null,
@@ -438,8 +440,8 @@ export const createUI = async (req: Request, res: Response) => {
 export const updateUI = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        // New form fields: title, category, overview (description), author (additional info)
-        const { title, category, author, overview } = req.body;
+        // New form fields: title, category, overview (description), author (additional info), customUrl
+        const { title, category, author, overview, customUrl } = req.body;
 
         // Fetch existing UI
         const [existingUI] = await db.select().from(uis).where(eq(uis.id, id)).limit(1);
@@ -472,6 +474,7 @@ export const updateUI = async (req: Request, res: Response) => {
             ...(category ? { category } : {}),
             ...(author !== undefined ? { author } : {}),
             ...(overview !== undefined ? { overview } : {}),
+            ...(customUrl !== undefined ? { customUrl } : {}),
             ...(files && files['uiFile'] && files['uiFile'][0] ? {
                 fileType: files['uiFile'][0].originalname.split('.').pop()?.toUpperCase()
             } : {})

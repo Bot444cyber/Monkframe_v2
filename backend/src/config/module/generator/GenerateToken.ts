@@ -9,6 +9,7 @@ interface TokenPayload {
   full_name: string;
   user_id: number;
   email: string;
+  dashboard_access?: boolean | null;
 }
 
 function GenerateToken(payload: TokenPayload): string {

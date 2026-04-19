@@ -20,6 +20,7 @@ export interface Product {
     showcase?: string[];
     specifications?: { label: string; value: string; desc: string }[];
     fileType?: string;
+    customUrl?: string;
     slug?: string;
 }
 

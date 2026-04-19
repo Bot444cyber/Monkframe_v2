@@ -1,0 +1,1 @@
+ALTER TABLE `uis` ADD `customUrl` varchar(255);

@@ -20,7 +20,7 @@ export const getNotifications = async (req: Request, res: Response) => {
         let notificationsRes: any[] = [];
         let total = 0;
 
-        if (role === 'ADMIN' && scope === 'all') {
+        if ((role === 'ADMIN' || role === 'DEVELOPER') && scope === 'all') {
             const [totalRes] = await db.select({ value: count() }).from(notificationsTable).where(eq(notificationsTable.status, 'PENDING'));
             total = totalRes.value;
 

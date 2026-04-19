@@ -46,6 +46,7 @@ const productFetcher = async (url: string): Promise<{ products: Product[]; total
       sales: 0, revenue: "0", color: ui.color,
       likes: ui.likes || 0, liked: ui.liked || false, wished: ui.wished || false,
       rating: ui.rating || 4.8, fileType: ui.fileType,
+      customUrl: ui.customUrl,
     })),
     totalPages: data.meta?.totalPages || 1
   };

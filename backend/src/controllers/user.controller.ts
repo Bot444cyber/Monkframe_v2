@@ -125,7 +125,8 @@ export const googleAuthCallback = (req: Request, res: Response, next: NextFuncti
                     full_name: user!.full_name,
                     role: user!.role,
                     user_id: user!.user_id,
-                    email: user!.email
+                    email: user!.email,
+                    dashboard_access: user!.dashboard_access
                 });
 
                 console.log('🚀 Redirecting to frontend...');

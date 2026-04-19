@@ -419,6 +419,10 @@ const resetData = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (targets.notifications) {
             transactionOperations.push((tx) => tx.delete(schema_1.notifications));
         }
+        if (targets.downloads) {
+            // Reset download counters on all UIs back to 0
+            transactionOperations.push((tx) => tx.update(schema_1.uis).set({ downloads: 0 }));
+        }
         // Execute Transaction
         if (transactionOperations.length > 0) {
             yield db_1.db.transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {

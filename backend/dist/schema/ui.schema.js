@@ -19,6 +19,7 @@ const payload = {
         imageSrc: (0, zod_1.string)().nullable().optional(),
         google_file_id: (0, zod_1.string)().nullable().optional(),
         specifications: (0, zod_1.any)().optional(),
+        customUrl: (0, zod_1.string)().nullable().optional(),
     }),
 };
 const params = {

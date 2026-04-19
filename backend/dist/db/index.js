@@ -57,6 +57,7 @@ exports.poolConnection = promise_1.default.createPool({
     // Essential for keeping the connection alive on Hostinger
     enableKeepAlive: true,
     keepAliveInitialDelay: 10000,
+    connectTimeout: 20000, // 20 seconds timeout
 });
 exports.db = (0, mysql2_1.drizzle)(exports.poolConnection, { schema, mode: 'default' });
 // Add a quick check to log if the connection fails

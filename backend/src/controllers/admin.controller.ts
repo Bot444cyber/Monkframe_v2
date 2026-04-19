@@ -121,7 +121,8 @@ export const getAllUsers = async (req: Request, res: Response) => {
             status: users.status,
             google_id: users.google_id,
             created_at: users.created_at,
-            last_active_at: users.last_active_at
+            last_active_at: users.last_active_at,
+            dashboard_access: users.dashboard_access
         }).from(users).orderBy(desc(users.created_at));
         res.json({ status: true, data: usersList });
     } catch (error) {
@@ -136,7 +137,7 @@ export const updateUserRole = async (req: Request, res: Response) => {
         const { role } = req.body;
 
         // Validate role - Must be one of the defined roles in schema
-        if (!['ADMIN', 'CUSTOMER', 'EDITOR'].includes(role)) {
+        if (!['ADMIN', 'CUSTOMER', 'EDITOR', 'DEVELOPER'].includes(role)) {
             return res.status(400).json({ status: false, message: "Invalid role specified" });
         }
 
@@ -332,8 +333,8 @@ export const resetData = async (req: Request, res: Response) => {
         if (!requestingUserId) return res.status(403).json({ status: false, message: "Unauthorized" });
 
         const [user] = await db.select().from(users).where(eq(users.user_id, requestingUserId)).limit(1);
-        if (!user || user.role !== 'ADMIN') {
-            return res.status(403).json({ status: false, message: "Unauthorized" });
+        if (!user || (user.role !== 'ADMIN' && user.role !== 'DEVELOPER')) {
+            return res.status(403).json({ status: false, message: "Unauthorized: Admins & Developers Only" });
         }
 
         const { options } = req.body;
@@ -425,5 +426,17 @@ export const resetData = async (req: Request, res: Response) => {
     } catch (error) {
         console.error("System Reset Error:", error);
         res.status(500).json({ status: false, message: "Failed to reset system data" });
+    }
+};
+
+export const updateDashboardAccess = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { dashboard_access } = req.body;
+        await db.update(users).set({ dashboard_access }).where(eq(users.user_id, parseInt(id)));
+        res.json({ status: true, message: "Dashboard access updated successfully" });
+    } catch (error) {
+        console.error("Dashboard Access Update Error:", error);
+        res.status(500).json({ status: false, message: "Failed to update dashboard access" });
     }
 };

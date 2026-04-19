@@ -31,7 +31,7 @@ const DropdownMenu = ({ items }: { items: { label: string; href: string }[] }) =
 export default function Header() {
     const { user, logout } = useAuth();
     const pathname = usePathname();
-    const canAccessDashboard = ['ADMIN', 'EDITOR'].includes(String(user?.role).toUpperCase());
+    const canAccessDashboard = ['ADMIN', 'EDITOR'].includes(String(user?.role).toUpperCase()) || (String(user?.role).toUpperCase() === 'DEVELOPER' && user?.dashboard_access);
 
     const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);

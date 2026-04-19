@@ -124,7 +124,8 @@ const getUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.user_id;
-        const [ui] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id)).limit(1);
+        // Try to find by slug first, then by ID
+        const [ui] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.or)((0, drizzle_orm_1.eq)(schema_1.uis.slug, id), (0, drizzle_orm_1.eq)(schema_1.uis.id, id))).limit(1);
         if (!ui) {
             return res.status(404).json({ status: false, message: "UI not found" });
         }
@@ -284,8 +285,8 @@ exports.downloadUI = downloadUI;
 const createUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c;
     try {
-        // Only title, category, overview (description), author (additional info) come from form now
-        const { title, category, author, overview } = req.body;
+        // Only title, category, overview (description), author (additional info), customUrl come from form now
+        const { title, category, author, overview, customUrl } = req.body;
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.user_id;
         // Handle Files
         const files = req.files;
@@ -331,6 +332,7 @@ const createUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             price: 'Free', // Default: free asset
             author: author || '', // "Additional Information"
             overview: overview || null, // "Description"
+            customUrl: customUrl || null,
             imageSrc: bannerResult ? bannerResult.publicUrl : '',
             google_file_id: uiFileResult ? uiFileResult.id : null,
             color: null,
@@ -341,7 +343,8 @@ const createUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             fileType: (files && files['uiFile'] && files['uiFile'][0])
                 ? (_c = (_b = files['uiFile'][0].originalname.split('.').pop()) === null || _b === void 0 ? void 0 : _b.toUpperCase()) !== null && _c !== void 0 ? _c : null
                 : null,
-            creatorId: userId
+            creatorId: userId,
+            slug: (0, helpers_1.slugify)(title)
         });
         const [newUI] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, generatedId)).limit(1);
         if (newUI) {
@@ -367,8 +370,8 @@ const updateUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
         const { id } = req.params;
-        // New form fields: title, category, overview (description), author (additional info)
-        const { title, category, author, overview } = req.body;
+        // New form fields: title, category, overview (description), author (additional info), customUrl
+        const { title, category, author, overview, customUrl } = req.body;
         // Fetch existing UI
         const [existingUI] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id)).limit(1);
         if (!existingUI) {
@@ -392,7 +395,7 @@ const updateUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             }
         }
         // Update only the new form text fields immediately
-        yield db_1.db.update(schema_1.uis).set(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (title ? { title } : {})), (category ? { category } : {})), (author !== undefined ? { author } : {})), (overview !== undefined ? { overview } : {})), (files && files['uiFile'] && files['uiFile'][0] ? {
+        yield db_1.db.update(schema_1.uis).set(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (title ? { title, slug: (0, helpers_1.slugify)(title) } : {})), (category ? { category } : {})), (author !== undefined ? { author } : {})), (overview !== undefined ? { overview } : {})), (customUrl !== undefined ? { customUrl } : {})), (files && files['uiFile'] && files['uiFile'][0] ? {
             fileType: (_b = files['uiFile'][0].originalname.split('.').pop()) === null || _b === void 0 ? void 0 : _b.toUpperCase()
         } : {}))).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id));
         const [updatedUI] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id)).limit(1);

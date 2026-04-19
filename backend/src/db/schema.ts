@@ -19,8 +19,9 @@ export const users = mysqlTable('users', {
   email: varchar('email', { length: 191 }).notNull().unique(),
   password_hash: varchar('password_hash', { length: 255 }),
   google_id: varchar('google_id', { length: 191 }).unique(),
-  role: mysqlEnum('role', ['ADMIN', 'CUSTOMER', 'EDITOR']).default('CUSTOMER').notNull(),
+  role: mysqlEnum('role', ['ADMIN', 'CUSTOMER', 'EDITOR', 'DEVELOPER']).default('CUSTOMER').notNull(),
   status: mysqlEnum('status', ['ACTIVE', 'INACTIVE', 'SUSPENDED']).default('ACTIVE').notNull(),
+  dashboard_access: boolean('dashboard_access').default(false).notNull(),
   created_at: timestamp('created_at').defaultNow().notNull(),
   updated_at: timestamp('updated_at').defaultNow().onUpdateNow().notNull(),
   last_active_at: timestamp('last_active_at').defaultNow().onUpdateNow().notNull(),
@@ -64,6 +65,7 @@ export const uis = mysqlTable('uis', {
   created_at: timestamp('created_at').defaultNow().notNull(),
   updated_at: timestamp('updated_at').defaultNow().onUpdateNow().notNull(),
   fileType: varchar('fileType', { length: 20 }),
+  customUrl: varchar('customUrl', { length: 255 }),
   slug: varchar('slug', { length: 255 }).unique(),
 });
 

@@ -52,6 +52,8 @@ exports.uis = (0, mysql_core_1.mysqlTable)('uis', {
     created_at: (0, mysql_core_1.timestamp)('created_at').defaultNow().notNull(),
     updated_at: (0, mysql_core_1.timestamp)('updated_at').defaultNow().onUpdateNow().notNull(),
     fileType: (0, mysql_core_1.varchar)('fileType', { length: 20 }),
+    customUrl: (0, mysql_core_1.varchar)('customUrl', { length: 255 }),
+    slug: (0, mysql_core_1.varchar)('slug', { length: 255 }).unique(),
 });
 exports.uisRelations = (0, drizzle_orm_1.relations)(exports.uis, ({ one, many }) => ({
     creator: one(exports.users, {

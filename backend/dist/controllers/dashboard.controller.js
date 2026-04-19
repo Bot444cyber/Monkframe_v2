@@ -127,7 +127,8 @@ const getStats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 date: toLocalDateStr(d), // LOCAL date string to avoid UTC drift
                 uis: 0,
                 users: 0,
-                volume: 0
+                volume: 0,
+                downloads: 0
             });
         }
         const sevenDaysAgo = new Date();
@@ -143,6 +144,11 @@ const getStats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const recentPayments = yield db_1.db.select({ created_at: schema_1.payments.created_at, amount: schema_1.payments.amount })
             .from(schema_1.payments)
             .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.gte)(schema_1.payments.created_at, sevenDaysAgo), (0, drizzle_orm_1.eq)(schema_1.payments.status, 'COMPLETED')));
+        // Real download events: fetch UIs that were downloaded (updated_at updated by download route)
+        // updated_at is refreshed via onUpdateNow() every time a download increments uis.downloads
+        const recentDownloadedUIs = yield db_1.db.select({ updated_at: schema_1.uis.updated_at, downloads: schema_1.uis.downloads })
+            .from(schema_1.uis)
+            .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.gte)(schema_1.uis.updated_at, sevenDaysAgo), (0, drizzle_orm_1.sql) `${schema_1.uis.downloads} > 0`));
         // Map to graphData — use local date string to match keys
         recentUIs.forEach(item => {
             const dateStr = toLocalDateStr(new Date(item.created_at));
@@ -159,11 +165,19 @@ const getStats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         recentPayments.forEach(item => {
             const dateStr = toLocalDateStr(new Date(item.created_at));
             const entry = graphData.find(g => g.date === dateStr);
-            if (entry)
+            if (entry) {
                 entry.volume += item.amount;
+            }
         });
-        // Remove the 'date' field from final output if not needed, or keep it. Let's keep structure simple.
-        const finalGraphData = graphData.map(({ day, uis, users, volume }) => ({ day, uis, users, volume }));
+        // Count actual downloads per day using updated_at as the event timestamp
+        recentDownloadedUIs.forEach(item => {
+            const dateStr = toLocalDateStr(new Date(item.updated_at));
+            const entry = graphData.find(g => g.date === dateStr);
+            if (entry)
+                entry.downloads += item.downloads;
+        });
+        // Remove the 'date' field from final output
+        const finalGraphData = graphData.map(({ day, uis, users, volume, downloads }) => ({ day, uis, users, volume, downloads }));
         // 10. Trending UIs
         const trendingUIs = yield db_1.db.select({
             id: schema_1.uis.id,
@@ -203,20 +217,28 @@ const getStats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const todayUIsList = yield db_1.db.select({ created_at: schema_1.uis.created_at })
             .from(schema_1.uis)
             .where((0, drizzle_orm_1.gte)(schema_1.uis.created_at, startOfToday));
+        // Real intraday downloads: UIs whose updated_at is today (download triggered update)
+        const todayDownloadedUIs = yield db_1.db.select({ updated_at: schema_1.uis.updated_at, downloads: schema_1.uis.downloads })
+            .from(schema_1.uis)
+            .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.gte)(schema_1.uis.updated_at, startOfToday), (0, drizzle_orm_1.sql) `${schema_1.uis.downloads} > 0`));
         // Generate buckets for 00:00 to 23:00
         for (let i = 0; i < 24; i++) {
             const hourLabel = `${i.toString().padStart(2, '0')}:00`;
             // Filter counts for this hour
             const usersCount = todayUsersList.filter(u => new Date(u.created_at).getHours() === i).length;
             const uisCount = todayUIsList.filter(u => new Date(u.created_at).getHours() === i).length;
-            const revenueSum = todayPayments
-                .filter(p => new Date(p.created_at).getHours() === i)
-                .reduce((acc, curr) => acc + curr.amount, 0);
+            const hourPayments = todayPayments.filter(p => new Date(p.created_at).getHours() === i);
+            const revenueSum = hourPayments.reduce((acc, curr) => acc + curr.amount, 0);
+            // Real download count: sum downloads of UIs updated in this hour
+            const downloadsCount = todayDownloadedUIs
+                .filter(u => new Date(u.updated_at).getHours() === i)
+                .reduce((acc, u) => acc + u.downloads, 0);
             hourlyStats.push({
                 day: hourLabel, // reusing 'day' key for XAxis compatibility with existing types/chart
                 users: usersCount,
                 uis: uisCount,
-                volume: revenueSum
+                volume: revenueSum,
+                downloads: downloadsCount
             });
         }
         res.status(200).json({
@@ -226,6 +248,7 @@ const getStats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     { label: 'Total Revenue', value: totalRevenue.toLocaleString(), change: revenueChangeStr, color: 'emerald' },
                     { label: 'Active Users', value: activeUsers < 1000 ? activeUsers.toString() : (activeUsers / 1000).toFixed(1) + 'k', change: '+0', color: 'indigo' },
                     { label: 'Live UIs', value: liveUis.toString(), change: '+5.1%', color: 'amber' },
+                    { label: 'Total Downloads', value: totalDownloads < 1000 ? totalDownloads.toString() : (totalDownloads / 1000).toFixed(1) + 'k', change: '+0%', color: 'teal' },
                 ],
                 graphData: finalGraphData,
                 hourlyStats,

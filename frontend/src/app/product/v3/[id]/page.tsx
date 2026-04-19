@@ -68,6 +68,11 @@ export default function ProductCinematicPage() {
                         </h1>
                         <div className="flex flex-col gap-6 items-end text-right">
                             <span className="text-[10px] font-black uppercase tracking-[0.5em] text-gray-400">Visual Spec v3.0 Premium</span>
+                            {product.customUrl && (
+                                <a href={product.customUrl} target="_blank" rel="noopener noreferrer" className="px-12 py-5 bg-black text-white text-xs font-black uppercase tracking-widest rounded-full hover:bg-gray-800 hover:text-white transition-all shadow-2xl text-center">
+                                    Visit External URL
+                                </a>
+                            )}
                             <button onClick={handleDownload} className="px-12 py-5 bg-blue-600 text-white text-xs font-black uppercase tracking-widest rounded-full hover:bg-black hover:text-white transition-all shadow-2xl shadow-blue-500/20">
                                 Get Cinematic Pack
                             </button>
@@ -108,6 +113,11 @@ export default function ProductCinematicPage() {
                             <div className="p-12 rounded-[3.5rem] border border-gray-100 bg-blue-50/20 backdrop-blur-3xl flex flex-col gap-8 text-center items-center">
                                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-600">Final Decision</span>
                                 <h3 className="text-3xl font-black text-gray-900 uppercase">Ready?</h3>
+                                {product.customUrl && (
+                                    <a href={product.customUrl} target="_blank" rel="noopener noreferrer" className="w-full py-6 flex items-center justify-center bg-black text-white text-[11px] font-black uppercase tracking-[0.2em] rounded-3xl hover:bg-gray-800 hover:text-white transition-all shadow-[0_0_15px_rgba(0,0,0,0.1)]">
+                                        External Site
+                                    </a>
+                                )}
                                 <button onClick={handleDownload} className="w-full py-6 bg-blue-600 text-white text-[11px] font-black uppercase tracking-[0.2em] rounded-3xl hover:bg-blue-700 hover:text-white transition-all shadow-blue-500/10">
                                     Download Now
                                 </button>

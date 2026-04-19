@@ -5,6 +5,6 @@ import { authenticateUser, authorizeRoles } from '../middlewares/auth.middleware
 const router = express.Router();
 
 // Define routes
-router.get('/stats', authenticateUser, authorizeRoles('ADMIN'), getStats);
+router.get('/stats', authenticateUser, authorizeRoles('ADMIN', 'DEVELOPER'), getStats);
 
 export default router;

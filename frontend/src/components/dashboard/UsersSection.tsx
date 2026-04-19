@@ -8,13 +8,14 @@ interface User {
     user_id: number;
     full_name: string;
     email: string;
-    role: 'ADMIN' | 'CUSTOMER' | 'EDITOR';
+    role: 'ADMIN' | 'CUSTOMER' | 'EDITOR' | 'DEVELOPER';
     status: string;
     google_id: string | null;
     created_at: string;
     last_active_at: string;
     purchases?: number;
     lifetimeValue?: number;
+    dashboard_access?: boolean;
 }
 
 interface UsersSectionProps {
@@ -62,9 +63,33 @@ const UsersSection: React.FC<UsersSectionProps> = ({
             } else {
                 toast.error(data.message || "Failed to update role", { id: loadingToast });
             }
-        } catch (error) {
-            console.error("Role update error", error);
-            toast.error("An error occurred while updating the role", { id: loadingToast });
+        } catch {
+            toast.error("Network error occurred", { id: loadingToast });
+        } finally {
+            setUpdatingId(null);
+        }
+    };
+
+    const handleDashboardAccessChange = async (userId: number, access: boolean) => {
+        setUpdatingId(userId);
+        const loadingToast = toast.loading("Updating dashboard access...");
+        try {
+            const token = localStorage.getItem('auth_token');
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
+            const res = await fetch(`${apiUrl}/api/admin/users/${userId}/dashboard-access`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ dashboard_access: access })
+            });
+            const data = await res.json();
+            if (data.status) {
+                toast.success(data.message, { id: loadingToast });
+                onRefresh();
+            } else {
+                toast.error(data.message || "Failed to update access", { id: loadingToast });
+            }
+        } catch {
+            toast.error("Network error", { id: loadingToast });
         } finally {
             setUpdatingId(null);
         }
@@ -124,6 +149,7 @@ const UsersSection: React.FC<UsersSectionProps> = ({
                         <tr className="border-b border-border text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] bg-secondary/5">
                             <th className="px-8 py-6 whitespace-nowrap">User Identity</th>
                             <th className="px-8 py-6 whitespace-nowrap">Role</th>
+                            <th className="px-8 py-6 whitespace-nowrap">Dash Access</th>
                             <th className="px-8 py-6 whitespace-nowrap">Access</th>
                             <th className="px-8 py-6 whitespace-nowrap">Ingress Date</th>
                             <th className="px-8 py-6 whitespace-nowrap text-right">Activity</th>
@@ -184,11 +210,27 @@ const UsersSection: React.FC<UsersSectionProps> = ({
                                             >
                                                 <option value="CUSTOMER">CUSTOMER</option>
                                                 <option value="EDITOR">EDITOR</option>
+                                                <option value="DEVELOPER">DEVELOPER</option>
                                                 <option value="ADMIN">ADMIN</option>
                                             </select>
                                             <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground/40">
                                                 <Shield size={10} />
                                             </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-6">
+                                        <div className="flex items-center">
+                                            {user.role === 'CUSTOMER' ? (
+                                                <span className="text-xs text-muted-foreground font-bold">—</span>
+                                            ) : (
+                                                <button
+                                                    onClick={() => handleDashboardAccessChange(user.user_id, !user.dashboard_access)}
+                                                    disabled={updatingId === user.user_id || user.role === 'ADMIN' || user.role === 'EDITOR'}
+                                                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 ease-in-out ${(user.dashboard_access || user.role === 'ADMIN' || user.role === 'EDITOR') ? 'bg-blue-600' : 'bg-gray-200'} ${(updatingId === user.user_id || user.role === 'ADMIN' || user.role === 'EDITOR') ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                >
+                                                    <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${(user.dashboard_access || user.role === 'ADMIN' || user.role === 'EDITOR') ? 'translate-x-2' : '-translate-x-2'}`} />
+                                                </button>
+                                            )}
                                         </div>
                                     </td>
                                     <td className="px-8 py-6">

@@ -11,6 +11,7 @@ interface IToken {
     role: string;
     user_id: number;
     email: string;
+    dashboard_access?: boolean | null;
 }
 
 interface AuthResponse {
@@ -54,7 +55,8 @@ class Auth {
                 full_name: user.full_name || '',
                 role: user.role,
                 user_id: user.user_id,
-                email: user.email
+                email: user.email,
+                dashboard_access: user.dashboard_access
             };
 
             // Return Token
@@ -84,7 +86,8 @@ class Auth {
                 full_name: user.full_name || '',
                 role: user.role,
                 user_id: user.user_id,
-                email: user.email
+                email: user.email,
+                dashboard_access: user.dashboard_access
             };
 
             // Return Token
@@ -132,7 +135,8 @@ class Auth {
                 full_name: newUser.full_name || '',
                 role: newUser.role,
                 user_id: newUser.user_id,
-                email: newUser.email
+                email: newUser.email,
+                dashboard_access: newUser.dashboard_access
             };
 
             // Return Token

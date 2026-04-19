@@ -201,7 +201,7 @@ export default function Dashboard() {
 
     React.useEffect(() => {
         if (!authLoading) {
-            if (!user || (user.role !== 'ADMIN' && user.role !== 'EDITOR')) {
+            if (!user || (user.role !== 'ADMIN' && user.role !== 'EDITOR' && !(user.role === 'DEVELOPER' && user.dashboard_access))) {
                 router.push('/');
                 toast.error("Unauthorized access", { id: 'unauthorized-access-toast', duration: 5000 });
             }
@@ -209,7 +209,7 @@ export default function Dashboard() {
     }, [user, authLoading, router]);
 
     React.useEffect(() => {
-        if (activeTab === 'overview' && user?.role === 'ADMIN') fetchStats();
+        if (activeTab === 'overview' && (user?.role === 'ADMIN' || user?.role === 'DEVELOPER')) fetchStats();
     }, [activeTab, user]);
 
     React.useEffect(() => { if (activeTab === 'uis') fetchUIs(); }, [activeTab, uisPage]);
@@ -219,7 +219,7 @@ export default function Dashboard() {
     // System Alert Toasts on Login
     React.useEffect(() => {
         const hasShownToasts = sessionStorage.getItem('system_alerts_shown');
-        if (!authLoading && user?.role === 'ADMIN' && !hasShownToasts) {
+        if (!authLoading && (user?.role === 'ADMIN' || user?.role === 'DEVELOPER') && !hasShownToasts) {
             const showToasts = async () => {
                 try {
                     const result = await NotificationService.getNotifications(1, 5, 'all');
@@ -259,7 +259,7 @@ export default function Dashboard() {
 
     React.useEffect(() => {
         const interval = setInterval(() => {
-            if (activeTab === 'overview' && user?.role === 'ADMIN') fetchStats();
+            if (activeTab === 'overview' && (user?.role === 'ADMIN' || user?.role === 'DEVELOPER')) fetchStats();
             if (activeTab === 'uis') fetchUIs();
             if (activeTab === 'users') fetchUsers();
             if (activeTab === 'payments') fetchPayments();
@@ -289,6 +289,7 @@ export default function Dashboard() {
                 formData.append('category', currentUI.category || '');
                 formData.append('overview', currentUI.overview || '');   // Description field
                 formData.append('author', currentUI.author || '');       // Additional Information field
+                formData.append('customUrl', currentUI.customUrl || ''); // Custom URL
 
                 // File uploads
                 if (files.banner) formData.append('banner', files.banner);
@@ -308,6 +309,7 @@ export default function Dashboard() {
                     category: currentUI.category,
                     overview: currentUI.overview,   // Description
                     author: currentUI.author,       // Additional Information
+                    customUrl: currentUI.customUrl || null, // Custom URL
                 });
             }
 
@@ -482,7 +484,7 @@ export default function Dashboard() {
         }
     };
 
-    if (authLoading || !user || (user.role !== 'ADMIN' && user.role !== 'EDITOR')) {
+    if (authLoading || !user || (user.role !== 'ADMIN' && user.role !== 'EDITOR' && !(user.role === 'DEVELOPER' && user.dashboard_access))) {
         return <DashboardSkeleton />;
     }
 
@@ -610,7 +612,7 @@ export default function Dashboard() {
                         </Link>
 
 
-                        {user?.role === 'ADMIN' && (
+                        {(user?.role === 'ADMIN' || user?.role === 'DEVELOPER') && (
                             <button
                                 onClick={() => setIsResetOpen(true)}
                                 className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-destructive/80 hover:text-destructive hover:bg-destructive/10 border border-transparent hover:border-destructive/20 transition-all text-sm font-medium group"

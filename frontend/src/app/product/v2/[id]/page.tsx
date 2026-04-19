@@ -94,6 +94,11 @@ export default function ProductArtifactPage() {
                                 <span className="text-4xl font-black text-blue-600">${product.price || "Free"}</span>
                             </div>
                             <div className="flex flex-col gap-4">
+                                {product.customUrl && (
+                                    <a href={product.customUrl} target="_blank" rel="noopener noreferrer" className="w-full py-5 bg-black text-white text-[11px] font-black uppercase tracking-[0.3em] rounded-xl hover:bg-gray-800 transition-all flex items-center justify-center gap-2">
+                                        External Visit <svg className="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                    </a>
+                                )}
                                 <button onClick={handleDownload} className="w-full py-5 bg-blue-600 text-white text-[11px] font-black uppercase tracking-[0.3em] rounded-xl hover:bg-blue-700 transition-all flex items-center justify-center gap-2 group">
                                     Secure Acquisition <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                                 </button>

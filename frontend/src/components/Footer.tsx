@@ -29,7 +29,7 @@ const SOCIAL_LINKS = [
 
 export default function Footer() {
   const { user } = useAuth();
-  const canAccessDashboard = ['ADMIN', 'EDITOR'].includes(String(user?.role).toUpperCase());
+  const canAccessDashboard = ['ADMIN', 'EDITOR'].includes(String(user?.role).toUpperCase()) || (String(user?.role).toUpperCase() === 'DEVELOPER' && user?.dashboard_access);
 
   return (
     <footer className="mt-20 border-t border-gray-100 bg-white pt-16 pb-12">
