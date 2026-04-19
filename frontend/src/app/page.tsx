@@ -1,29 +1,43 @@
 "use client"
-import React, { useState, Suspense, useRef, useEffect, useCallback } from 'react';
+import React, { useState, Suspense, useRef, useCallback } from 'react';
 import Header from '@/components/Header';
 import ProductCard from '@/components/ProductCard';
 import ProductCardSkeleton from '@/components/ProductCardSkeleton';
+import BlogCard from '@/components/BlogCard';
 import { Product } from '@/components/ts/types';
 import { SearchBar } from '@/components/SearchBar';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { ChevronDown } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import useSWR from 'swr';
 
-const DynamicMegaMenu = dynamic(() => import('@/components/DynamicMegaMenu'), {
-  ssr: false,
-});
+const DynamicMegaMenu = dynamic(() => import('@/components/DynamicMegaMenu'), { ssr: false });
 const Footer = dynamic(() => import('@/components/Footer'), { ssr: false });
 const Pagination = dynamic(() => import('@/components/Pagination'), { ssr: false });
 
 // ─── Dropdown Mappings ────────────────────────────────────────────────────────
 const simpleDropdowns: Record<string, string[]> = {};
-const navItems = ["Flyer", "Brochure", "Business Card", "Outdoor", "Book", "Stationery", "Packaging", "Poster", "More", "All"];
+const navItems = ["Flyer", "Brochure", "Business Card", "Outdoor", "Book", "Stationery", "Packaging", "Poster", "More", "All", "Blog"];
 
-// ─── Fetcher ────────────────────────────────────────────────────────────────
+// ─── Blog fetcher ─────────────────────────────────────────────────────────────
+const blogFetcher = async (url: string): Promise<{ products: any[]; totalPages: number }> => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+  const headers: Record<string, string> = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const res = await fetch(url, { headers });
+  if (!res.ok) throw new Error('Failed to fetch blogs');
+  const data = await res.json();
+  if (!data.status) throw new Error(data.message || 'API Error');
+  return {
+    products: data.data,
+    totalPages: data.meta?.totalPages || 1
+  };
+};
+
+// ─── Product Fetcher ────────────────────────────────────────────────────────
 const productFetcher = async (url: string): Promise<{ products: Product[]; totalPages: number }> => {
   const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
   const headers: Record<string, string> = {};
@@ -70,6 +84,8 @@ function HomeContent() {
   const { checkSession } = useAuth();
   const hasProcessedToken = useRef(false);
 
+  const isBlog = selectedCategory === 'Blog';
+
   React.useEffect(() => {
     const token = searchParams?.get('token');
     if (token && !hasProcessedToken.current) {
@@ -93,15 +109,25 @@ function HomeContent() {
 
   // ─── SWR Hook for Products ───────────────────────────────────────────────
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
+
+  // Blog fetching
+  const blogQueryParams = new URLSearchParams({ page: page.toString(), limit: '9', status: 'PUBLISHED' });
+  const { data: blogData, isLoading: blogLoading } = useSWR(
+    isBlog ? `${apiUrl}/api/blogs?${blogQueryParams.toString()}` : null,
+    blogFetcher,
+    { revalidateOnFocus: false, keepPreviousData: true }
+  );
+
+  // Product fetching
   const queryParams = new URLSearchParams({
     page: page.toString(),
     limit: '12',
-    ...(selectedCategory && selectedCategory !== 'All' && { category: selectedCategory }),
+    ...(selectedCategory && selectedCategory !== 'All' && selectedCategory !== 'Blog' && { category: selectedCategory }),
     ...(debouncedSearch && { search: debouncedSearch })
   });
 
-  const { data, error, isLoading, isValidating } = useSWR(
-    `${apiUrl}/api/uis?${queryParams.toString()}`,
+  const { data, isLoading, isValidating } = useSWR(
+    !isBlog ? `${apiUrl}/api/uis?${queryParams.toString()}` : null,
     productFetcher,
     {
       revalidateOnFocus: false,
@@ -112,16 +138,18 @@ function HomeContent() {
 
   const products = data?.products || [];
   const totalPages = data?.totalPages || 1;
+  const blogs = blogData?.products || [];
+  const blogTotalPages = blogData?.totalPages || 1;
 
   const handleNavEnter = useCallback((item: string) => {
     if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
-    if (item !== "All" || simpleDropdowns[item]) {
+    if (item !== "All" && item !== "Blog" || simpleDropdowns[item]) {
       const el = navItemRefs.current[item];
       const section = navSectionRef.current;
       if (el && section) {
         const eRect = el.getBoundingClientRect();
         const sRect = section.getBoundingClientRect();
-        const isMega = item !== "All" && !simpleDropdowns[item];
+        const isMega = item !== "All" && item !== "Blog" && !simpleDropdowns[item];
         const menuWidth = isMega ? Math.min(720, window.innerWidth * 0.92) : 176;
         const rawCentre = eRect.left - sRect.left + eRect.width / 2;
         const halfMenu = menuWidth / 2;
@@ -140,7 +168,6 @@ function HomeContent() {
     if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
   }, []);
 
-  // Stable callback for SearchBar — won't change identity ever
   const handleSearchCommit = useCallback((query: string) => {
     setDebouncedSearch(query);
     setPage(1);
@@ -162,9 +189,7 @@ function HomeContent() {
           <p className="mt-4 sm:mt-5 text-gray-600 text-sm sm:text-base leading-relaxed max-w-xs sm:max-w-md mx-auto">
             Access Thousands Of High-Fidelity, Customizable Templates To Showcase Your Next Big Project. Always Free.
           </p>
-
-          {/* Search bar — isolated component, typing never re-renders HomeContent */}
-          <SearchBar onCommit={handleSearchCommit} />
+          {!isBlog && <SearchBar onCommit={handleSearchCommit} />}
         </section>
 
         {/* ── Sub-nav / Filter ── */}
@@ -174,7 +199,7 @@ function HomeContent() {
               Studio Mockups
               <span className="mx-2 font-normal text-gray-300">—</span>
               <span className="font-normal text-gray-500 normal-case tracking-normal text-[11px] sm:text-[13px]">
-                High-Quality Free Mockups For Designers
+                {isBlog ? 'Design Insights, Tutorials & Inspiration' : 'High-Quality Free Mockups For Designers'}
               </span>
             </p>
           </div>
@@ -183,8 +208,9 @@ function HomeContent() {
             <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 sm:gap-x-5 text-[12px] sm:text-[13px] font-bold text-gray-500 uppercase tracking-widest pb-1">
               {navItems.map((item) => {
                 const isAll = item === "All";
+                const isBlogItem = item === "Blog";
                 const isActive = selectedCategory === item;
-                const hasDropdown = !isAll || !!simpleDropdowns[item];
+                const hasDropdown = !isAll && !isBlogItem && !!simpleDropdowns[item] || (!isAll && !isBlogItem);
 
                 return (
                   <div
@@ -205,11 +231,13 @@ function HomeContent() {
                       }}
                       className={`flex items-center gap-1 py-1.5 transition-colors cursor-pointer ${isAll
                         ? `px-3 sm:px-4 rounded-full text-[12px] sm:text-[13px] font-bold uppercase tracking-widest ${isActive ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-blue-600 hover:text-white'}`
-                        : `hover:text-blue-600 ${isActive ? 'text-blue-600' : ''}`
+                        : isBlogItem
+                          ? `px-3 sm:px-4 rounded-full text-[12px] sm:text-[13px] font-bold uppercase tracking-widest ${isActive ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-900 hover:text-white'}`
+                          : `hover:text-blue-600 ${isActive ? 'text-blue-600' : ''}`
                         }`}
                     >
                       {item}
-                      {!isAll && hasDropdown && <ChevronDown className="w-2.5 h-2.5 sm:w-3 sm:h-3" />}
+                      {!isAll && !isBlogItem && hasDropdown && <ChevronDown className="w-2.5 h-2.5 sm:w-3 sm:h-3" />}
                     </button>
                   </div>
                 );
@@ -217,7 +245,7 @@ function HomeContent() {
             </nav>
 
             <AnimatePresence>
-              {activeDropdown && (!["All"].includes(activeDropdown) || simpleDropdowns[activeDropdown]) && (
+              {activeDropdown && (![" All", "Blog"].includes(activeDropdown) || simpleDropdowns[activeDropdown]) && (
                 <div
                   className="absolute top-full z-[100] pt-2"
                   style={{ left: dropdownLeft, transform: 'translateX(-50%)' }}
@@ -234,44 +262,96 @@ function HomeContent() {
           </div>
         </section>
 
-        {/* ── Product Grid ── */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-8 pt-6 sm:pt-8 pb-16 sm:pb-20 min-h-[800px] relative">
-          {isValidating && !isLoading && (
-            <div className="absolute top-0 right-8 z-10">
-              <div className="flex items-center gap-2 px-3 py-1 bg-white/80 backdrop-blur-sm border border-gray-100 rounded-full shadow-sm">
-                <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
-                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Updating...</span>
+        {/* ── Blog Grid ── */}
+        {isBlog && (
+          <section className="max-w-7xl mx-auto px-4 sm:px-8 pt-8 pb-16 sm:pb-20 min-h-[600px]">
+            {/* Blog section header */}
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight">Latest Articles</h2>
+                <p className="text-gray-500 text-sm mt-1">Design tips, tutorials, and inspiration</p>
               </div>
+              <Link href="/blog" className="text-xs font-black uppercase tracking-widest text-blue-600 hover:text-blue-700 transition-colors hidden sm:block">
+                View All →
+              </Link>
             </div>
-          )}
-          {isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-7 mb-10 sm:mb-14">
-              {[...Array(6)].map((_, i) => (
-                <ProductCardSkeleton key={i} />
-              ))}
-            </div>
-          ) : products.length > 0 ? (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-7 mb-10 sm:mb-14">
-                {products.map((product, index) => (
-                  <ProductCard key={product.id} product={product} priority={index < 3} />
+            {blogLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="aspect-[16/9] bg-gray-100 rounded-2xl mb-4" />
+                    <div className="h-3 bg-gray-100 rounded-full w-1/3 mb-3" />
+                    <div className="h-5 bg-gray-100 rounded-xl w-3/4 mb-2" />
+                    <div className="h-4 bg-gray-100 rounded-xl w-full mb-1" />
+                    <div className="h-4 bg-gray-100 rounded-xl w-2/3" />
+                  </div>
                 ))}
               </div>
-              <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
-            </>
-          ) : (
-            <div className="py-16 sm:py-20 text-center flex flex-col items-center gap-4">
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-800">No items found</h3>
-              <p className="text-gray-500 text-sm sm:text-base">Try selecting a different category or search term.</p>
-              <button
-                onClick={() => { setSelectedCategory("All"); setDebouncedSearch(""); setPage(1); }}
-                className="mt-2 px-5 sm:px-6 py-2 sm:py-2.5 bg-blue-600 text-white text-sm font-bold rounded-full hover:bg-blue-700 transition-all"
-              >
-                Reset Filter
-              </button>
-            </div>
-          )}
-        </section>
+            ) : blogs.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8 sm:gap-10">
+                  {blogs.map((blog: any) => (
+                    <BlogCard key={blog.id} blog={blog} />
+                  ))}
+                </div>
+                <div className="mt-12">
+                  <Pagination currentPage={page} totalPages={blogTotalPages} onPageChange={setPage} />
+                </div>
+              </>
+            ) : (
+              <div className="py-20 text-center flex flex-col items-center gap-4">
+                <div className="w-16 h-16 rounded-3xl bg-gray-100 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-gray-400">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-800">No articles yet</h3>
+                <p className="text-gray-500 text-sm">Check back soon for design tips and inspiration.</p>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* ── Product Grid ── */}
+        {!isBlog && (
+          <section className="max-w-7xl mx-auto px-4 sm:px-8 pt-6 sm:pt-8 pb-16 sm:pb-20 min-h-[800px] relative">
+            {isValidating && !isLoading && (
+              <div className="absolute top-0 right-8 z-10">
+                <div className="flex items-center gap-2 px-3 py-1 bg-white/80 backdrop-blur-sm border border-gray-100 rounded-full shadow-sm">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Updating...</span>
+                </div>
+              </div>
+            )}
+            {isLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-7 mb-10 sm:mb-14">
+                {[...Array(6)].map((_, i) => (
+                  <ProductCardSkeleton key={i} />
+                ))}
+              </div>
+            ) : products.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-7 mb-10 sm:mb-14">
+                  {products.map((product, index) => (
+                    <ProductCard key={product.id} product={product} priority={index < 3} />
+                  ))}
+                </div>
+                <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+              </>
+            ) : (
+              <div className="py-16 sm:py-20 text-center flex flex-col items-center gap-4">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-800">No items found</h3>
+                <p className="text-gray-500 text-sm sm:text-base">Try selecting a different category or search term.</p>
+                <button
+                  onClick={() => { setSelectedCategory("All"); setDebouncedSearch(""); setPage(1); }}
+                  className="mt-2 px-5 sm:px-6 py-2 sm:py-2.5 bg-blue-600 text-white text-sm font-bold rounded-full hover:bg-blue-700 transition-all"
+                >
+                  Reset Filter
+                </button>
+              </div>
+            )}
+          </section>
+        )}
 
       </main>
       <Footer />

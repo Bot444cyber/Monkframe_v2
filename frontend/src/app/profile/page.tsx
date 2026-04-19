@@ -386,7 +386,7 @@ export default function ProfilePage() {
 
                                                     <div className="flex items-center gap-2 w-full sm:w-auto xl:w-full">
                                                         <Link
-                                                            href={`/product/${p.uiId}`}
+                                                            href={`/${(p.ui?.category || 'mockups').toLowerCase()}/${p.uiId}`}
                                                             className="flex-1 sm:flex-none xl:flex-1 h-10 px-4 bg-gray-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center hover:bg-gray-800 transition-all active:scale-95"
                                                         >
                                                             Download

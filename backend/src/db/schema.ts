@@ -190,3 +190,27 @@ export const newsletterSubscribers = mysqlTable('newsletter_subscribers', {
   email: varchar('email', { length: 191 }).notNull().unique(),
   created_at: timestamp('created_at').defaultNow().notNull(),
 });
+
+export const blogs = mysqlTable('blogs', {
+  id: varchar('id', { length: 36 }).primaryKey().$defaultFn(() => randomUUID()),
+  title: varchar('title', { length: 255 }).notNull(),
+  slug: varchar('slug', { length: 255 }).notNull().unique(),
+  content: text('content').notNull(),
+  excerpt: varchar('excerpt', { length: 500 }),
+  coverImage: text('cover_image'),
+  authorId: int('authorId').notNull(),
+  status: mysqlEnum('status', ['DRAFT', 'PUBLISHED']).default('DRAFT').notNull(),
+  category: varchar('category', { length: 100 }),
+  tags: json('tags'),
+  views: int('views').default(0).notNull(),
+  created_at: timestamp('created_at').defaultNow().notNull(),
+  updated_at: timestamp('updated_at').defaultNow().onUpdateNow().notNull(),
+});
+
+export const blogsRelations = relations(blogs, ({ one }) => ({
+  author: one(users, {
+    fields: [blogs.authorId],
+    references: [users.user_id],
+  }),
+}));
+

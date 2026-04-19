@@ -30,6 +30,7 @@ const searchFetcher = async (url: string) => {
     return data.data.map((ui: any) => ({
         id: ui.id,
         slug: ui.slug,
+        category: ui.category,
         title: ui.title,
         imageSrc: ui.imageSrc,
         overview: ui.overview || `High-quality ${ui.category || "asset"} mockup.`,
@@ -57,7 +58,7 @@ type DropdownProps = {
     query: string;
     activeTab: TabLabel;
     setActiveTab: (t: TabLabel) => void;
-    onSelect: (title: string, id?: string, slug?: string) => void;
+    onSelect: (title: string, id?: string, slug?: string, category?: string) => void;
 };
 
 const SearchDropdown = React.memo(({ query, activeTab, setActiveTab, onSelect }: DropdownProps) => {
@@ -137,7 +138,7 @@ const SearchDropdown = React.memo(({ query, activeTab, setActiveTab, onSelect }:
                     displayResults.map((item: any, i: number) => (
                         <button
                             key={i}
-                            onMouseDown={e => { e.preventDefault(); onSelect(item.title, item.id, item.slug); }}
+                            onMouseDown={e => { e.preventDefault(); onSelect(item.title, item.id, item.slug, item.category); }}
                             className="w-full flex items-center gap-4 px-4 py-3 hover:bg-gray-50 transition-colors text-left group"
                         >
                             <div className="w-12 h-12 rounded-xl bg-[#f8fafc] flex items-center justify-center overflow-hidden shrink-0 group-hover:shadow-sm transition-all p-1">
@@ -212,10 +213,10 @@ export const SearchBar = React.memo(({ onCommit }: SearchBarProps) => {
         return () => document.removeEventListener("mousedown", handler);
     }, []);
 
-    const handleSelect = useCallback((title: string, id?: string, slug?: string) => {
+    const handleSelect = useCallback((title: string, id?: string, slug?: string, category?: string) => {
         const identifier = slug || id;
         if (identifier) {
-            router.push(`/product/v1/${identifier}`);
+            router.push(`/${(category || 'mockups').toLowerCase()}/${identifier}`);
         } else {
             setQuery(title);
             onCommit(title);

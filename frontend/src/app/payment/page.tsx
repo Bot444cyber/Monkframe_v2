@@ -44,7 +44,8 @@ function PaymentContent() {
             }
             toast.success("Payment successful!");
             if (id) {
-                router.push(`/product/${id}?autoDownload=true`);
+                const cat = searchParams?.get('category') || 'mockups';
+                router.push(`/${cat}/${id}?autoDownload=true`);
             } else {
                 router.push('/');
             }
@@ -116,7 +117,8 @@ function PaymentContent() {
 
         toast.success("Payment successful!");
         if (id) {
-            router.push(`/product/${id}?autoDownload=true`);
+            const cat = searchParams?.get('category') || 'mockups';
+            router.push(`/${cat}/${id}?autoDownload=true`);
         } else {
             router.push('/');
         }

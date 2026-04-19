@@ -230,7 +230,7 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                                             <>
                                                 <div className="flex bg-[#EEF0F5]/50 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-600 transition-shadow">
                                                     <span className="flex items-center px-3 text-[11px] font-medium text-gray-400 bg-gray-50 border-r border-gray-200 select-none hidden sm:flex">
-                                                        {siteUrl}/product/v1/
+                                                        {siteUrl}/{currentUI.category ? currentUI.category.toLowerCase() : 'mockups'}/
                                                     </span>
                                                     <input
                                                         id="custom-url-input"
@@ -243,7 +243,7 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
                                                 </div>
                                                 <p className="px-1 text-[9px] font-bold text-gray-400/80 uppercase tracking-widest leading-relaxed mt-1.5">
                                                     IF EMPTY, WE USE YOUR DEFAULT PRODUCT LINK:<br />
-                                                    <span className="text-gray-400 font-medium normal-case tracking-normal">{siteUrl}/product/v1/{currentUI.customUrl || generatedSlug || 'free-standing-front-facing-6x9-book-mockup-psd'}</span>
+                                                    <span className="text-gray-400 font-medium normal-case tracking-normal">{siteUrl}/{currentUI.category ? currentUI.category.toLowerCase() : 'mockups'}/{currentUI.customUrl || generatedSlug || 'free-standing-front-facing-6x9-book-mockup-psd'}</span>
                                                 </p>
                                             </>
                                         );

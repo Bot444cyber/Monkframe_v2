@@ -23,12 +23,13 @@ const DashboardModals = dynamic(() => import('@/components/dashboard/DashboardMo
 const ResetDataModal = dynamic(() => import('@/components/dashboard/ResetDataModal'), { ssr: false });
 const AdminSystemAlerts = dynamic(() => import('@/components/dashboard/AdminSystemAlerts'), { ssr: false });
 const CommentSection = dynamic(() => import('@/components/CommentSection'), { ssr: false });
+import BlogSection from '@/components/dashboard/BlogSection';
 
 import { useAuth } from '@/context/AuthContext';
 import { NotificationService } from '@/services/notification.service';
 import toast from 'react-hot-toast';
 
-export type Tab = 'overview' | 'uis' | 'payments' | 'users' | 'activity' | 'drive' | string;
+export type Tab = 'overview' | 'uis' | 'payments' | 'users' | 'activity' | 'drive' | 'blogs' | string;
 
 export interface OverviewData {
     stats: { label: string; value: string; change: string; color: string }[];
@@ -588,6 +589,34 @@ export default function Dashboard() {
                             ))}
                         </nav>
                     </div>
+
+                    {/* Content Section */}
+                    {(user?.role === 'ADMIN' || user?.role === 'DEVELOPER') && (
+                        <div className="mb-8">
+                            <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4 pl-4">Content</h2>
+                            <nav className="space-y-1">
+                                <button
+                                    onClick={() => { setActiveTab('blogs'); setIsSidebarOpen(false); }}
+                                    className={`w-full group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${activeTab === 'blogs'
+                                        ? 'bg-linear-to-r from-primary/5 to-transparent text-foreground shadow-[inset_1px_0_0_0_var(--primary)]'
+                                        : 'bg-transparent text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+                                        }`}
+                                >
+                                    {activeTab === 'blogs' && (
+                                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-blue-500 rounded-r-full shadow-[0_0_12px_rgba(37,99,235,0.5)]" />
+                                    )}
+                                    <span className={`relative transition-colors duration-300 ${activeTab === 'blogs' ? 'text-blue-600' : 'text-muted-foreground group-hover:text-foreground'}`}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" />
+                                        </svg>
+                                    </span>
+                                    <span className={`text-sm font-bold uppercase tracking-widest transition-all ${activeTab === 'blogs' ? 'translate-x-1' : 'group-hover:translate-x-1'}`}>
+                                        Articles
+                                    </span>
+                                </button>
+                            </nav>
+                        </div>
+                    )}
                 </div>
 
                 {/* System / Footer Section */}
@@ -723,6 +752,7 @@ export default function Dashboard() {
                         />
                     )}
                     {activeTab === 'drive' && <DriveSection />}
+                    {activeTab === 'blogs' && <BlogSection />}
                 </div>
             </main>
 

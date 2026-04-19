@@ -27,9 +27,9 @@ export default function ProductDetailsPage() {
 
     useEffect(() => {
         const fetchProduct = async () => {
-            if (!params?.id) return;
+            if (!params?.slug) return;
             try {
-                const response = await InteractionService.getUI(params.id as string);
+                const response = await InteractionService.getUI(params.slug as string);
                 if (response.status) {
                     const raw = response.data;
                     const normalized = {
@@ -48,7 +48,7 @@ export default function ProductDetailsPage() {
             }
         };
         fetchProduct();
-    }, [params?.id]);
+    }, [params?.slug]);
 
 
     const handleToggleWishlist = async (e: React.MouseEvent) => {
