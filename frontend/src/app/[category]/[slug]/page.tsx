@@ -172,14 +172,6 @@ export default function ProductDetailsPage() {
                                         This premium UI asset is available for free. Download and use it in your personal or commercial projects.
                                     </p>
                                     <div className="flex flex-col gap-3 w-full">
-                                        {product.customUrl && (
-                                            <a href={product.customUrl} target="_blank" rel="noopener noreferrer" className="w-full py-4.5 px-8 bg-black text-white text-[12px] font-black uppercase tracking-[0.1em] shadow-xl hover:bg-gray-800 hover:scale-[1.02] active:scale-[0.98] transition-all flex justify-center items-center gap-3 rounded-2xl">
-                                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                </svg>
-                                                External Visit
-                                            </a>
-                                        )}
                                         <button onClick={handleDownload} className="w-full py-4.5 px-8 bg-blue-600 text-white text-[12px] font-black uppercase tracking-[0.1em] shadow-xl shadow-blue-500/20 hover:bg-blue-700 hover:scale-[1.02] active:scale-[0.98] transition-all flex justify-center items-center gap-3 rounded-2xl">
                                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />

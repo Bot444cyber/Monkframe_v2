@@ -53,6 +53,7 @@ export default function Header() {
 
     const navItems = [
         { label: "Explore", href: "/" },
+        { label: "Blog", href: "/blog" },
         { label: "Licenses", href: "/licenses" },
         { label: "Faq", href: "/faq" },
         { label: "Contact", href: "/contact" }
