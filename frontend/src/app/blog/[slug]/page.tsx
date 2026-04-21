@@ -84,7 +84,7 @@ export default function BlogPostPage() {
                         </svg>
                     </div>
                     <div>
-                        <h1 className="text-3xl font-black text-gray-900 mb-2">Article Not Found</h1>
+                        <h1 className="text-3xl font-extrabold text-gray-900 mb-2">Article Not Found</h1>
                         <p className="text-gray-500 max-w-sm mx-auto">This article may have been removed or the URL is incorrect.</p>
                     </div>
                     <div className="flex items-center gap-3">
@@ -125,14 +125,14 @@ export default function BlogPostPage() {
                     {/* ── Category badge ── */}
                     {blog.category && (
                         <div className="mb-5">
-                            <span className={`inline-block text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded text-white ${catColor}`}>
+                            <span className={`inline-block text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded text-white ${catColor}`}>
                                 {blog.category}
                             </span>
                         </div>
                     )}
 
                     {/* ── Title ── */}
-                    <h1 className="text-3xl sm:text-[2.6rem] font-black leading-[1.12] tracking-tight text-gray-900 mb-4">
+                    <h1 className="text-3xl sm:text-[2.6rem] font-extrabold leading-[1.12] tracking-tight text-gray-900 mb-4">
                         {blog.title}
                     </h1>
 
@@ -147,7 +147,7 @@ export default function BlogPostPage() {
                     <div className="flex flex-wrap items-center gap-3 pb-7 mb-8 border-b border-gray-100 text-sm text-gray-400">
                         {blog.author?.name && (
                             <div className="flex items-center gap-2 mr-1">
-                                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-black shadow-sm ${catColor}`}>
+                                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold shadow-sm ${catColor}`}>
                                     {blog.author.name.charAt(0).toUpperCase()}
                                 </div>
                                 <span className="text-gray-700 font-semibold text-sm">{blog.author.name}</span>
@@ -217,12 +217,12 @@ export default function BlogPostPage() {
                     {/* ── Author card ── */}
                     {blog.author?.name && (
                         <div className="flex items-center gap-5 p-6 rounded-2xl bg-gray-50 border border-gray-100 mb-12">
-                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white text-2xl font-black shadow-lg shrink-0 ${catColor}`}>
+                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white text-2xl font-extrabold shadow-lg shrink-0 ${catColor}`}>
                                 {blog.author.name.charAt(0).toUpperCase()}
                             </div>
                             <div>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5">Written by</p>
-                                <p className="text-base font-black text-gray-900">{blog.author.name}</p>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Written by</p>
+                                <p className="text-base font-bold text-gray-900">{blog.author.name}</p>
                                 <p className="text-sm text-gray-400 mt-0.5">MOCKUPIDEA contributor</p>
                             </div>
                             <Link href="/blog" className="ml-auto flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:underline shrink-0">
@@ -237,15 +237,15 @@ export default function BlogPostPage() {
                         <div className="absolute inset-0 opacity-[0.04]"
                             style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.5) 1px,transparent 1px)', backgroundSize: '28px 28px' }} />
                         <div className="relative z-10 text-center">
-                            <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 text-[9px] font-black uppercase tracking-widest text-blue-300">
+                            <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 text-[9px] font-bold uppercase tracking-widest text-blue-300">
                                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />Free Resources
                             </div>
-                            <h2 className="text-2xl sm:text-3xl font-black mb-3 tracking-tight">Download Free Mockups</h2>
+                            <h2 className="text-2xl sm:text-3xl font-extrabold mb-3 tracking-tight">Download Free Mockups</h2>
                             <p className="text-gray-400 text-sm mb-7 max-w-sm mx-auto leading-relaxed">
                                 Hundreds of high-quality, free mockup templates to make your designs shine.
                             </p>
                             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                                <Link href="/" className="inline-flex items-center gap-2 px-7 py-3 bg-blue-600 text-white rounded-2xl font-black text-sm hover:bg-blue-500 transition-all active:scale-95 shadow-lg shadow-blue-600/30">
+                                <Link href="/" className="inline-flex items-center gap-2 px-7 py-3 bg-blue-600 text-white rounded-2xl font-bold text-sm hover:bg-blue-500 transition-all active:scale-95 shadow-lg shadow-blue-600/30">
                                     Browse Mockups
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
                                 </Link>

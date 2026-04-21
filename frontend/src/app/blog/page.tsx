@@ -86,17 +86,17 @@ function HeroCard({ blog }: { blog: Blog }) {
             <div className="sm:w-[38%] p-7 sm:p-10 flex flex-col justify-between bg-white">
                 <div>
                     {blog.category && (
-                        <span className={`inline-block text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-md text-white mb-4 ${catColor}`}>
+                        <span className={`inline-block text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-md text-white mb-4 ${catColor}`}>
                             {blog.category}
                         </span>
                     )}
-                    <h2 className="text-xl sm:text-2xl font-black text-gray-900 leading-tight tracking-tight group-hover:text-blue-600 transition-colors duration-200 line-clamp-3">
+                    <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 leading-tight tracking-tight group-hover:text-blue-600 transition-colors duration-200 line-clamp-3">
                         {blog.title}
                     </h2>
                 </div>
                 <div className="flex items-center gap-2 mt-4">
                     {blog.author?.name && (
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-[10px] font-black shrink-0">
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-[10px] font-bold shrink-0">
                             {blog.author.name.charAt(0).toUpperCase()}
                         </div>
                     )}
@@ -118,8 +118,8 @@ function HeroCard({ blog }: { blog: Blog }) {
                 ) : (
                     <div className="w-full h-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center">
                         <div className="text-center px-6">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-2">Featured</p>
-                            <p className="text-white font-black text-lg leading-tight line-clamp-3">{blog.title}</p>
+                            <p className="text-[9px] font-bold uppercase tracking-widest text-gray-400 mb-2">Featured</p>
+                            <p className="text-white font-bold text-lg leading-tight line-clamp-3">{blog.title}</p>
                         </div>
                     </div>
                 )}
@@ -145,13 +145,13 @@ function FreepikCard({ blog }: { blog: Blog }) {
                     />
                 ) : (
                     <div className="w-full h-full bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 flex items-center justify-center p-6">
-                        <p className="text-white font-black text-sm leading-snug text-center line-clamp-3">{blog.title}</p>
+                        <p className="text-white font-bold text-sm leading-snug text-center line-clamp-3">{blog.title}</p>
                     </div>
                 )}
                 {/* Dark gradient + title overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-3">
-                    <p className="text-white text-[13px] font-black leading-snug line-clamp-2 drop-shadow-md">
+                    <p className="text-white text-[13px] font-bold leading-snug line-clamp-2 drop-shadow-md">
                         {blog.title}
                     </p>
                 </div>
@@ -160,11 +160,11 @@ function FreepikCard({ blog }: { blog: Blog }) {
             {/* Below the image: category + title + author */}
             <div className="p-4 flex flex-col gap-2 flex-1">
                 {blog.category && (
-                    <span className={`inline-flex self-start text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded text-white ${catColor}`}>
+                    <span className={`inline-flex self-start text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded text-white ${catColor}`}>
                         {blog.category}
                     </span>
                 )}
-                <h3 className="text-sm font-black text-gray-900 leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors duration-200">
+                <h3 className="text-sm font-bold text-gray-900 leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors duration-200">
                     {blog.title}
                 </h3>
                 {blog.excerpt && (
@@ -173,7 +173,7 @@ function FreepikCard({ blog }: { blog: Blog }) {
                 {/* Author row */}
                 <div className="flex items-center gap-2 mt-auto pt-2 border-t border-gray-50">
                     {blog.author?.name && (
-                        <div className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-[9px] font-black shrink-0">
+                        <div className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-[9px] font-bold shrink-0">
                             {blog.author.name.charAt(0).toUpperCase()}
                         </div>
                     )}
@@ -235,8 +235,8 @@ export default function BlogPage() {
                     {/* ── Top bar ── */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                         <div>
-                            <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">MOCKUPIDEA</span>
-                            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 mt-0.5">Blog</h1>
+                            <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">MOCKUPIDEA</span>
+                            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 mt-0.5">Blog</h1>
                         </div>
                         {/* Search */}
                         <div className="relative w-full sm:w-64">
@@ -254,7 +254,7 @@ export default function BlogPage() {
                     </div>
 
                     {/* ── Category nav tabs ── */}
-                    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pb-5 mb-7 border-b border-gray-100 text-[11px] sm:text-[12px] font-black uppercase tracking-widest">
+                    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pb-5 mb-7 border-b border-gray-100 text-[11px] sm:text-[12px] font-bold uppercase tracking-widest">
                         {CATEGORIES.map(cat => {
                             const isActive = activeCategory === cat;
                             return (
@@ -286,7 +286,7 @@ export default function BlogPage() {
                                 </svg>
                             </div>
                             <div>
-                                <h3 className="text-lg font-black text-gray-900 mb-1">
+                                <h3 className="text-lg font-extrabold text-gray-900 mb-1">
                                     {debouncedSearch ? `No results for "${debouncedSearch}"` : 'No articles yet'}
                                 </h3>
                                 <p className="text-sm text-gray-400 max-w-xs mx-auto">
