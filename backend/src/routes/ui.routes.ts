@@ -53,6 +53,8 @@ router.put('/:id', authenticateUser, authorizeRoles('ADMIN', 'EDITOR', 'DEVELOPE
 ]), validateResource(updateUiSchema), uiController.updateUI);
 
 
+router.delete('/:id/file', authenticateUser, authorizeRoles('ADMIN', 'EDITOR', 'DEVELOPER'), uiController.deleteUIFile);
+
 router.delete('/:id', authenticateUser, authorizeRoles('ADMIN', 'EDITOR', 'DEVELOPER'), uiController.deleteUI);
 
 export default router;

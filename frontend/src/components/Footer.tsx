@@ -9,8 +9,11 @@ const SocialIcons = {
   Instagram: () => (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></svg>
   ),
-  Binance: () => (
-    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M16.624 13.9202l2.7175 2.7154-7.3418 7.3418-7.3418-7.3418 2.7175-2.7154L11.9997 19.3444l4.6243-4.4242zm2.7175-3.8404l2.7175 2.7175-2.7175 2.7175-2.7175-2.7175 2.7175-2.7175zm-14.6836 0l2.7175 2.7175-2.7175 2.7175-2.7175-2.7175 2.7175-2.7175zm7.3418-10.0573l7.3418 7.3418-2.7175 2.7154L11.9997 5.6554 7.3754 10.0798l-2.7175-2.7154 7.3418-7.3418zm0 9.6239l2.4334 2.4334-2.4334 2.4334-2.4334-2.4334 2.4334-2.4334z" /></svg>
+  Facebook: () => (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M24 12.073C24 5.404 18.627 0 12 0S0 5.404 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047v-2.66c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.265h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z" /></svg>
+  ),
+  Behance: () => (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M6.938 4.503c.702 0 1.34.06 1.92.188.577.13 1.07.33 1.485.61.41.28.733.65.96 1.12.225.47.34 1.05.34 1.73 0 .74-.17 1.36-.507 1.86-.338.5-.837.9-1.502 1.22.906.26 1.576.72 2.022 1.37.448.66.665 1.45.665 2.36 0 .75-.13 1.39-.41 1.93-.28.55-.67 1-1.16 1.35-.48.348-1.05.6-1.69.75-.64.15-1.31.22-2.01.22H0V4.51h6.938v-.008zm-.34 4.888c.586 0 1.065-.13 1.434-.397.37-.263.55-.68.55-1.24 0-.3-.06-.56-.17-.77-.11-.22-.27-.39-.47-.522-.2-.13-.44-.22-.7-.268-.26-.05-.54-.07-.84-.07H2.92v3.267h3.678zm.19 5.087c.32 0 .618-.034.898-.1.28-.067.52-.18.72-.33.2-.15.36-.35.47-.6.12-.25.17-.56.17-.93 0-.74-.207-1.27-.617-1.6-.41-.33-.95-.49-1.62-.49H2.92v4.05h3.868zm9.255-1.073c.27.67.74 1 1.56 1 .48 0 .89-.12 1.24-.38.34-.256.55-.53.62-.82h2.42c-.38 1.2-1.01 2.06-1.88 2.58-.87.52-1.93.78-3.17.78-.86 0-1.64-.14-2.33-.42-.7-.28-1.29-.67-1.79-1.17-.49-.5-.87-1.1-1.13-1.8-.26-.7-.39-1.47-.39-2.31 0-.82.13-1.58.4-2.28.27-.7.65-1.31 1.14-1.82.49-.51 1.07-.91 1.77-1.19.7-.28 1.45-.43 2.27-.43.93 0 1.74.18 2.44.56.7.37 1.27.88 1.72 1.51.45.63.77 1.35.97 2.15.2.8.28 1.64.24 2.52h-7.26c0 .7.18 1.37.45 2.02zm2.8-4.99c-.22-.63-.66-.94-1.35-.94-.39 0-.72.07-.97.2-.26.13-.46.3-.62.5-.16.2-.27.41-.33.64-.07.23-.1.45-.11.66h4.01c-.08-.74-.38-1.37-.62-2.01zm-3.88-5.68h5.04v1.28h-5.04V3.63z" /></svg>
   ),
   Dribbble: () => (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="12" cy="12" r="10" /><path d="M8.56 2.74c4.37 2.62 6.12 7.35 7.06 12.04" /><path d="M2 12c5.44.2 11.35-1 17.08-5.14" /><path d="M11 20c4.9-3.1 4.9-9.1 4.9-9.1" /></svg>
@@ -21,10 +24,11 @@ const SocialIcons = {
 };
 
 const SOCIAL_LINKS = [
-  { name: 'Instagram', href: '#', icon: SocialIcons.Instagram },
-  { name: 'Binance', href: '#', icon: SocialIcons.Binance },
-  { name: 'Dribbble', href: '#', icon: SocialIcons.Dribbble },
-  { name: 'Pinterest', href: '#', icon: SocialIcons.Pinterest },
+  { name: 'Instagram', href: 'https://www.instagram.com/mockupidea/', icon: SocialIcons.Instagram },
+  { name: 'Pinterest', href: 'https://www.pinterest.com/mockupidea1/', icon: SocialIcons.Pinterest },
+  { name: 'Behance', href: 'https://www.behance.net/mockupidea', icon: SocialIcons.Behance },
+  { name: 'Dribbble', href: 'https://dribbble.com/mockupidea1', icon: SocialIcons.Dribbble },
+  { name: 'Facebook', href: 'https://www.facebook.com/profile.php?id=61573660727141', icon: SocialIcons.Facebook },
 ];
 
 export default function Footer() {
@@ -77,6 +81,7 @@ export default function Footer() {
           <div className="md:pl-8">
             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-8 py-1">Essentials</h4>
             <ul className="space-y-4">
+              <li><Link href="/blog" className="text-sm font-bold text-gray-500 hover:text-blue-600 transition-colors">Our Blog</Link></li>
               <li><Link href="/licenses" className="text-sm font-bold text-gray-500 hover:text-blue-600 transition-colors">Licensing Info</Link></li>
               <li><Link href="/contact" className="text-sm font-bold text-gray-500 hover:text-blue-600 transition-colors">Contact Support</Link></li>
               <li><Link href="/faq" className="text-sm font-bold text-gray-500 hover:text-blue-600 transition-colors">Common FAQ</Link></li>

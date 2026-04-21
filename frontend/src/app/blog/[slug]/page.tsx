@@ -98,14 +98,14 @@ export default function BlogPostPage() {
     }
 
     return (
-        <div className="min-h-screen bg-white font-sans text-gray-900 flex flex-col">
+        <div className="min-h-screen bg-white font-sans text-gray-900 flex flex-col overflow-x-hidden">
             <Header />
             <main className="flex-1">
 
                 {/* ── Full-width Cover Image ── */}
                 {blog.coverImage && (
-                    <div className="w-full aspect-[21/9] sm:aspect-[3/1] overflow-hidden bg-gray-100">
-                        <img src={blog.coverImage} alt={blog.title} className="w-full h-full object-cover" />
+                    <div className="relative w-full h-[220px] sm:h-[360px] md:h-[480px] overflow-hidden bg-gray-100">
+                        <img src={blog.coverImage} alt={blog.title} className="absolute inset-0 w-full h-full object-cover" />
                     </div>
                 )}
 
@@ -177,19 +177,19 @@ export default function BlogPostPage() {
                     )}
 
                     {/* ── Markdown Body ── */}
-                    <div className="prose prose-gray max-w-none mb-16
+                    <div className="prose prose-gray w-full max-w-full break-words mb-16
                         prose-headings:font-black prose-headings:tracking-tight prose-headings:text-gray-900
                         prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-4 prose-h2:pb-3 prose-h2:border-b prose-h2:border-gray-100
                         prose-h3:text-lg prose-h3:mt-8 prose-h3:mb-3
-                        prose-p:text-gray-600 prose-p:leading-[1.85] prose-p:text-[16.5px]
-                        prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-a:font-semibold
+                        prose-p:text-gray-600 prose-p:leading-[1.85] prose-p:text-[16.5px] prose-p:break-words
+                        prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-a:font-semibold prose-a:break-all
                         prose-strong:text-gray-900 prose-strong:font-black
                         prose-ul:text-gray-600 prose-ol:text-gray-600
                         prose-li:leading-7 prose-li:my-1
-                        prose-img:rounded-2xl prose-img:shadow-lg prose-img:my-8
+                        prose-img:rounded-2xl prose-img:shadow-lg prose-img:my-8 prose-img:max-w-full
                         prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:bg-blue-50/60 prose-blockquote:rounded-r-2xl prose-blockquote:py-3 prose-blockquote:px-5 prose-blockquote:not-italic prose-blockquote:text-gray-700 prose-blockquote:font-medium
-                        prose-code:text-blue-600 prose-code:bg-blue-50 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:font-mono prose-code:text-[14px] prose-code:before:content-none prose-code:after:content-none
-                        prose-pre:bg-[#0f172a] prose-pre:rounded-2xl prose-pre:shadow-2xl
+                        prose-code:text-blue-600 prose-code:bg-blue-50 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:font-mono prose-code:text-[14px] prose-code:before:content-none prose-code:after:content-none prose-code:break-all
+                        prose-pre:bg-[#0f172a] prose-pre:rounded-2xl prose-pre:shadow-2xl prose-pre:overflow-x-auto
                         prose-hr:border-gray-100
                     ">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>{blog.content}</ReactMarkdown>

@@ -270,7 +270,7 @@ export default function Dashboard() {
     }, [activeTab, user]);
 
     // Handlers
-    const handleSave = async () => {
+    const handleSave = async (opts?: { uiFile: File | null; banner: File | null; showcaseFiles: File[]; showcaseIndexes: number[] }) => {
         const loadingToast = toast.loading(isAddOpen ? "Deploying Asset..." : "Saving Changes...");
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
         const method = isAddOpen ? 'POST' : 'PUT';
@@ -281,40 +281,25 @@ export default function Dashboard() {
             const headers: any = {};
             if (token) headers['Authorization'] = `Bearer ${token}`;
 
-            let body: any;
+            const formData = new FormData();
+            formData.append('title', currentUI.title || '');
+            formData.append('category', currentUI.category || '');
+            formData.append('overview', currentUI.overview || '');
+            formData.append('author', currentUI.author || '');
+            formData.append('customUrl', currentUI.customUrl || '');
 
-            if (isAddOpen) {
-                // --- CREATE: multipart/form-data ---
-                const formData = new FormData();
-                formData.append('title', currentUI.title || '');
-                formData.append('category', currentUI.category || '');
-                formData.append('overview', currentUI.overview || '');   // Description field
-                formData.append('author', currentUI.author || '');       // Additional Information field
-                formData.append('customUrl', currentUI.customUrl || ''); // Custom URL
-
-                // File uploads
+            if (opts) {
+                if (opts.banner) formData.append('banner', opts.banner);
+                if (opts.uiFile) formData.append('uiFile', opts.uiFile);
+                opts.showcaseFiles.forEach(f => formData.append('showcase', f));
+                if (opts.showcaseIndexes.length > 0) formData.append('showcaseIndexes', opts.showcaseIndexes.join(','));
+            } else {
                 if (files.banner) formData.append('banner', files.banner);
                 if (files.uiFile) formData.append('uiFile', files.uiFile);
-                if (files.showcase && files.showcase.length > 0) {
-                    // Max 4 showcase images
-                    files.showcase.slice(0, 4).forEach(file => {
-                        formData.append('showcase', file);
-                    });
-                }
-                body = formData;
-            } else {
-                // --- UPDATE: JSON ---
-                headers['Content-Type'] = 'application/json';
-                body = JSON.stringify({
-                    title: currentUI.title,
-                    category: currentUI.category,
-                    overview: currentUI.overview,   // Description
-                    author: currentUI.author,       // Additional Information
-                    customUrl: currentUI.customUrl || null, // Custom URL
-                });
+                files.showcase.filter(Boolean).slice(0, 3).forEach(f => formData.append('showcase', f));
             }
 
-            const res = await fetch(url, { method, headers, body });
+            const res = await fetch(url, { method, headers, body: formData });
             const data = await res.json();
 
             if (data.status) {
@@ -331,6 +316,29 @@ export default function Dashboard() {
         } catch (error) {
             console.error("Save error", error);
             toast.error("An error occurred", { id: loadingToast });
+        }
+    };
+
+    const handleDeleteFile = async (type: 'banner' | 'showcase' | 'uiFile', index?: number) => {
+        if (!currentUI.id) return;
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1000';
+            const token = localStorage.getItem('auth_token');
+            const res = await fetch(`${apiUrl}/api/uis/${currentUI.id}/file`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                },
+                body: JSON.stringify({ type, index })
+            });
+            const data = await res.json();
+            if (!data.status) {
+                toast.error(data.message || 'Failed to remove file');
+            }
+        } catch (err) {
+            console.error('handleDeleteFile error', err);
+            toast.error('Failed to remove file from Drive');
         }
     };
 
@@ -770,6 +778,7 @@ export default function Dashboard() {
                 setFiles={setFiles}
                 previews={previews}
                 setPreviews={setPreviews}
+                onDeleteFile={handleDeleteFile}
             />
 
             <ResetDataModal

@@ -440,8 +440,7 @@ export const createUI = async (req: Request, res: Response) => {
 export const updateUI = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        // New form fields: title, category, overview (description), author (additional info), customUrl
-        const { title, category, author, overview, customUrl } = req.body;
+        const { title, category, author, overview, customUrl, showcaseIndexes } = req.body;
 
         // Fetch existing UI
         const [existingUI] = await db.select().from(uis).where(eq(uis.id, id)).limit(1);
@@ -449,11 +448,14 @@ export const updateUI = async (req: Request, res: Response) => {
             return res.status(404).json({ status: false, message: "UI not found" });
         }
 
-        // Handle Files
         const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
         const userId = (req.user as any)?.user_id;
 
-        // Queue background file uploads (banner, uiFile, showcase)
+        // Parse the showcase slot indexes sent by the frontend (e.g. "0,2")
+        const slotIndexes: number[] = showcaseIndexes
+            ? String(showcaseIndexes).split(',').map(Number).filter(n => !isNaN(n))
+            : [];
+
         if (files && files['banner'] && files['banner'][0]) {
             const file = files['banner'][0];
             processUpload({ filePath: file.path, fileName: file.originalname, mimeType: file.mimetype, uiId: id, type: 'BANNER', isPublic: true, userId });
@@ -463,12 +465,12 @@ export const updateUI = async (req: Request, res: Response) => {
             processUpload({ filePath: file.path, fileName: file.originalname, mimeType: file.mimetype, uiId: id, type: 'UI_FILE', isPublic: false, userId });
         }
         if (files && files['showcase']) {
-            for (const file of files['showcase'].slice(0, 4)) {
-                processUpload({ filePath: file.path, fileName: file.originalname, mimeType: file.mimetype, uiId: id, type: 'SHOWCASE', isPublic: true, userId });
-            }
+            files['showcase'].slice(0, 3).forEach((file, arrayIdx) => {
+                const showcaseIndex = slotIndexes[arrayIdx] ?? undefined;
+                processUpload({ filePath: file.path, fileName: file.originalname, mimeType: file.mimetype, uiId: id, type: 'SHOWCASE', isPublic: true, userId, showcaseIndex });
+            });
         }
 
-        // Update only the new form text fields immediately
         await db.update(uis).set({
             ...(title ? { title, slug: slugify(title) } : {}),
             ...(category ? { category } : {}),
@@ -565,6 +567,56 @@ export const deleteUI = async (req: Request, res: Response) => {
     } catch (error) {
         console.error("Delete UI Error:", error);
         res.status(500).json({ status: false, message: "Failed to delete UI" });
+    }
+};
+
+// Delete a single file from Drive (banner / showcase slot / uiFile) without deleting the whole UI
+export const deleteUIFile = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { type, index } = req.body as { type: 'banner' | 'showcase' | 'uiFile'; index?: number };
+
+        const [ui] = await db.select().from(uis).where(eq(uis.id, id)).limit(1);
+        if (!ui) return res.status(404).json({ status: false, message: 'UI not found' });
+
+        let driveFileId: string | null = null;
+        let updatePayload: Record<string, any> = {};
+
+        if (type === 'banner') {
+            driveFileId = extractDriveFileId(ui.imageSrc || '');
+            updatePayload = { imageSrc: '' };
+        } else if (type === 'uiFile') {
+            driveFileId = ui.google_file_id || null;
+            updatePayload = { google_file_id: null, fileType: null };
+        } else if (type === 'showcase') {
+            const showcase = parseArray(ui.showcase);
+            const idx = typeof index === 'number' ? index : -1;
+            if (idx < 0 || idx >= showcase.length) {
+                return res.status(400).json({ status: false, message: 'Invalid showcase index' });
+            }
+            driveFileId = extractDriveFileId(showcase[idx]);
+            showcase.splice(idx, 1);
+            updatePayload = { showcase };
+        } else {
+            return res.status(400).json({ status: false, message: 'Invalid file type' });
+        }
+
+        // Delete from Google Drive (non-blocking failure — DB still cleaned up)
+        if (driveFileId) {
+            try {
+                await deleteFileFromDrive(driveFileId);
+            } catch (driveErr) {
+                console.error(`[Drive] Failed to delete file ${driveFileId}:`, driveErr);
+            }
+        }
+
+        // Clear the DB column
+        await db.update(uis).set(updatePayload).where(eq(uis.id, id));
+
+        return res.json({ status: true, message: 'File removed successfully' });
+    } catch (error) {
+        console.error('deleteUIFile Error:', error);
+        return res.status(500).json({ status: false, message: 'Failed to remove file' });
     }
 };
 
