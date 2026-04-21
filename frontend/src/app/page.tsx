@@ -181,13 +181,13 @@ function HomeContent() {
         {/* ── Hero ── */}
         <section className="max-w-4xl mx-auto px-4 sm:px-6 pt-14 sm:pt-20 pb-8 sm:pb-10 text-center">
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-tight text-gray-900">
-            Design Better With
+            Download Free Mockup PSD Templates
           </h1>
           <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-tight text-blue-600 mt-1">
-            Flawless Mockups
+            — Download Instantly
           </h2>
           <p className="mt-4 sm:mt-5 text-gray-600 text-sm sm:text-base leading-relaxed max-w-xs sm:max-w-md mx-auto">
-            Access Thousands Of High-Fidelity, Customizable Templates To Showcase Your Next Big Project. Always Free.
+            Download free PSD mockup templates for any project — packaging, apparel, branding & devices. Commercial use allowed. No sign-up required.
           </p>
           {!isBlog && <SearchBar onCommit={handleSearchCommit} />}
         </section>
