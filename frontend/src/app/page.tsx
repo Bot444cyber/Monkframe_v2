@@ -180,10 +180,10 @@ function HomeContent() {
 
         {/* ── Hero ── */}
         <section className="max-w-4xl mx-auto px-4 sm:px-6 pt-14 sm:pt-20 pb-8 sm:pb-10 text-center">
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-tight text-gray-900">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-tight text-gray-900">
             Download Free Mockup PSD
           </h1>
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-tight text-blue-600 mt-1">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold leading-tight tracking-tight text-blue-600 mt-1 sm:mt-2">
             Templates — Download Instantly
           </h2>
           <p className="mt-4 sm:mt-5 text-gray-600 text-sm sm:text-base leading-relaxed max-w-xs sm:max-w-md mx-auto">
