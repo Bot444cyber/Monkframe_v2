@@ -126,8 +126,7 @@ const SearchDropdown = React.memo(({ query, activeTab, setActiveTab, onSelect }:
             <div className="py-2 min-h-[100px]">
                 {loading ? (
                     [...Array(3)].map((_, i) => (
-                        <div key={i} className="w-full flex items-center gap-4 px-4 py-3 animate-pulse">
-                            <div className="w-12 h-12 rounded-xl bg-gray-100 shrink-0" />
+                        <div key={i} className="w-full flex px-4 py-3 animate-pulse">
                             <div className="flex-1 flex flex-col gap-2">
                                 <div className="h-4 bg-gray-200 rounded w-1/3" />
                                 <div className="h-3 bg-gray-100 rounded w-2/3" />
@@ -139,23 +138,9 @@ const SearchDropdown = React.memo(({ query, activeTab, setActiveTab, onSelect }:
                         <button
                             key={i}
                             onMouseDown={e => { e.preventDefault(); onSelect(item.title, item.id, item.slug, item.category); }}
-                            className="w-full flex items-center gap-4 px-4 py-3 hover:bg-gray-50 transition-colors text-left group"
+                            className="w-full flex items-center px-4 py-3 hover:bg-gray-50 transition-colors text-left group"
                         >
-                            <div className="w-12 h-12 rounded-xl bg-[#f8fafc] flex items-center justify-center overflow-hidden shrink-0 group-hover:shadow-sm transition-all p-1">
-                                {item.imageSrc
-                                    ? <div className="w-full h-full relative">
-                                        <Image
-                                            src={item.imageSrc}
-                                            alt={item.title}
-                                            fill
-                                            className="object-cover rounded-lg"
-                                            unoptimized={item.imageSrc.includes('drive.google.com')}
-                                            referrerPolicy="no-referrer"
-                                        />
-                                    </div>
-                                    : <span className="text-xl">📦</span>}
-                            </div>
-                            <div className="min-w-0">
+                            <div className="min-w-0 w-full">
                                 <p className="text-[15px] font-bold text-[#0f172a] group-hover:text-blue-600 transition-colors truncate leading-tight">
                                     {item.title}
                                 </p>
