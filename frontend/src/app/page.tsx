@@ -186,7 +186,7 @@ function HomeContent() {
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold leading-tight tracking-tight text-blue-600 mt-1 sm:mt-2">
             Templates — Download Instantly
           </h2>
-          <p className="mt-4 sm:mt-5 text-gray-600 text-sm sm:text-base leading-relaxed max-w-xs sm:max-w-md mx-auto">
+          <p className="mt-4 sm:mt-5 text-gray-600 text-sm sm:text-base leading-relaxed max-w-md sm:max-w-2xl mx-auto">
             Download free PSD mockup templates for any project — packaging, apparel, branding & devices. Commercial use allowed. No sign-up required.
           </p>
           {!isBlog && <SearchBar onCommit={handleSearchCommit} />}

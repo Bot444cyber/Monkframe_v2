@@ -5,7 +5,7 @@ import rateLimit from 'express-rate-limit';
  */
 export const generalLimiter = rateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
-    max: 350,
+    max: 250,
     standardHeaders: true,  // Return `RateLimit-*` headers
     legacyHeaders: false,
     message: {
