@@ -14,12 +14,12 @@ const SocialIcons = {
   ),
   Behance: () => (
     <div className="relative w-4 h-4 md:w-5 md:h-5">
-      <Image src="/logo/behance-svgrepo-com.svg" alt="Behance" fill className="object-contain filter group-hover:brightness-0 group-hover:invert transition-all duration-300" />
+      <Image src="/logo/behance-svgrepo-com.svg" alt="Behance" fill className="object-contain filter opacity-[0.45] group-hover:opacity-100 group-hover:brightness-0 group-hover:invert transition-all duration-300" />
     </div>
   ),
   Dribbble: () => (
     <div className="relative w-4 h-4 md:w-5 md:h-5">
-      <Image src="/logo/dribbble-svgrepo-com.svg" alt="Dribbble" fill className="object-contain filter group-hover:brightness-0 group-hover:invert transition-all duration-300" />
+      <Image src="/logo/dribbble-svgrepo-com.svg" alt="Dribbble" fill className="object-contain filter opacity-[0.45] group-hover:opacity-100 group-hover:brightness-0 group-hover:invert transition-all duration-300" />
     </div>
   ),
   Pinterest: () => (
