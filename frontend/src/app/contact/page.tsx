@@ -5,13 +5,11 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 export default function ContactPage() {
-    const [status, setStatus] = useState<'idle' | 'sending' | 'sent'>('idle');
+    const [status, setStatus] = useState<'idle' | 'under_maintenance'>('idle');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        setStatus('sending');
-        // Simulate sending
-        setTimeout(() => setStatus('sent'), 1500);
+        setStatus('under_maintenance');
     };
 
     return (
@@ -44,14 +42,14 @@ export default function ContactPage() {
 
                     {/* Form */}
                     <div className="bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
-                        {status === 'sent' ? (
+                        {status === 'under_maintenance' ? (
                             <div className="h-full flex flex-col items-center justify-center text-center py-20">
-                                <div className="w-16 h-16 rounded-full bg-blue-600 text-white flex items-center justify-center mb-4 shadow-xl">
-                                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                                <div className="w-16 h-16 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center mb-4 shadow-sm">
+                                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                                 </div>
-                                <h3 className="text-2xl font-bold text-gray-900 mb-2">Message Sent</h3>
-                                <p className="text-gray-500">We'll get back to you shortly.</p>
-                                <button onClick={() => setStatus('idle')} className="mt-8 text-sm font-bold text-gray-900 hover:text-blue-600 transition-colors">Send another</button>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-2">Under Maintenance</h3>
+                                <p className="text-gray-500">We are currently upgrading our systems. Please try again later.</p>
+                                <button onClick={() => setStatus('idle')} className="mt-8 text-sm font-bold text-gray-900 hover:text-blue-600 transition-colors">Go back</button>
                             </div>
                         ) : (
                             <form onSubmit={handleSubmit} className="space-y-4">
@@ -75,10 +73,9 @@ export default function ContactPage() {
                                 </div>
                                 <button
                                     type="submit"
-                                    disabled={status === 'sending'}
-                                    className="w-full py-3 text-sm bg-gray-900 text-white font-bold rounded-xl hover:bg-blue-600 transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest"
+                                    className="w-full py-3 text-sm bg-gray-900 text-white font-bold rounded-xl hover:bg-blue-600 transition-all shadow-sm active:scale-95 uppercase tracking-widest"
                                 >
-                                    {status === 'sending' ? 'Sending...' : 'Send Message'}
+                                    Send Message
                                 </button>
                             </form>
                         )}
