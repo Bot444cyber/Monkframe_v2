@@ -91,9 +91,13 @@ app.use(helmet({
 // CORS — resilient: handles x-forwarded-proto from Hostinger's Nginx proxy
 // and gracefully falls back when FRONTEND_URL is not set.
 // FIX: Actually apply the trim() and slash removal to the array values
+// Added production domains as hardcoded fallbacks to prevent CORS lockdown if .env is missing them
 const allowedOrigins = [
     process.env.FRONTEND_URL,
     ...(process.env.ALLOWED_ORIGINS?.split(',') ?? []),
+    'https://www.mockupidea.com',
+    'https://mockupidea.com',
+    'https://api.mockupidea.com'
 ]
     .map(o => o?.trim().replace(/\/$/, ''))
     .filter((o): o is string => !!o);
