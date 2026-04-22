@@ -386,6 +386,17 @@ export const createUI = async (req: Request, res: Response) => {
 
         const generatedId = randomUUID();
 
+        // Generate a unique slug
+        let baseSlug = slugify(title);
+        let finalSlug = baseSlug;
+        let counter = 1;
+        while (true) {
+            const [existing] = await db.select({ id: uis.id }).from(uis).where(eq(uis.slug, finalSlug)).limit(1);
+            if (!existing) break;
+            finalSlug = `${baseSlug}-${counter}`;
+            counter++;
+        }
+
         // Create UI Record — removed fields use sensible defaults
         await db.insert(uis).values({
             id: generatedId,
@@ -406,7 +417,7 @@ export const createUI = async (req: Request, res: Response) => {
                 ? files['uiFile'][0].originalname.split('.').pop()?.toUpperCase() ?? null
                 : null,
             creatorId: userId,
-            slug: slugify(title)
+            slug: finalSlug
         });
 
         const [newUI] = await db.select().from(uis).where(eq(uis.id, generatedId)).limit(1);
@@ -471,8 +482,21 @@ export const updateUI = async (req: Request, res: Response) => {
             });
         }
 
+        let finalSlug: string | undefined = undefined;
+        if (title) {
+            let baseSlug = slugify(title);
+            finalSlug = baseSlug;
+            let counter = 1;
+            while (true) {
+                const [existing] = await db.select({ id: uis.id }).from(uis).where(eq(uis.slug, finalSlug)).limit(1);
+                if (!existing || existing.id === id) break;
+                finalSlug = `${baseSlug}-${counter}`;
+                counter++;
+            }
+        }
+
         await db.update(uis).set({
-            ...(title ? { title, slug: slugify(title) } : {}),
+            ...(title ? { title, slug: finalSlug } : {}),
             ...(category ? { category } : {}),
             ...(author !== undefined ? { author } : {}),
             ...(overview !== undefined ? { overview } : {}),
