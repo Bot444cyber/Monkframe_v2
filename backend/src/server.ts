@@ -90,10 +90,13 @@ app.use(helmet({
 
 // CORS — resilient: handles x-forwarded-proto from Hostinger's Nginx proxy
 // and gracefully falls back when FRONTEND_URL is not set.
+// FIX: Actually apply the trim() and slash removal to the array values
 const allowedOrigins = [
     process.env.FRONTEND_URL,
     ...(process.env.ALLOWED_ORIGINS?.split(',') ?? []),
-].filter((o): o is string => !!o?.trim());
+]
+    .map(o => o?.trim().replace(/\/$/, ''))
+    .filter((o): o is string => !!o);
 
 app.use(
     cors({
@@ -118,7 +121,8 @@ app.use(
                 callback(null, true);
             } else {
                 logger.warn(`CORS blocked origin: ${incomingOrigin}`);
-                callback(new Error(`Origin '${incomingOrigin}' not allowed by CORS`));
+                // FIX: Pass false instead of an Error to prevent the 500 server crash!
+                callback(null, false);
             }
         },
         credentials: true,
