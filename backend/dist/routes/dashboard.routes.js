@@ -8,5 +8,5 @@ const dashboard_controller_1 = require("../controllers/dashboard.controller");
 const auth_middleware_1 = require("../middlewares/auth.middleware");
 const router = express_1.default.Router();
 // Define routes
-router.get('/stats', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN'), dashboard_controller_1.getStats);
+router.get('/stats', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN', 'DEVELOPER'), dashboard_controller_1.getStats);
 exports.default = router;

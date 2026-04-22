@@ -10,7 +10,7 @@ const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
  */
 exports.generalLimiter = (0, express_rate_limit_1.default)({
     windowMs: 5 * 60 * 1000, // 5 minutes
-    max: 350,
+    max: 250,
     standardHeaders: true, // Return `RateLimit-*` headers
     legacyHeaders: false,
     message: {

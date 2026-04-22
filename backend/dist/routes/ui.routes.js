@@ -66,15 +66,16 @@ router.get('/:id/download', auth_middleware_1.optionalAuthenticate, uiController
 // Stream Image Proxy
 router.get('/image/:fileId', uiController.streamImage);
 // CRUD
-router.post('/', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN', 'EDITOR'), upload.fields([
+router.post('/', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN', 'EDITOR', 'DEVELOPER'), upload.fields([
     { name: 'banner', maxCount: 1 },
     { name: 'uiFile', maxCount: 1 },
     { name: 'showcase', maxCount: 4 }
 ]), (0, validateResource_1.default)(ui_schema_1.createUiSchema), uiController.createUI);
-router.put('/:id', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN', 'EDITOR'), upload.fields([
+router.put('/:id', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN', 'EDITOR', 'DEVELOPER'), upload.fields([
     { name: 'banner', maxCount: 1 },
     { name: 'uiFile', maxCount: 1 },
     { name: 'showcase', maxCount: 4 }
 ]), (0, validateResource_1.default)(ui_schema_1.updateUiSchema), uiController.updateUI);
-router.delete('/:id', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN', 'EDITOR'), uiController.deleteUI);
+router.delete('/:id/file', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN', 'EDITOR', 'DEVELOPER'), uiController.deleteUIFile);
+router.delete('/:id', auth_middleware_1.authenticateUser, (0, auth_middleware_1.authorizeRoles)('ADMIN', 'EDITOR', 'DEVELOPER'), uiController.deleteUI);
 exports.default = router;

@@ -27,7 +27,7 @@ const getNotifications = (req, res) => __awaiter(void 0, void 0, void 0, functio
         const scope = req.query.scope;
         let notificationsRes = [];
         let total = 0;
-        if (role === 'ADMIN' && scope === 'all') {
+        if ((role === 'ADMIN' || role === 'DEVELOPER') && scope === 'all') {
             const [totalRes] = yield db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.notifications).where((0, drizzle_orm_1.eq)(schema_1.notifications.status, 'PENDING'));
             total = totalRes.value;
             const rows = yield db_1.db

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.newsletterSubscribers = exports.notificationsRelations = exports.notifications = exports.commentsRelations = exports.comments = exports.wishlistsRelations = exports.wishlists = exports.likesRelations = exports.likes = exports.paymentsRelations = exports.payments = exports.uisRelations = exports.uis = exports.authOtp = exports.usersRelations = exports.users = void 0;
+exports.blogsRelations = exports.blogs = exports.newsletterSubscribers = exports.notificationsRelations = exports.notifications = exports.commentsRelations = exports.comments = exports.wishlistsRelations = exports.wishlists = exports.likesRelations = exports.likes = exports.paymentsRelations = exports.payments = exports.uisRelations = exports.uis = exports.authOtp = exports.usersRelations = exports.users = void 0;
 const mysql_core_1 = require("drizzle-orm/mysql-core");
 const drizzle_orm_1 = require("drizzle-orm");
 const crypto_1 = require("crypto");
@@ -10,8 +10,9 @@ exports.users = (0, mysql_core_1.mysqlTable)('users', {
     email: (0, mysql_core_1.varchar)('email', { length: 191 }).notNull().unique(),
     password_hash: (0, mysql_core_1.varchar)('password_hash', { length: 255 }),
     google_id: (0, mysql_core_1.varchar)('google_id', { length: 191 }).unique(),
-    role: (0, mysql_core_1.mysqlEnum)('role', ['ADMIN', 'CUSTOMER', 'EDITOR']).default('CUSTOMER').notNull(),
+    role: (0, mysql_core_1.mysqlEnum)('role', ['ADMIN', 'CUSTOMER', 'EDITOR', 'DEVELOPER']).default('CUSTOMER').notNull(),
     status: (0, mysql_core_1.mysqlEnum)('status', ['ACTIVE', 'INACTIVE', 'SUSPENDED']).default('ACTIVE').notNull(),
+    dashboard_access: (0, mysql_core_1.boolean)('dashboard_access').default(false).notNull(),
     created_at: (0, mysql_core_1.timestamp)('created_at').defaultNow().notNull(),
     updated_at: (0, mysql_core_1.timestamp)('updated_at').defaultNow().onUpdateNow().notNull(),
     last_active_at: (0, mysql_core_1.timestamp)('last_active_at').defaultNow().onUpdateNow().notNull(),
@@ -165,3 +166,24 @@ exports.newsletterSubscribers = (0, mysql_core_1.mysqlTable)('newsletter_subscri
     email: (0, mysql_core_1.varchar)('email', { length: 191 }).notNull().unique(),
     created_at: (0, mysql_core_1.timestamp)('created_at').defaultNow().notNull(),
 });
+exports.blogs = (0, mysql_core_1.mysqlTable)('blogs', {
+    id: (0, mysql_core_1.varchar)('id', { length: 36 }).primaryKey().$defaultFn(() => (0, crypto_1.randomUUID)()),
+    title: (0, mysql_core_1.varchar)('title', { length: 255 }).notNull(),
+    slug: (0, mysql_core_1.varchar)('slug', { length: 255 }).notNull().unique(),
+    content: (0, mysql_core_1.text)('content').notNull(),
+    excerpt: (0, mysql_core_1.varchar)('excerpt', { length: 500 }),
+    coverImage: (0, mysql_core_1.text)('cover_image'),
+    authorId: (0, mysql_core_1.int)('authorId').notNull(),
+    status: (0, mysql_core_1.mysqlEnum)('status', ['DRAFT', 'PUBLISHED']).default('DRAFT').notNull(),
+    category: (0, mysql_core_1.varchar)('category', { length: 100 }),
+    tags: (0, mysql_core_1.json)('tags'),
+    views: (0, mysql_core_1.int)('views').default(0).notNull(),
+    created_at: (0, mysql_core_1.timestamp)('created_at').defaultNow().notNull(),
+    updated_at: (0, mysql_core_1.timestamp)('updated_at').defaultNow().onUpdateNow().notNull(),
+});
+exports.blogsRelations = (0, drizzle_orm_1.relations)(exports.blogs, ({ one }) => ({
+    author: one(exports.users, {
+        fields: [exports.blogs.authorId],
+        references: [exports.users.user_id],
+    }),
+}));

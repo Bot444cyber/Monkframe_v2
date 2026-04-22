@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.streamImage = exports.deleteUI = exports.updateUI = exports.createUI = exports.downloadUI = exports.getUI = exports.getUIs = void 0;
+exports.streamImage = exports.deleteUIFile = exports.deleteUI = exports.updateUI = exports.createUI = exports.downloadUI = exports.getUI = exports.getUIs = void 0;
 const db_1 = require("../db");
 const schema_1 = require("../db/schema");
 const drizzle_orm_1 = require("drizzle-orm");
@@ -41,7 +41,7 @@ const parseArray = (data) => {
 };
 // Fetch all UIs
 const getUIs = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _a, _b;
     try {
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.user_id;
         const { creatorId, category, sort } = req.query;
@@ -68,8 +68,8 @@ const getUIs = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             orderByCondition = [(0, drizzle_orm_1.desc)(schema_1.uis.created_at)];
         }
         // Run count and query
-        const [totalQuery] = yield db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.uis).where(whereCondition);
-        const total = totalQuery.value;
+        const totalQuery = yield db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.uis).where(whereCondition);
+        const total = ((_b = totalQuery[0]) === null || _b === void 0 ? void 0 : _b.value) || 0;
         // Fetch UIs
         const uisRes = whereCondition
             ? yield db_1.db.select().from(schema_1.uis).where(whereCondition).orderBy(...orderByCondition).limit(limit).offset(skip)
@@ -84,8 +84,8 @@ const getUIs = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 creator = found !== null && found !== void 0 ? found : null;
             }
             // Get comments count manually
-            const commentsResult = yield db_1.db.select({ count: (0, drizzle_orm_1.count)() }).from(schema_1.comments).where((0, drizzle_orm_1.eq)(schema_1.comments.ui_id, ui.id));
-            const commentsCount = ((_a = commentsResult[0]) === null || _a === void 0 ? void 0 : _a.count) || 0;
+            const commentsResult = yield db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.comments).where((0, drizzle_orm_1.eq)(schema_1.comments.ui_id, ui.id));
+            const commentsCount = ((_a = commentsResult[0]) === null || _a === void 0 ? void 0 : _a.value) || 0;
             // Get user specific relations manually
             let liked = false;
             let wished = false;
@@ -124,8 +124,8 @@ const getUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.user_id;
-        // Try to find by slug first, then by ID
-        const [ui] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.or)((0, drizzle_orm_1.eq)(schema_1.uis.slug, id), (0, drizzle_orm_1.eq)(schema_1.uis.id, id))).limit(1);
+        // Try to find by customUrl, then slug, then by ID
+        const [ui] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.or)((0, drizzle_orm_1.eq)(schema_1.uis.customUrl, id), (0, drizzle_orm_1.eq)(schema_1.uis.slug, id), (0, drizzle_orm_1.eq)(schema_1.uis.id, id))).limit(1);
         if (!ui) {
             return res.status(404).json({ status: false, message: "UI not found" });
         }
@@ -135,8 +135,8 @@ const getUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             const [found] = yield db_1.db.select({ full_name: schema_1.users.full_name, user_id: schema_1.users.user_id }).from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.user_id, ui.creatorId)).limit(1);
             creator = found !== null && found !== void 0 ? found : null;
         }
-        const commentsResult = yield db_1.db.select({ count: (0, drizzle_orm_1.count)() }).from(schema_1.comments).where((0, drizzle_orm_1.eq)(schema_1.comments.ui_id, ui.id));
-        const commentsCount = ((_b = commentsResult[0]) === null || _b === void 0 ? void 0 : _b.count) || 0;
+        const commentsResult = yield db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.comments).where((0, drizzle_orm_1.eq)(schema_1.comments.ui_id, ui.id));
+        const commentsCount = ((_b = commentsResult[0]) === null || _b === void 0 ? void 0 : _b.value) || 0;
         let liked = false;
         let wished = false;
         let purchased = false;
@@ -248,7 +248,7 @@ const downloadUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 console.error(`[CRITICAL] Drive File Missing for UI ${id}: ${ui.google_file_id}`);
                 // 1. Notify Admins through the notification system
                 try {
-                    const adminUsers = yield db_1.db.select({ user_id: schema_1.users.user_id }).from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.role, 'ADMIN'));
+                    const adminUsers = yield db_1.db.select({ user_id: schema_1.users.user_id }).from(schema_1.users).where((0, drizzle_orm_1.or)((0, drizzle_orm_1.eq)(schema_1.users.role, 'ADMIN'), (0, drizzle_orm_1.eq)(schema_1.users.role, 'DEVELOPER')));
                     if (adminUsers.length > 0) {
                         const notificationPromises = adminUsers.map(admin => {
                             return db_1.db.insert(schema_1.notifications).values({
@@ -324,6 +324,17 @@ const createUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             });
         }
         const generatedId = (0, crypto_1.randomUUID)();
+        // Generate a unique slug
+        let baseSlug = (0, helpers_1.slugify)(title);
+        let finalSlug = baseSlug;
+        let counter = 1;
+        while (true) {
+            const [existing] = yield db_1.db.select({ id: schema_1.uis.id }).from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.slug, finalSlug)).limit(1);
+            if (!existing)
+                break;
+            finalSlug = `${baseSlug}-${counter}`;
+            counter++;
+        }
         // Create UI Record — removed fields use sensible defaults
         yield db_1.db.insert(schema_1.uis).values({
             id: generatedId,
@@ -344,7 +355,7 @@ const createUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 ? (_c = (_b = files['uiFile'][0].originalname.split('.').pop()) === null || _b === void 0 ? void 0 : _b.toUpperCase()) !== null && _c !== void 0 ? _c : null
                 : null,
             creatorId: userId,
-            slug: (0, helpers_1.slugify)(title)
+            slug: finalSlug
         });
         const [newUI] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, generatedId)).limit(1);
         if (newUI) {
@@ -370,17 +381,18 @@ const updateUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
         const { id } = req.params;
-        // New form fields: title, category, overview (description), author (additional info), customUrl
-        const { title, category, author, overview, customUrl } = req.body;
+        const { title, category, author, overview, customUrl, showcaseIndexes } = req.body;
         // Fetch existing UI
         const [existingUI] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id)).limit(1);
         if (!existingUI) {
             return res.status(404).json({ status: false, message: "UI not found" });
         }
-        // Handle Files
         const files = req.files;
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.user_id;
-        // Queue background file uploads (banner, uiFile, showcase)
+        // Parse the showcase slot indexes sent by the frontend (e.g. "0,2")
+        const slotIndexes = showcaseIndexes
+            ? String(showcaseIndexes).split(',').map(Number).filter(n => !isNaN(n))
+            : [];
         if (files && files['banner'] && files['banner'][0]) {
             const file = files['banner'][0];
             (0, upload_service_1.processUpload)({ filePath: file.path, fileName: file.originalname, mimeType: file.mimetype, uiId: id, type: 'BANNER', isPublic: true, userId });
@@ -390,12 +402,26 @@ const updateUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             (0, upload_service_1.processUpload)({ filePath: file.path, fileName: file.originalname, mimeType: file.mimetype, uiId: id, type: 'UI_FILE', isPublic: false, userId });
         }
         if (files && files['showcase']) {
-            for (const file of files['showcase'].slice(0, 4)) {
-                (0, upload_service_1.processUpload)({ filePath: file.path, fileName: file.originalname, mimeType: file.mimetype, uiId: id, type: 'SHOWCASE', isPublic: true, userId });
+            files['showcase'].slice(0, 3).forEach((file, arrayIdx) => {
+                var _a;
+                const showcaseIndex = (_a = slotIndexes[arrayIdx]) !== null && _a !== void 0 ? _a : undefined;
+                (0, upload_service_1.processUpload)({ filePath: file.path, fileName: file.originalname, mimeType: file.mimetype, uiId: id, type: 'SHOWCASE', isPublic: true, userId, showcaseIndex });
+            });
+        }
+        let finalSlug = undefined;
+        if (title) {
+            let baseSlug = (0, helpers_1.slugify)(title);
+            finalSlug = baseSlug;
+            let counter = 1;
+            while (true) {
+                const [existing] = yield db_1.db.select({ id: schema_1.uis.id }).from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.slug, finalSlug)).limit(1);
+                if (!existing || existing.id === id)
+                    break;
+                finalSlug = `${baseSlug}-${counter}`;
+                counter++;
             }
         }
-        // Update only the new form text fields immediately
-        yield db_1.db.update(schema_1.uis).set(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (title ? { title, slug: (0, helpers_1.slugify)(title) } : {})), (category ? { category } : {})), (author !== undefined ? { author } : {})), (overview !== undefined ? { overview } : {})), (customUrl !== undefined ? { customUrl } : {})), (files && files['uiFile'] && files['uiFile'][0] ? {
+        yield db_1.db.update(schema_1.uis).set(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (title ? { title, slug: finalSlug } : {})), (category ? { category } : {})), (author !== undefined ? { author } : {})), (overview !== undefined ? { overview } : {})), (customUrl !== undefined ? { customUrl } : {})), (files && files['uiFile'] && files['uiFile'][0] ? {
             fileType: (_b = files['uiFile'][0].originalname.split('.').pop()) === null || _b === void 0 ? void 0 : _b.toUpperCase()
         } : {}))).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id));
         const [updatedUI] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id)).limit(1);
@@ -470,6 +496,56 @@ const deleteUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.deleteUI = deleteUI;
+// Delete a single file from Drive (banner / showcase slot / uiFile) without deleting the whole UI
+const deleteUIFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const { type, index } = req.body;
+        const [ui] = yield db_1.db.select().from(schema_1.uis).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id)).limit(1);
+        if (!ui)
+            return res.status(404).json({ status: false, message: 'UI not found' });
+        let driveFileId = null;
+        let updatePayload = {};
+        if (type === 'banner') {
+            driveFileId = extractDriveFileId(ui.imageSrc || '');
+            updatePayload = { imageSrc: '' };
+        }
+        else if (type === 'uiFile') {
+            driveFileId = ui.google_file_id || null;
+            updatePayload = { google_file_id: null, fileType: null };
+        }
+        else if (type === 'showcase') {
+            const showcase = parseArray(ui.showcase);
+            const idx = typeof index === 'number' ? index : -1;
+            if (idx < 0 || idx >= showcase.length) {
+                return res.status(400).json({ status: false, message: 'Invalid showcase index' });
+            }
+            driveFileId = extractDriveFileId(showcase[idx]);
+            showcase.splice(idx, 1);
+            updatePayload = { showcase };
+        }
+        else {
+            return res.status(400).json({ status: false, message: 'Invalid file type' });
+        }
+        // Delete from Google Drive (non-blocking failure — DB still cleaned up)
+        if (driveFileId) {
+            try {
+                yield (0, drive_service_1.deleteFileFromDrive)(driveFileId);
+            }
+            catch (driveErr) {
+                console.error(`[Drive] Failed to delete file ${driveFileId}:`, driveErr);
+            }
+        }
+        // Clear the DB column
+        yield db_1.db.update(schema_1.uis).set(updatePayload).where((0, drizzle_orm_1.eq)(schema_1.uis.id, id));
+        return res.json({ status: true, message: 'File removed successfully' });
+    }
+    catch (error) {
+        console.error('deleteUIFile Error:', error);
+        return res.status(500).json({ status: false, message: 'Failed to remove file' });
+    }
+});
+exports.deleteUIFile = deleteUIFile;
 // Stream Image Proxy with Caching
 const streamImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {

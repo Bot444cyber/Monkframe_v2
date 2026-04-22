@@ -130,7 +130,8 @@ const googleAuthCallback = (req, res, next) => {
                     full_name: user.full_name,
                     role: user.role,
                     user_id: user.user_id,
-                    email: user.email
+                    email: user.email,
+                    dashboard_access: user.dashboard_access
                 });
                 console.log('🚀 Redirecting to frontend...');
                 // Successful authentication
@@ -166,7 +167,7 @@ const getCurrentUser = (req, res) => {
 exports.getCurrentUser = getCurrentUser;
 // Get User Profile with Wishlist and Purchases
 const getUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _a, _b;
     try {
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.user_id;
         if (!userId) {
@@ -188,11 +189,9 @@ const getUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function*
             .from(schema_1.wishlists)
             .innerJoin(schema_1.uis, (0, drizzle_orm_1.eq)(schema_1.uis.id, schema_1.wishlists.ui_id))
             .where((0, drizzle_orm_1.eq)(schema_1.wishlists.user_id, userId));
-        const [[paymentCount]] = yield Promise.all([
-            db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.payments).where((0, drizzle_orm_1.eq)(schema_1.payments.userId, userId))
-        ]);
-        const countWishlists = wishlistCountResult.value;
-        const countPayments = paymentCount.value;
+        const paymentCountResult = yield db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.payments).where((0, drizzle_orm_1.eq)(schema_1.payments.userId, userId));
+        const countWishlists = (wishlistCountResult === null || wishlistCountResult === void 0 ? void 0 : wishlistCountResult.value) || 0;
+        const countPayments = ((_b = paymentCountResult[0]) === null || _b === void 0 ? void 0 : _b.value) || 0;
         // Fetch wishlist items with UI details via innerJoin to exclude orphans
         const wishlistRows = yield db_1.db
             .select({

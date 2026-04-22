@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var _a, _b;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sessionMiddleware = void 0;
 // 1. THIS MUST BE THE ABSOLUTE FIRST LINE
@@ -50,6 +49,7 @@ const notification_routes_1 = __importDefault(require("./routes/notification.rou
 const dashboard_routes_1 = __importDefault(require("./routes/dashboard.routes"));
 const newsletter_routes_1 = __importDefault(require("./routes/newsletter.routes"));
 const googleDrive_routes_1 = __importDefault(require("./routes/googleDrive.routes"));
+const blog_routes_1 = __importDefault(require("./routes/blog.routes"));
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 8000;
 const isProd = process.env.NODE_ENV === 'production';
@@ -92,31 +92,25 @@ app.use((0, helmet_1.default)({
     crossOriginOpenerPolicy: { policy: 'unsafe-none' }, // allow Google OAuth popup flow
     contentSecurityPolicy: isProd ? undefined : false,
 }));
-// CORS — resilient: handles x-forwarded-proto from Hostinger's Nginx proxy
-// and gracefully falls back when FRONTEND_URL is not set.
+// BULLETPROOF CORS - Hardcoded to bypass .env parsing issues
 const allowedOrigins = [
-    process.env.FRONTEND_URL,
-    ...((_b = (_a = process.env.ALLOWED_ORIGINS) === null || _a === void 0 ? void 0 : _a.split(',')) !== null && _b !== void 0 ? _b : []),
-].filter((o) => !!(o === null || o === void 0 ? void 0 : o.trim()));
+    'http://localhost:3000',
+    'https://mockupidea.com',
+    'https://www.mockupidea.com'
+];
 app.use((0, cors_1.default)({
     origin: (incomingOrigin, callback) => {
-        // Allow requests with no origin (curl, Postman, server-to-server)
+        // Allow requests with no origin (curl, Postman)
         if (!incomingOrigin)
             return callback(null, true);
-        // In development always allow
-        if (!isProd)
-            return callback(null, true);
-        // Normalise: strip trailing slash, handle http→https via proxy
+        // Strip trailing slash just in case
         const normalised = incomingOrigin.replace(/\/$/, '');
-        const httpsVariant = normalised.replace(/^http:\/\//i, 'https://');
-        const allowed = allowedOrigins.length === 0 || // no list set → open (fallback)
-            allowedOrigins.some((o) => o === normalised || o === httpsVariant);
-        if (allowed) {
-            callback(null, true);
+        if (allowedOrigins.includes(normalised)) {
+            callback(null, true); // Success!
         }
         else {
             logger_1.default.warn(`CORS blocked origin: ${incomingOrigin}`);
-            callback(new Error(`Origin '${incomingOrigin}' not allowed by CORS`));
+            callback(null, false); // Graceful rejection, no 500 crashes
         }
     },
     credentials: true,
@@ -210,6 +204,7 @@ app.use('/api/notifications', notification_routes_1.default);
 app.use('/api/dashboard', dashboard_routes_1.default);
 app.use('/api/newsletter', newsletter_routes_1.default);
 app.use('/api/admin/drive', googleDrive_routes_1.default);
+app.use('/api/blogs', blog_routes_1.default);
 // 404 handler
 app.use((req, res) => {
     res.status(404).json({
@@ -230,7 +225,7 @@ function startApp() {
         // 1. Await DB before opening the port
         yield initializeDatabase();
         const server = app.listen(PORT || 8000, () => {
-            logger_1.default.info('🚀 UI Management System started', {
+            logger_1.default.info('🚀 Mockupidea API Service successfully initialized.', {
                 port: PORT,
                 url: `http://localhost:${PORT}`,
                 env: process.env.NODE_ENV || 'development'

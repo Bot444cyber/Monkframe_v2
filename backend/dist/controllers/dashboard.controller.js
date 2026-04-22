@@ -15,25 +15,26 @@ const schema_1 = require("../db/schema");
 const drizzle_orm_1 = require("drizzle-orm");
 const helpers_1 = require("../utils/helpers");
 const getStats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
     try {
         // 1. Total Revenue (Sum of COMPLETED payments)
-        const [totalRevenueAgg] = yield db_1.db.select({ amount: (0, drizzle_orm_1.sum)(schema_1.payments.amount) })
+        const totalRevenueAgg = yield db_1.db.select({ amount: (0, drizzle_orm_1.sum)(schema_1.payments.amount) })
             .from(schema_1.payments)
             .where((0, drizzle_orm_1.eq)(schema_1.payments.status, 'COMPLETED'));
-        const totalRevenue = parseFloat(totalRevenueAgg.amount || '0');
+        const totalRevenue = parseFloat(((_a = totalRevenueAgg[0]) === null || _a === void 0 ? void 0 : _a.amount) || '0');
         // Calculate Revenue Change (This Month vs Last Month)
         const now = new Date();
         const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
         const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
         const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-        const [thisMonthRevenueAgg] = yield db_1.db.select({ amount: (0, drizzle_orm_1.sum)(schema_1.payments.amount) })
+        const thisMonthRevenueAgg = yield db_1.db.select({ amount: (0, drizzle_orm_1.sum)(schema_1.payments.amount) })
             .from(schema_1.payments)
             .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.gte)(schema_1.payments.created_at, startOfThisMonth), (0, drizzle_orm_1.eq)(schema_1.payments.status, 'COMPLETED')));
-        const thisMonthRevenue = parseFloat(thisMonthRevenueAgg.amount || '0');
-        const [lastMonthRevenueAgg] = yield db_1.db.select({ amount: (0, drizzle_orm_1.sum)(schema_1.payments.amount) })
+        const thisMonthRevenue = parseFloat(((_b = thisMonthRevenueAgg[0]) === null || _b === void 0 ? void 0 : _b.amount) || '0');
+        const lastMonthRevenueAgg = yield db_1.db.select({ amount: (0, drizzle_orm_1.sum)(schema_1.payments.amount) })
             .from(schema_1.payments)
             .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.gte)(schema_1.payments.created_at, startOfLastMonth), (0, drizzle_orm_1.lte)(schema_1.payments.created_at, endOfLastMonth), (0, drizzle_orm_1.eq)(schema_1.payments.status, 'COMPLETED')));
-        const lastMonthRevenue = parseFloat(lastMonthRevenueAgg.amount || '0');
+        const lastMonthRevenue = parseFloat(((_c = lastMonthRevenueAgg[0]) === null || _c === void 0 ? void 0 : _c.amount) || '0');
         let revenueChange = 0;
         if (lastMonthRevenue === 0) {
             revenueChange = thisMonthRevenue > 0 ? 100 : 0;
@@ -43,14 +44,14 @@ const getStats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         const revenueChangeStr = (revenueChange >= 0 ? '+' : '') + revenueChange.toFixed(1) + '%';
         // 2. Active Users
-        const [activeUsersRow] = yield db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.status, 'ACTIVE'));
-        const activeUsers = activeUsersRow.value;
+        const activeUsersRow = yield db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.status, 'ACTIVE'));
+        const activeUsers = ((_d = activeUsersRow[0]) === null || _d === void 0 ? void 0 : _d.value) || 0;
         // 3. Live UIs
-        const [liveUisRow] = yield db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.uis);
-        const liveUis = liveUisRow.value;
+        const liveUisRow = yield db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.uis);
+        const liveUis = ((_e = liveUisRow[0]) === null || _e === void 0 ? void 0 : _e.value) || 0;
         // 4. Total Downloads
-        const [totalDownloadsAgg] = yield db_1.db.select({ value: (0, drizzle_orm_1.sum)(schema_1.uis.downloads) }).from(schema_1.uis);
-        const totalDownloads = parseInt(totalDownloadsAgg.value || '0');
+        const totalDownloadsAgg = yield db_1.db.select({ value: (0, drizzle_orm_1.sum)(schema_1.uis.downloads) }).from(schema_1.uis);
+        const totalDownloads = parseInt(((_f = totalDownloadsAgg[0]) === null || _f === void 0 ? void 0 : _f.value) || '0');
         // 6. Payment Status Distribution (For Financial Health)
         const paymentGroup = yield db_1.db.select({
             status: schema_1.payments.status,
@@ -189,14 +190,14 @@ const getStats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // 11. Daily Stats (Real-time for "Today")
         const startOfToday = new Date();
         startOfToday.setHours(0, 0, 0, 0);
-        const [todayRevenueAgg] = yield db_1.db.select({ amount: (0, drizzle_orm_1.sum)(schema_1.payments.amount) })
+        const todayRevenueAgg = yield db_1.db.select({ amount: (0, drizzle_orm_1.sum)(schema_1.payments.amount) })
             .from(schema_1.payments)
             .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.gte)(schema_1.payments.created_at, startOfToday), (0, drizzle_orm_1.eq)(schema_1.payments.status, 'COMPLETED')));
-        const todayRevenue = parseFloat(todayRevenueAgg.amount || '0');
-        const [todayUsersRow] = yield db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.users).where((0, drizzle_orm_1.gte)(schema_1.users.created_at, startOfToday));
-        const todayUsers = todayUsersRow.value;
-        const [todayUIsRow] = yield db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.uis).where((0, drizzle_orm_1.gte)(schema_1.uis.created_at, startOfToday));
-        const todayUIs = todayUIsRow.value;
+        const todayRevenue = parseFloat(((_g = todayRevenueAgg[0]) === null || _g === void 0 ? void 0 : _g.amount) || '0');
+        const todayUsersRow = yield db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.users).where((0, drizzle_orm_1.gte)(schema_1.users.created_at, startOfToday));
+        const todayUsers = ((_h = todayUsersRow[0]) === null || _h === void 0 ? void 0 : _h.value) || 0;
+        const todayUIsRow = yield db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.uis).where((0, drizzle_orm_1.gte)(schema_1.uis.created_at, startOfToday));
+        const todayUIs = ((_j = todayUIsRow[0]) === null || _j === void 0 ? void 0 : _j.value) || 0;
         const dailyStats = {
             revenue: todayRevenue,
             revenueGoal: 1000, // Hardcoded goal for demo

@@ -42,7 +42,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetData = exports.getRecentActivity = exports.deletePayment = exports.getAllPayments = exports.deleteUser = exports.updateUserStatus = exports.updateUserRole = exports.getAllUsers = exports.getOverviewStats = void 0;
+exports.updateDashboardAccess = exports.resetData = exports.getRecentActivity = exports.deletePayment = exports.getAllPayments = exports.deleteUser = exports.updateUserStatus = exports.updateUserRole = exports.getAllUsers = exports.getOverviewStats = void 0;
 const db_1 = require("../db");
 const schema_1 = require("../db/schema");
 const drizzle_orm_1 = require("drizzle-orm");
@@ -158,7 +158,8 @@ const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             status: schema_1.users.status,
             google_id: schema_1.users.google_id,
             created_at: schema_1.users.created_at,
-            last_active_at: schema_1.users.last_active_at
+            last_active_at: schema_1.users.last_active_at,
+            dashboard_access: schema_1.users.dashboard_access
         }).from(schema_1.users).orderBy((0, drizzle_orm_1.desc)(schema_1.users.created_at));
         res.json({ status: true, data: usersList });
     }
@@ -173,7 +174,7 @@ const updateUserRole = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const { id } = req.params;
         const { role } = req.body;
         // Validate role - Must be one of the defined roles in schema
-        if (!['ADMIN', 'CUSTOMER', 'EDITOR'].includes(role)) {
+        if (!['ADMIN', 'CUSTOMER', 'EDITOR', 'DEVELOPER'].includes(role)) {
             return res.status(400).json({ status: false, message: "Invalid role specified" });
         }
         // Update in database
@@ -242,12 +243,13 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.deleteUser = deleteUser;
 const getAllPayments = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
-        const [totalRes] = yield db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.payments);
-        const total = totalRes.value;
+        const totalRes = yield db_1.db.select({ value: (0, drizzle_orm_1.count)() }).from(schema_1.payments);
+        const total = ((_a = totalRes[0]) === null || _a === void 0 ? void 0 : _a.value) || 0;
         const rows = yield db_1.db
             .select({
             id: schema_1.payments.id,
@@ -358,8 +360,8 @@ const resetData = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (!requestingUserId)
             return res.status(403).json({ status: false, message: "Unauthorized" });
         const [user] = yield db_1.db.select().from(schema_1.users).where((0, drizzle_orm_1.eq)(schema_1.users.user_id, requestingUserId)).limit(1);
-        if (!user || user.role !== 'ADMIN') {
-            return res.status(403).json({ status: false, message: "Unauthorized" });
+        if (!user || (user.role !== 'ADMIN' && user.role !== 'DEVELOPER')) {
+            return res.status(403).json({ status: false, message: "Unauthorized: Admins & Developers Only" });
         }
         const { options } = req.body;
         const targets = options || {
@@ -440,3 +442,16 @@ const resetData = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.resetData = resetData;
+const updateDashboardAccess = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const { dashboard_access } = req.body;
+        yield db_1.db.update(schema_1.users).set({ dashboard_access }).where((0, drizzle_orm_1.eq)(schema_1.users.user_id, parseInt(id)));
+        res.json({ status: true, message: "Dashboard access updated successfully" });
+    }
+    catch (error) {
+        console.error("Dashboard Access Update Error:", error);
+        res.status(500).json({ status: false, message: "Failed to update dashboard access" });
+    }
+});
+exports.updateDashboardAccess = updateDashboardAccess;

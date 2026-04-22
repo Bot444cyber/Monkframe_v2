@@ -46,7 +46,8 @@ class Auth {
                     full_name: user.full_name || '',
                     role: user.role,
                     user_id: user.user_id,
-                    email: user.email
+                    email: user.email,
+                    dashboard_access: user.dashboard_access
                 };
                 // Return Token
                 return { status: true, message: "Login successful", token: (0, GenerateToken_1.default)(tokenData) };
@@ -73,7 +74,8 @@ class Auth {
                     full_name: user.full_name || '',
                     role: user.role,
                     user_id: user.user_id,
-                    email: user.email
+                    email: user.email,
+                    dashboard_access: user.dashboard_access
                 };
                 // Return Token
                 return { status: true, message: "Login successful", token: (0, GenerateToken_1.default)(tokenData) };
@@ -115,7 +117,8 @@ class Auth {
                     full_name: newUser.full_name || '',
                     role: newUser.role,
                     user_id: newUser.user_id,
-                    email: newUser.email
+                    email: newUser.email,
+                    dashboard_access: newUser.dashboard_access
                 };
                 // Return Token
                 return { status: true, message: "Registration successful", token: (0, GenerateToken_1.default)(tokenData) };
