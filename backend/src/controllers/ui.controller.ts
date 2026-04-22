@@ -63,8 +63,8 @@ export const getUIs = async (req: Request, res: Response) => {
         }
 
         // Run count and query
-        const [totalQuery] = await db.select({ value: count() }).from(uis).where(whereCondition);
-        const total = totalQuery.value;
+        const totalQuery = await db.select({ value: count() }).from(uis).where(whereCondition);
+        const total = totalQuery[0]?.value || 0;
 
         // Fetch UIs
         const uisRes = whereCondition
@@ -81,8 +81,8 @@ export const getUIs = async (req: Request, res: Response) => {
             }
 
             // Get comments count manually
-            const commentsResult = await db.select({ count: count() }).from(commentsTable).where(eq(commentsTable.ui_id, ui.id));
-            const commentsCount = commentsResult[0]?.count || 0;
+            const commentsResult = await db.select({ value: count() }).from(commentsTable).where(eq(commentsTable.ui_id, ui.id));
+            const commentsCount = commentsResult[0]?.value || 0;
 
             // Get user specific relations manually
             let liked = false;
@@ -153,8 +153,8 @@ export const getUI = async (req: Request, res: Response) => {
             creator = found ?? null;
         }
 
-        const commentsResult = await db.select({ count: count() }).from(commentsTable).where(eq(commentsTable.ui_id, ui.id));
-        const commentsCount = commentsResult[0]?.count || 0;
+        const commentsResult = await db.select({ value: count() }).from(commentsTable).where(eq(commentsTable.ui_id, ui.id));
+        const commentsCount = commentsResult[0]?.value || 0;
 
         let liked = false;
         let wished = false;

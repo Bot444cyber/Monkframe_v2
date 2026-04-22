@@ -216,8 +216,8 @@ export const getAllPayments = async (req: Request, res: Response) => {
         const limit = parseInt(req.query.limit as string) || 10;
         const skip = (page - 1) * limit;
 
-        const [totalRes] = await db.select({ value: count() }).from(payments);
-        const total = totalRes.value;
+        const totalRes = await db.select({ value: count() }).from(payments);
+        const total = totalRes[0]?.value || 0;
 
         const rows = await db
             .select({

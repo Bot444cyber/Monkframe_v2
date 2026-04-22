@@ -52,11 +52,11 @@ export const getBlogs = async (req: Request, res: Response) => {
             .offset(offset);
 
         // Get total count
-        const totalQuery = await db.select({ count: sql<number>`count(*)` })
+        const totalQuery = await db.select({ value: sql<number>`count(*)` })
             .from(blogs)
             .where(whereCondition);
 
-        const total = totalQuery[0].count;
+        const total = totalQuery[0]?.value || 0;
 
         res.json({
             status: true,

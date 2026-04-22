@@ -7,10 +7,10 @@ import { transformToProxy } from '../utils/helpers';
 export const getStats = async (req: Request, res: Response) => {
     try {
         // 1. Total Revenue (Sum of COMPLETED payments)
-        const [totalRevenueAgg] = await db.select({ amount: sum(payments.amount) })
+        const totalRevenueAgg = await db.select({ amount: sum(payments.amount) })
             .from(payments)
             .where(eq(payments.status, 'COMPLETED'));
-        const totalRevenue = parseFloat(totalRevenueAgg.amount || '0');
+        const totalRevenue = parseFloat(totalRevenueAgg[0]?.amount || '0');
 
         // Calculate Revenue Change (This Month vs Last Month)
         const now = new Date();
@@ -18,15 +18,15 @@ export const getStats = async (req: Request, res: Response) => {
         const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
         const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
 
-        const [thisMonthRevenueAgg] = await db.select({ amount: sum(payments.amount) })
+        const thisMonthRevenueAgg = await db.select({ amount: sum(payments.amount) })
             .from(payments)
             .where(and(gte(payments.created_at, startOfThisMonth), eq(payments.status, 'COMPLETED')));
-        const thisMonthRevenue = parseFloat(thisMonthRevenueAgg.amount || '0');
+        const thisMonthRevenue = parseFloat(thisMonthRevenueAgg[0]?.amount || '0');
 
-        const [lastMonthRevenueAgg] = await db.select({ amount: sum(payments.amount) })
+        const lastMonthRevenueAgg = await db.select({ amount: sum(payments.amount) })
             .from(payments)
             .where(and(gte(payments.created_at, startOfLastMonth), lte(payments.created_at, endOfLastMonth), eq(payments.status, 'COMPLETED')));
-        const lastMonthRevenue = parseFloat(lastMonthRevenueAgg.amount || '0');
+        const lastMonthRevenue = parseFloat(lastMonthRevenueAgg[0]?.amount || '0');
 
         let revenueChange = 0;
         if (lastMonthRevenue === 0) {
@@ -37,17 +37,17 @@ export const getStats = async (req: Request, res: Response) => {
         const revenueChangeStr = (revenueChange >= 0 ? '+' : '') + revenueChange.toFixed(1) + '%';
 
         // 2. Active Users
-        const [activeUsersRow] = await db.select({ value: count() }).from(users).where(eq(users.status, 'ACTIVE'));
-        const activeUsers = activeUsersRow.value;
+        const activeUsersRow = await db.select({ value: count() }).from(users).where(eq(users.status, 'ACTIVE'));
+        const activeUsers = activeUsersRow[0]?.value || 0;
 
         // 3. Live UIs
-        const [liveUisRow] = await db.select({ value: count() }).from(uis);
-        const liveUis = liveUisRow.value;
+        const liveUisRow = await db.select({ value: count() }).from(uis);
+        const liveUis = liveUisRow[0]?.value || 0;
 
 
         // 4. Total Downloads
-        const [totalDownloadsAgg] = await db.select({ value: sum(uis.downloads) }).from(uis);
-        const totalDownloads = parseInt(totalDownloadsAgg.value || '0');
+        const totalDownloadsAgg = await db.select({ value: sum(uis.downloads) }).from(uis);
+        const totalDownloads = parseInt(totalDownloadsAgg[0]?.value || '0');
 
 
 
@@ -205,16 +205,16 @@ export const getStats = async (req: Request, res: Response) => {
         const startOfToday = new Date();
         startOfToday.setHours(0, 0, 0, 0);
 
-        const [todayRevenueAgg] = await db.select({ amount: sum(payments.amount) })
+        const todayRevenueAgg = await db.select({ amount: sum(payments.amount) })
             .from(payments)
             .where(and(gte(payments.created_at, startOfToday), eq(payments.status, 'COMPLETED')));
-        const todayRevenue = parseFloat(todayRevenueAgg.amount || '0');
+        const todayRevenue = parseFloat(todayRevenueAgg[0]?.amount || '0');
 
-        const [todayUsersRow] = await db.select({ value: count() }).from(users).where(gte(users.created_at, startOfToday));
-        const todayUsers = todayUsersRow.value;
+        const todayUsersRow = await db.select({ value: count() }).from(users).where(gte(users.created_at, startOfToday));
+        const todayUsers = todayUsersRow[0]?.value || 0;
 
-        const [todayUIsRow] = await db.select({ value: count() }).from(uis).where(gte(uis.created_at, startOfToday));
-        const todayUIs = todayUIsRow.value;
+        const todayUIsRow = await db.select({ value: count() }).from(uis).where(gte(uis.created_at, startOfToday));
+        const todayUIs = todayUIsRow[0]?.value || 0;
 
         const dailyStats = {
             revenue: todayRevenue,

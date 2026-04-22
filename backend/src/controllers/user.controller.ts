@@ -186,12 +186,10 @@ export const getUserProfile = async (req: Request, res: Response) => {
             .innerJoin(uis, eq(uis.id, wishlistsTable.ui_id))
             .where(eq(wishlistsTable.user_id, userId));
 
-        const [[paymentCount]] = await Promise.all([
-            db.select({ value: count() }).from(paymentsTable).where(eq(paymentsTable.userId, userId))
-        ]);
+        const paymentCountResult = await db.select({ value: count() }).from(paymentsTable).where(eq(paymentsTable.userId, userId));
 
-        const countWishlists = wishlistCountResult.value;
-        const countPayments = paymentCount.value;
+        const countWishlists = wishlistCountResult?.value || 0;
+        const countPayments = paymentCountResult[0]?.value || 0;
 
         // Fetch wishlist items with UI details via innerJoin to exclude orphans
         const wishlistRows = await db
