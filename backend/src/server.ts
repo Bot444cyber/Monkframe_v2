@@ -250,7 +250,7 @@ async function startApp() {
     await initializeDatabase();
 
     const server = app.listen(PORT || 8000, () => {
-        logger.info('🚀 UI Management System started', {
+        logger.info('🚀 Mockupidea API Service successfully initialized.', {
             port: PORT,
             url: `http://localhost:${PORT}`,
             env: process.env.NODE_ENV || 'development'
