@@ -88,45 +88,27 @@ app.use(helmet({
     contentSecurityPolicy: isProd ? undefined : false,
 }));
 
-// CORS — resilient: handles x-forwarded-proto from Hostinger's Nginx proxy
-// and gracefully falls back when FRONTEND_URL is not set.
-// FIX: Actually apply the trim() and slash removal to the array values
-// Added production domains as hardcoded fallbacks to prevent CORS lockdown if .env is missing them
+// BULLETPROOF CORS - Hardcoded to bypass .env parsing issues
 const allowedOrigins = [
-    process.env.FRONTEND_URL,
-    ...(process.env.ALLOWED_ORIGINS?.split(',') ?? []),
-    'https://www.mockupidea.com',
+    'http://localhost:3000',
     'https://mockupidea.com',
-    'https://api.mockupidea.com'
-]
-    .map(o => o?.trim().replace(/\/$/, ''))
-    .filter((o): o is string => !!o);
+    'https://www.mockupidea.com'
+];
 
 app.use(
     cors({
         origin: (incomingOrigin, callback) => {
-            // Allow requests with no origin (curl, Postman, server-to-server)
+            // Allow requests with no origin (curl, Postman)
             if (!incomingOrigin) return callback(null, true);
 
-            // In development always allow
-            if (!isProd) return callback(null, true);
-
-            // Normalise: strip trailing slash, handle http→https via proxy
+            // Strip trailing slash just in case
             const normalised = incomingOrigin.replace(/\/$/, '');
-            const httpsVariant = normalised.replace(/^http:\/\//i, 'https://');
 
-            const allowed =
-                allowedOrigins.length === 0 ||          // no list set → open (fallback)
-                allowedOrigins.some((o) =>
-                    o === normalised || o === httpsVariant
-                );
-
-            if (allowed) {
-                callback(null, true);
+            if (allowedOrigins.includes(normalised)) {
+                callback(null, true); // Success!
             } else {
                 logger.warn(`CORS blocked origin: ${incomingOrigin}`);
-                // FIX: Pass false instead of an Error to prevent the 500 server crash!
-                callback(null, false);
+                callback(null, false); // Graceful rejection, no 500 crashes
             }
         },
         credentials: true,
