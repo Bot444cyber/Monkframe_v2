@@ -67,17 +67,19 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({
     const graphData = overviewData?.graphData || [];
     const stats = overviewData?.stats || [];
 
-    const displayStats = stats.map((stat) => {
-        let icon = Icons.TrendingUp;
-        let colorKey = stat.color || 'blue';
-        const label = stat.label?.toLowerCase() || '';
+    const displayStats = stats
+        .filter((stat) => stat.label !== 'Total Revenue')
+        .map((stat) => {
+            let icon = Icons.TrendingUp;
+            let colorKey = stat.color || 'blue';
+            const label = stat.label?.toLowerCase() || '';
 
-        if (label.includes('download')) { icon = Icons.Download; colorKey = 'emerald'; }
-        else if (label.includes('active user')) { icon = Icons.TrendingUp; colorKey = 'indigo'; }
-        else if (label.includes('live ui')) { icon = Icons.Layers; colorKey = 'blue'; }
+            if (label.includes('download')) { icon = Icons.Download; colorKey = 'emerald'; }
+            else if (label.includes('active user')) { icon = Icons.TrendingUp; colorKey = 'indigo'; }
+            else if (label.includes('live ui')) { icon = Icons.Layers; colorKey = 'blue'; }
 
-        return { ...stat, icon, styles: getColorStyles(colorKey) };
-    });
+            return { ...stat, icon, styles: getColorStyles(colorKey) };
+        });
 
     // ─── Download Report ─────────────────────────────────────────────────────────
     const handleDownloadReport = () => {
