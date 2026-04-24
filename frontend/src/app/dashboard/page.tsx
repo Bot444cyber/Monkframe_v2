@@ -52,7 +52,6 @@ export default function Dashboard() {
             { label: 'Total Downloads', value: '0', change: '+0%', color: 'emerald' },
             { label: 'Total Users', value: '0', change: '+0%', color: 'indigo' },
             { label: 'Live UIs', value: '0', change: '+0%', color: 'blue' },
-
         ],
         graphData: [],
 

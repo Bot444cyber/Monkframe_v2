@@ -143,14 +143,6 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({
                             <div key={idx} className="group relative p-6 rounded-3xl bg-card border border-border hover:border-border/80 transition-all duration-500 hover:-translate-y-1 shadow-xl overflow-hidden">
                                 <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full blur-[60px] opacity-0 group-hover:opacity-10 transition-opacity duration-700 bg-blue-500" />
                                 <div className="relative z-10 flex flex-col justify-between h-full min-h-[140px]">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-500 border border-blue-500/20">
-                                            <svg className="w-5 h-5 fill-none stroke-current stroke-[2.5]" viewBox="0 0 24 24"><Icons.Dollar /></svg>
-                                        </div>
-                                        <div className="flex items-center gap-1.5 text-[10px] font-bold px-3 py-1.5 rounded-full border border-blue-500/20 text-blue-500 bg-blue-500/5">
-                                            +12.5%
-                                        </div>
-                                    </div>
                                     <div className="absolute bottom-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity">
                                         <svg width="60" height="30" viewBox="0 0 60 30" fill="none" className="stroke-blue-500 stroke-2">
                                             <path d="M0 25 L10 20 L20 22 L30 10 L40 15 L50 5 L60 8" />
