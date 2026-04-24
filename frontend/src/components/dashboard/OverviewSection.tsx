@@ -20,7 +20,7 @@ const Icons = {
     Zap: () => <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />,
     Layers: () => <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />,
     Bell: () => <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" />,
-    Dollar: () => <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />,
+
     FileDown: () => (
         <>
             <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
@@ -60,11 +60,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({
 
     if (isLoading) return <OverviewSkeleton />;
 
-    // Safe data access
-    const payCompleted = overviewData?.paymentStatusDistribution?.completed || 0;
-    const payPending = overviewData?.paymentStatusDistribution?.pending || 0;
-    const payFailed = overviewData?.paymentStatusDistribution?.failed || 0;
-    const payTotal = payCompleted + payPending + payFailed;
+
 
     const recentActivities = overviewData?.formattedActivities || [];
     const trendingUIs = overviewData?.trendingUIs || [];
@@ -89,13 +85,12 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({
             toast.error('No graph data available to export.');
             return;
         }
-        const headers = ['Day', 'Users', 'UIs', 'Downloads', 'Revenue (Volume)'];
+        const headers = ['Day', 'Users', 'UIs', 'Downloads'];
         const rows = graphData.map(p => [
             p.day,
             p.users,
             p.uis,
             (p as any).downloads ?? 0,
-            (p as any).volume ?? 0,
         ]);
         const csvContent = [headers, ...rows]
             .map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
@@ -138,20 +133,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({
             {/* ── HERO METRICS ────────────────────────────────────────────────────── */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {displayStats.map((stat, idx) => {
-                    if (stat.label === 'Total Revenue') {
-                        return (
-                            <div key={idx} className="group relative p-6 rounded-3xl bg-card border border-border hover:border-border/80 transition-all duration-500 hover:-translate-y-1 shadow-xl overflow-hidden">
-                                <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full blur-[60px] opacity-0 group-hover:opacity-10 transition-opacity duration-700 bg-blue-500" />
-                                <div className="relative z-10 flex flex-col justify-between h-full min-h-[140px]">
-                                    <div className="absolute bottom-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity">
-                                        <svg width="60" height="30" viewBox="0 0 60 30" fill="none" className="stroke-blue-500 stroke-2">
-                                            <path d="M0 25 L10 20 L20 22 L30 10 L40 15 L50 5 L60 8" />
-                                        </svg>
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    }
+
 
                     return (
                         <div key={idx} className="group relative p-6 rounded-3xl bg-card border border-border hover:border-border/80 transition-all duration-500 hover:-translate-y-1 shadow-2xl overflow-hidden">
@@ -225,19 +207,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({
                         </div>
                     </div>
 
-                    {/* Today's stats bar */}
-                    {overviewData.dailyStats && (
-                        <div className="flex items-center gap-4 bg-secondary/30 px-4 py-2.5 rounded-xl border border-border/50 mb-6 relative z-10 w-fit">
-                            <div className="px-3 border-r border-border/50">
-                                <div className="text-[10px] text-muted-foreground uppercase font-bold">Today's Vol</div>
-                                <div className="text-sm font-bold text-foreground">${overviewData.dailyStats.revenue.toLocaleString()}</div>
-                            </div>
-                            <div className="px-1">
-                                <div className="text-[10px] text-muted-foreground uppercase font-bold">Target</div>
-                                <div className="text-xs font-bold text-muted-foreground/60">${overviewData.dailyStats.revenueGoal.toLocaleString()}</div>
-                            </div>
-                        </div>
-                    )}
+
 
                     {/* Chart */}
                     <div className="flex-1 w-full min-h-[300px] relative z-10">
@@ -326,36 +296,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({
                         </div>
                     </div>
 
-                    {/* PAYMENT HEALTH */}
-                    <div className="bg-card border border-border p-8 rounded-[2.5rem] shadow-xl h-auto">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Revenue Status</h3>
-                            <span className="text-[10px] font-bold text-blue-600 px-2 py-1 bg-blue-600/10 rounded-md border border-blue-600/10 uppercase tracking-wider">Healthy</span>
-                        </div>
 
-                        <div className="flex h-2.5 w-full bg-muted rounded-full overflow-hidden mb-8 ring-1 ring-border/50 p-0.5">
-                            {payTotal > 0 ? (
-                                <>
-                                    <div className="h-full rounded-l-full bg-blue-600 transition-all duration-1000" style={{ width: `${(payCompleted / payTotal) * 100}%` }} />
-                                    <div className="h-full bg-blue-300 transition-all duration-1000" style={{ width: `${(payPending / payTotal) * 100}%` }} />
-                                    <div className="h-full rounded-r-full bg-rose-500 transition-all duration-1000 flex-1" style={{ width: `${(payFailed / payTotal) * 100}%` }} />
-                                </>
-                            ) : (
-                                <div className="w-full h-full bg-secondary/80 rounded-full" />
-                            )}
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-secondary/20 rounded-2xl p-4 border border-border text-center hover:bg-secondary/40 transition-colors">
-                                <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-wider mb-1 block">Completed</span>
-                                <span className="text-xl font-bold text-foreground tabular-nums">{payCompleted}</span>
-                            </div>
-                            <div className="bg-secondary/20 rounded-2xl p-4 border border-border text-center hover:bg-secondary/40 transition-colors">
-                                <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-wider mb-1 block">Pending</span>
-                                <span className="text-xl font-bold text-foreground tabular-nums">{payPending}</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
