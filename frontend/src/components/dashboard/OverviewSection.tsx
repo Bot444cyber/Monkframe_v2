@@ -151,13 +151,6 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({
                                             +12.5%
                                         </div>
                                     </div>
-                                    <div>
-                                        <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Total Revenue</p>
-                                        <h3 className="text-4xl font-medium text-foreground tracking-tight flex items-baseline gap-1">
-                                            <span className="text-2xl text-muted-foreground font-bold">$</span>
-                                            {stat.value}
-                                        </h3>
-                                    </div>
                                     <div className="absolute bottom-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity">
                                         <svg width="60" height="30" viewBox="0 0 60 30" fill="none" className="stroke-blue-500 stroke-2">
                                             <path d="M0 25 L10 20 L20 22 L30 10 L40 15 L50 5 L60 8" />
