@@ -1,15 +1,32 @@
 /**
  * sitemap.ts — Auto-generated Sitemap for www.mockupidea.com
  *
- * This file is processed by Next.js at build time (or on-demand with ISR).
- * It fetches every published product and blog article from the API and
- * merges them with the static route list to produce a complete sitemap.xml
- * served at: https://www.mockupidea.com/sitemap.xml
+ * HOW AUTO-UPDATE WORKS (no rebuild needed):
+ * ─────────────────────────────────────────
+ * Next.js ISR (Incremental Static Regeneration) serves a cached version of
+ * /sitemap.xml and silently re-generates it in the background every 30 min.
+ * So when a new product or blog post is added to the database, it will
+ * automatically appear in the sitemap within 30 minutes — zero rebuilds.
+ *
+ * Timeline:
+ *   0 min  → Admin adds a new product/blog
+ *   ≤30 min → Next.js revalidates sitemap.ts, fetches fresh API data
+ *   ≤30 min → /sitemap.xml now contains the new URL
+ *   Next crawl → Google discovers and indexes the new page
+ *
+ * To make it faster: reduce `revalidate` below (e.g. 300 = 5 minutes).
+ * To make it instant: set revalidate = 0 (fully dynamic, slower TTFB).
  *
  * Docs: https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap
  */
 
 import type { MetadataRoute } from 'next';
+
+// ─── ISR Revalidation Period ──────────────────────────────────────────────────
+// Controls how often Next.js re-fetches all products/blogs from the API and
+// regenerates /sitemap.xml in the background WITHOUT a rebuild.
+// 43200 = 12 hours. Change to 1800 for 30 min, or 0 for fully dynamic.
+export const revalidate = 43200;
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
@@ -48,7 +65,9 @@ const BLOG_CATEGORIES = [
 async function apiFetch<T>(path: string): Promise<T | null> {
   try {
     const res = await fetch(`${API_URL}${path}`, {
-      next: { revalidate: 3600 }, // revalidate ISR cache every 1 hour
+      // Match the route-level revalidate so the fetch cache and page cache
+      // stay in sync. Next.js will re-fetch from the API every 30 minutes.
+      next: { revalidate },
       headers: { Accept: 'application/json' },
     });
     if (!res.ok) return null;
