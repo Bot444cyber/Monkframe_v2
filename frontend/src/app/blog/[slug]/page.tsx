@@ -181,16 +181,20 @@ export default function BlogPostPage() {
                         prose-headings:font-black prose-headings:tracking-tight prose-headings:text-gray-900
                         prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-4 prose-h2:pb-3 prose-h2:border-b prose-h2:border-gray-100
                         prose-h3:text-lg prose-h3:mt-8 prose-h3:mb-3
-                        prose-p:text-gray-600 prose-p:leading-[1.85] prose-p:text-[16.5px] prose-p:break-words
+                        prose-p:text-gray-600 prose-p:leading-[1.85] prose-p:text-[16.5px] prose-p:break-words prose-p:mb-6
                         prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-a:font-semibold prose-a:break-all
                         prose-strong:text-gray-900 prose-strong:font-black
-                        prose-ul:text-gray-600 prose-ol:text-gray-600
+                        prose-ul:text-gray-600 prose-ol:text-gray-600 prose-ul:mb-6 prose-ol:mb-6
                         prose-li:leading-7 prose-li:my-1
                         prose-img:rounded-2xl prose-img:shadow-lg prose-img:my-8 prose-img:max-w-full
-                        prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:bg-blue-50/60 prose-blockquote:rounded-r-2xl prose-blockquote:py-3 prose-blockquote:px-5 prose-blockquote:not-italic prose-blockquote:text-gray-700 prose-blockquote:font-medium
+                        prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:bg-blue-50/60 prose-blockquote:rounded-r-2xl prose-blockquote:py-3 prose-blockquote:px-5 prose-blockquote:not-italic prose-blockquote:text-gray-700 prose-blockquote:font-medium prose-blockquote:my-8
                         prose-code:text-blue-600 prose-code:bg-blue-50 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:font-mono prose-code:text-[14px] prose-code:before:content-none prose-code:after:content-none prose-code:break-all
-                        prose-pre:bg-[#0f172a] prose-pre:rounded-2xl prose-pre:shadow-2xl prose-pre:overflow-x-auto
-                        prose-hr:border-gray-100
+                        prose-pre:bg-[#0f172a] prose-pre:rounded-2xl prose-pre:shadow-2xl prose-pre:overflow-x-auto prose-pre:my-8
+                        prose-hr:border-gray-100 prose-hr:my-10
+                        prose-table:w-full prose-table:text-left prose-table:border-collapse prose-table:my-8
+                        prose-th:border-b-2 prose-th:border-gray-200 prose-th:py-4 prose-th:px-5 prose-th:bg-gray-50/80 prose-th:font-bold prose-th:text-gray-900 prose-th:text-sm prose-th:uppercase prose-th:tracking-wider
+                        prose-td:border-b prose-td:border-gray-100 prose-td:py-4 prose-td:px-5 prose-td:text-gray-600 prose-td:align-top
+                        prose-tr:transition-colors hover:prose-tr:bg-gray-50/50
                     ">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>{blog.content}</ReactMarkdown>
                     </div>
