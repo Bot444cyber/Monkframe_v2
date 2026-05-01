@@ -196,7 +196,18 @@ export default function BlogPostPage() {
                         prose-td:border-b prose-td:border-gray-100 prose-td:py-4 prose-td:px-5 prose-td:text-gray-600 prose-td:align-top
                         prose-tr:transition-colors hover:prose-tr:bg-gray-50/50
                     ">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{blog.content}</ReactMarkdown>
+                        <ReactMarkdown 
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                                table: ({ node, ...props }) => (
+                                    <div className="w-full overflow-x-auto pb-4">
+                                        <table {...props} />
+                                    </div>
+                                )
+                            }}
+                        >
+                            {blog.content}
+                        </ReactMarkdown>
                     </div>
 
                     {/* ── Share row ── */}
