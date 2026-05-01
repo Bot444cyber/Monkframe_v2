@@ -7,6 +7,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import PresenceHandler from "@/components/PresenceHandler";
 import { ThemeProvider } from "next-themes";
 import { cn } from "@/lib/utils";
+import Script from "next/script";
 
 const interTight = Inter_Tight({
   subsets: ["latin"],
@@ -30,6 +31,18 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={interTight.variable}>
       <body suppressHydrationWarning className="font-sans antialiased bg-white text-gray-900 selection:bg-blue-600/10 selection:text-blue-600">
+        <Script
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-F89VP08M4M"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-F89VP08M4M');
+          `}
+        </Script>
         <AuthProvider>
           <Toaster
             position="bottom-right"
