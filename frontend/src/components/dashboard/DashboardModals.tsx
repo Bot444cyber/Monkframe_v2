@@ -46,6 +46,14 @@ function FormattingToolbar({ inputId, value, onChange, showHeading = false }: {
         onChange(`${value.substring(0, lineStart)}${prefix}${value.substring(lineStart)}`);
         setTimeout(() => { input.focus(); input.setSelectionRange(start + prefix.length, start + prefix.length); }, 0);
     };
+    const insertTable = () => {
+        const input = document.getElementById(inputId) as HTMLInputElement | HTMLTextAreaElement;
+        if (!input) return;
+        const start = input.selectionStart || 0;
+        const tableTpl = `\n\n| Header 1 | Header 2 | Header 3 |\n|----------|----------|----------|\n| Row 1    | Data     | Data     |\n| Row 2    | Data     | Data     |\n\n`;
+        onChange(`${value.substring(0, start)}${tableTpl}${value.substring(start)}`);
+        setTimeout(() => { input.focus(); input.setSelectionRange(start + 4, start + 12); }, 0);
+    };
     const btn = 'p-1.5 bg-secondary hover:bg-blue-600/10 hover:text-blue-600 rounded-lg text-muted-foreground transition-all';
     return (
         <div className="flex flex-wrap items-center gap-1.5 mb-1 px-1">
@@ -64,6 +72,9 @@ function FormattingToolbar({ inputId, value, onChange, showHeading = false }: {
                     <button type="button" onClick={() => applyLineFormat('### ')} className={btn} title="Sub-Header"><span className="text-[10px] font-black leading-none">H3</span></button>
                     <button type="button" onClick={() => applyLineFormat('- ')} className={btn} title="Bullet List">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-0.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
+                    </button>
+                    <button type="button" onClick={insertTable} className={btn} title="Insert Table">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3.375 5.25h17.25a1.5 1.5 0 011.5 1.5v10.5a1.5 1.5 0 01-1.5 1.5H3.375a1.5 1.5 0 01-1.5-1.5V6.75a1.5 1.5 0 011.5-1.5z" /><path strokeLinecap="round" strokeLinejoin="round" d="M3.375 10.5h17.25M9 5.25v15M15 5.25v15" /></svg>
                     </button>
                 </>
             )}
