@@ -264,7 +264,7 @@ process.on('uncaughtException', (err) => {
         error: err.message,
         stack: err.stack
     });
-    setTimeout(() => process.exit(1), 1000); // Give logger a moment
+    setTimeout(() => process.exit(1), 1000);
 });
 
 // Boot — startApp awaits DB init then opens the port
